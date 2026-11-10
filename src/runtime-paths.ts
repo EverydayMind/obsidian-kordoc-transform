@@ -3,7 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { isAbsolute, join, resolve, sep } from "node:path";
 
-const VERSION = "4.24.58";
+// The pack must match the bundled engine; plugin and engine versions are kept equal.
+import { VERSION } from "./engine-version";
 const HELP = "https://github.com/everydaymind/obsidian-kordoc-transform#ocr-add-on";
 const required = ["engine.cjs", "parse-worker.cjs", "web-worker-engine.cjs", "models/manifest.json", "models/Pix2Text-LICENSE", "models/PaddleOCR-LICENSE", "node_modules/onnxruntime-node/package.json", "node_modules/sharp/package.json", "node_modules/@hyzyla/pdfium/package.json", "node_modules/@huggingface/tokenizers/package.json", "README.md", "THIRD_PARTY_NOTICES.md"];
 let directory = (globalThis as typeof globalThis & { kordocRuntimeDirectory?: string }).kordocRuntimeDirectory ?? "";

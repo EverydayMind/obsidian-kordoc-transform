@@ -3,7 +3,7 @@ import { loadEngine as load } from "./engine-loader";
 export { workerPath } from "./engine-loader";
 export type * from "kordoc";
 import type * as Engine from "./engine-entry";
-export const VERSION = "4.24.58";
+export { VERSION } from "./engine-version";
 export const blocksToChunks: typeof Engine.blocksToChunks = (...args: Parameters<typeof Engine.blocksToChunks>) => load().blocksToChunks(...args);
 export const blocksToMarkdown: typeof Engine.blocksToMarkdown = (...args: Parameters<typeof Engine.blocksToMarkdown>) => load().blocksToMarkdown(...args);
 export const classifyTableTree: typeof Engine.classifyTableTree = (...args: Parameters<typeof Engine.classifyTableTree>) => load().classifyTableTree(...args);

@@ -1297,7 +1297,7 @@ class KordocSettingTab extends PluginSettingTab {
     });
 
     const license = containerEl.createDiv({ cls: "kordoc-license" });
-    license.createEl("h3", { text: "오픈소스 라이선스" });
+    new Setting(license).setName("오픈소스 라이선스").setHeading();
     const attribution = license.createEl("p");
     attribution.appendText("이 플러그인은 ");
     attribution.createEl("a", {

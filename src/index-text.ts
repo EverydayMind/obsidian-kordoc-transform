@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import type { App, TAbstractFile, TFile } from "obsidian";
+import type { App } from "obsidian";
+import { vaultFileByPath } from "./vault-file";
 
-const isFile = (file: TAbstractFile | null): file is TFile => !!file && "extension" in file && "stat" in file;
 import { VERSION } from "./engine";
 import type { ParseWorkerPool } from "./batch-worker";
 import { normalizeKordocProviderPath } from "./verbex-contract";
@@ -18,8 +18,7 @@ export function createIndexText(app: App, pool: () => ParseWorkerPool) {
     check();
     const path = normalizeKordocProviderPath(input);
     if (path.split("/").some((part) => part.startsWith("."))) return { status: "unsupported", message: "Hidden paths are not indexable" };
-    const candidate = typeof app.vault.getFileByPath === "function" ? null : app.vault.getAbstractFileByPath(path);
-    const file = typeof app.vault.getFileByPath === "function" ? app.vault.getFileByPath(path) : isFile(candidate) ? candidate : null;
+    const file = vaultFileByPath(app.vault, path);
     if (!file || !/^(hwp|hwpx|pdf)$/i.test(file.extension)) return { status: "unsupported", message: "HWP/HWPX/PDF file required" };
     const sourceStamp = { mtime: file.stat.mtime, size: file.stat.size };
     if (sourceStamp.size > 100 * 1024 * 1024) return { status: "too_large", message: "100MB limit" };

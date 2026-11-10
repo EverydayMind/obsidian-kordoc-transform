@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import type { App, TAbstractFile, TFile } from 'obsidian';
+import type { App } from 'obsidian';
+import { vaultFileByPath } from './vault-file';
 import { loadStyleProfile } from './style-profile-loader';
 import type { StyleSnapshot } from './style-profile/types';
 import type { SemanticAnalysis } from './style-profile/semantic';
@@ -26,7 +27,6 @@ export interface StyleProfileApiV1 {
   reanalyzeSemanticEvidence(input: { snapshot: StyleSnapshot; evidence: SemanticEvidence; expectedMeasurementSha256: string; expectedEvidenceSha256: string; signal?: AbortSignal }): Promise<{ status: 'ok'; measurementSha256: string; evidenceSha256: string; analysis: SemanticAnalysis; analysisSha256: string } | StyleFailure>;
 }
 const hash = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
-const isFile = (file: TAbstractFile | null): file is TFile => !!file && 'extension' in file && 'stat' in file;
 const failure = (error: unknown): StyleFailure => {
   const code = error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' && ['not_found', 'unsupported', 'encrypted', 'drm', 'corrupted', 'too_large', 'bomb', 'source_changed', 'cancelled', 'timeout', 'busy', 'extractor_unavailable'].includes(error.code) ? error.code as FailureCode : 'corrupted';
   return { status: 'error', code, message: error instanceof Error ? error.message : 'Style extraction failed.', retry: ['busy', 'cancelled', 'timeout', 'extractor_unavailable'].includes(code) ? 'new_request' : 'after_input_change' };
@@ -49,8 +49,7 @@ export function createStyleProfileApi(app: App, load = loadStyleProfile): StyleP
     // eslint-disable-next-line no-control-regex -- Reject control characters in paths.
     if (typeof path !== 'string' || !path || path.length > 4096 || /^[A-Za-z]:|^\//.test(path) || /[\\\x00-\x1f]/.test(path) || path.split('/').some(part => !part || part.startsWith('.')) || path === app.vault.configDir || path.startsWith(`${app.vault.configDir}/`)) throw new StyleError('unsupported', 'User Vault relative path required.');
     if (input.expectedSha256 !== undefined && !/^[0-9a-f]{64}$/.test(input.expectedSha256)) throw new StyleError('corrupted', 'Invalid expected hash.');
-    const candidate = typeof app.vault.getFileByPath === 'function' ? null : app.vault.getAbstractFileByPath(path);
-    const file = typeof app.vault.getFileByPath === 'function' ? app.vault.getFileByPath(path) : isFile(candidate) ? candidate : null;
+    const file = vaultFileByPath(app.vault, path);
     if (!file) throw new StyleError('not_found', 'Source file not found.');
     if (!/^(hwp|hwpx)$/i.test(file.extension)) throw new StyleError('unsupported', 'HWP/HWPX source required.');
     if (file.stat.size > LIMITS.input) throw new StyleError('too_large', 'Input exceeds 32 MiB.');
@@ -72,8 +71,7 @@ export function createStyleProfileApi(app: App, load = loadStyleProfile): StyleP
     if (semantic === 'compact-evidence' && typeof runtime.extractCompactSemanticEvidenceBytes !== 'function') throw new StyleError('extractor_unavailable', 'Compact semantic runtime unavailable.');
     const value = anchors ? await runtime.resolveHwpxRootAnchorsBytes(bytes, { archiveSha256: sha256, ...anchors }, input.signal) : overlap ? await runtime.inspectStyleOverlapBytes(bytes, source, overlap, input.signal) : range ? await runtime.inspectStyleTextRangeBytes(bytes, source, range.ref, range.offset, range.limit, input.signal) : refs ? await runtime.inspectStyleBytes(bytes, source, refs, input.signal) : semantic === 'compact-evidence' ? await runtime.extractCompactSemanticEvidenceBytes(bytes, source, input.signal) : semantic === 'compact' ? await runtime.extractCompactStyleBytes(bytes, source, input.signal) : semantic === 'evidence' ? await runtime.extractSemanticEvidenceBytes(bytes, source, input.signal) : semantic ? await runtime.extractSemanticBytes(bytes, source, input.signal) : await runtime.extractStyleBytes(bytes, source, input.signal);
     guard.check();
-    const currentCandidate = typeof app.vault.getFileByPath === 'function' ? null : app.vault.getAbstractFileByPath(path);
-    const currentFile = typeof app.vault.getFileByPath === 'function' ? app.vault.getFileByPath(path) : isFile(currentCandidate) ? currentCandidate : null;
+    const currentFile = vaultFileByPath(app.vault, path);
     if (!currentFile || currentFile.stat.size > LIMITS.input || hash(new Uint8Array(await app.vault.readBinary(currentFile))) !== sha256) throw new StyleError('source_changed', 'Source changed during measurement.');
     guard.check();
     if (anchors) return { status: 'ok' as const, ...(value as Awaited<ReturnType<typeof runtime.resolveHwpxRootAnchorsBytes>>) };

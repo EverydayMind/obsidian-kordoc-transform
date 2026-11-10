@@ -1,4 +1,4 @@
-declare module "*redact-doc-HQNN2ECF.js" {
+declare module "*redact-doc-QPZN5OOW.js" {
   import type { RedactHit, RedactOptions, RedactRule } from "kordoc";
 
   interface FileHit {
