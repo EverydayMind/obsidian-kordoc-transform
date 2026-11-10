@@ -22,7 +22,10 @@ export function isolatePdfjs({ workerNodeMode = false, expectedAssetModules = 1 
           }
         }
         if (!data['cmaps/Adobe-Korea1-UCS2.bcmap'] || !data['standard_fonts/FoxitSerif.pfb']) throw new Error('PDF.js assets missing');
-        const packed = gzipSync(Buffer.from(JSON.stringify(data)), { level: 9 }).toString('base64');
+        // The gzip header records the build OS (byte 9); pin it to Unix so main.js is identical on every OS.
+        const gzip = gzipSync(Buffer.from(JSON.stringify(data)), { level: 9 });
+        gzip[9] = 3;
+        const packed = gzip.toString('base64');
         return { loader: 'js', contents: `import { gunzipSync } from 'node:zlib';
 let assets;
 function read(key) { assets ??= JSON.parse(gunzipSync(Buffer.from(${JSON.stringify(packed)}, 'base64')).toString('utf8')); if (!Object.prototype.hasOwnProperty.call(assets, key)) throw new Error('Missing PDF asset: ' + key); return new Uint8Array(Buffer.from(assets[key], 'base64')); }
