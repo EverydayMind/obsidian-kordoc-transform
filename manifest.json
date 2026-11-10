@@ -1,6 +1,6 @@
 {
   "id": "kordoc-transform",
-  "name": "KorDoc 문서변환기",
+  "name": "KorDoc Transform",
   "version": "4.24.58",
   "minAppVersion": "1.4.0",
   "description": "Convert Korean HWP, HWPX and HWPML documents, PDF, Excel, Word and PowerPoint files to Markdown, preview and edit HWPX, and export Markdown to HWPX offline.",

@@ -19,7 +19,7 @@ MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)�
 
 ## 설치
 
-커뮤니티 플러그인에서 **KorDoc 문서변환기**를 설치합니다. 수동 설치는 릴리스의 `main.js`, `manifest.json`, `styles.css`를 `.obsidian/plugins/kordoc-transform/`에 복사한 뒤 플러그인을 켭니다.
+커뮤니티 플러그인에서 **KorDoc Transform**을 설치합니다. 수동 설치는 릴리스의 `main.js`, `manifest.json`, `styles.css`를 `.obsidian/plugins/kordoc-transform/`에 복사한 뒤 플러그인을 켭니다.
 
 ## 사용법
 

@@ -1,4 +1,4 @@
-# KorDoc 문서변환기 (KorDoc Transform)
+# KorDoc Transform (KorDoc 문서변환기)
 
 [한국어](README.ko.md)
 
@@ -19,7 +19,7 @@ The user interface is in Korean. This is an unofficial plugin built on the MIT-l
 
 ## Installation
 
-Install **KorDoc 문서변환기** from Community plugins. For a manual installation, copy `main.js`, `manifest.json` and `styles.css` from a release into `.obsidian/plugins/kordoc-transform/` and enable the plugin.
+Install **KorDoc Transform** from Community plugins. For a manual installation, copy `main.js`, `manifest.json` and `styles.css` from a release into `.obsidian/plugins/kordoc-transform/` and enable the plugin.
 
 ## Usage
 
