@@ -1,0 +1,39 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import ts from 'typescript';
+
+const root = process.cwd();
+const check = process.argv.includes('--check');
+function output(file, content) {
+  if (check) {
+    if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== content) throw new Error(`${file} is stale; run npm run prepare:lazy`);
+  } else if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== content) fs.writeFileSync(file, content);
+}
+const version = JSON.parse(fs.readFileSync('node_modules/kordoc/package.json', 'utf8')).version;
+const names = new Set();
+for (const file of fs.readdirSync('src').filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts') && !['engine.ts', 'engine-entry.ts', 'parse-worker-entry.ts'].includes(f))) {
+  const location = path.join('src', file);
+  let text = fs.readFileSync(location, 'utf8');
+  const ast = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+  for (const stmt of ast.statements) {
+    if (!ts.isImportDeclaration(stmt) || !['kordoc', './engine'].includes(stmt.moduleSpecifier.text)) continue;
+    if (stmt.importClause?.isTypeOnly) continue;
+    for (const item of stmt.importClause?.namedBindings?.elements ?? []) {
+      if (!item.isTypeOnly && !['VERSION', 'workerPath', 'configureEngineDirectory'].includes(item.name.text)) names.add(item.name.text);
+    }
+  }
+  text = text.replace(/from "kordoc"/g, 'from "./engine"');
+  text = text.replace(/\/\/ Pinned 4\.18\.8 CLI implementation:[\s\S]*?import \{ redactDocument \} from "[^"\n]+";/, 'import { redactDocument } from "./engine";');
+  output(location, text);
+}
+names.add('redactDocument');
+const redact = fs.readdirSync('node_modules/kordoc/dist').find(f => /^redact-doc-.*\.js$/.test(f));
+if (!redact) throw new Error('Missing engine redact module');
+output('src/engine-entry.ts', `// Generated engine entry.\n(globalThis as typeof globalThis & { __kordocEngineEvaluations?: number }).__kordocEngineEvaluations = ((globalThis as typeof globalThis & { __kordocEngineEvaluations?: number }).__kordocEngineEvaluations ?? 0) + 1;\nexport * from "kordoc";\nexport { redactDocument } from "../node_modules/kordoc/dist/${redact}";\n`);
+output('src/engine.ts', `// Generated lazy facade. Loading plugin metadata never loads the engine.\nimport { loadEngine as load } from "./engine-loader";\nexport { workerPath } from "./engine-loader";\nexport type * from "kordoc";\nimport type * as Engine from "./engine-entry";\nexport const VERSION = ${JSON.stringify(version)};\n${[...names].sort().map(n => { const asserted = n === 'fillWithUniqueGuard'; return `export const ${n}: typeof Engine.${n} = ${asserted ? '(' : ''}(...args: Parameters<typeof Engine.${n}>) => load().${n}(...args)${asserted ? `) as typeof Engine.${n}` : ''};`; }).join('\n')}\n`);
+for (const file of ['package.json', 'manifest.json']) {
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  data.version = version;
+  data.description = data.description.replace(/4\.18\.8/g, version);
+  output(file, JSON.stringify(data, null, 2) + '\n');
+}

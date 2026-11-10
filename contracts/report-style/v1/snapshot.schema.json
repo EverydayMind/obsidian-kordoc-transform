@@ -1,0 +1,4622 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "snapshot.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "report-style-snapshot/1"
+    },
+    "extractorVersion": {
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 33554432
+        },
+        "format": {
+          "enum": [
+            "hwpx",
+            "hwp5"
+          ]
+        }
+      },
+      "required": [
+        "sha256",
+        "size",
+        "format"
+      ]
+    },
+    "complete": {
+      "const": true
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+            "maxLength": 256
+          },
+          "widthPt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "heightPt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "orientation": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "enum": [
+                      "portrait",
+                      "landscape"
+                    ]
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "marginsPt": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "left": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "right": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "top": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "bottom": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "header": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "footer": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "gutter": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "left",
+              "right",
+              "top",
+              "bottom",
+              "header",
+              "footer",
+              "gutter"
+            ]
+          },
+          "columns": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 256
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "ref",
+          "widthPt",
+          "heightPt",
+          "orientation",
+          "marginsPt",
+          "columns"
+        ]
+      },
+      "maxItems": 256,
+      "minItems": 1
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+            "maxLength": 256
+          },
+          "parentRef": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+                "maxLength": 256
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "enum": [
+              "paragraph",
+              "table",
+              "cell",
+              "header",
+              "footer"
+            ]
+          },
+          "topLevelOrder": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 200000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ref",
+          "parentRef",
+          "kind",
+          "topLevelOrder"
+        ]
+      },
+      "maxItems": 200000
+    },
+    "characterStyles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fonts": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "hangul": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "latin": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "hanja": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "japanese": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "other": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "symbol": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "user": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "hangul",
+              "latin",
+              "hanja",
+              "japanese",
+              "other",
+              "symbol",
+              "user"
+            ]
+          },
+          "sizePt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "colorRgb": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "bold": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "italic": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "ratioPct": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "hangul": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "latin": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "hanja": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "japanese": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "other": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "symbol": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "user": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "hangul",
+              "latin",
+              "hanja",
+              "japanese",
+              "other",
+              "symbol",
+              "user"
+            ]
+          },
+          "spacingPct": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "hangul": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "latin": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "hanja": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "japanese": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "other": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "symbol": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              },
+              "user": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "measured"
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "raw": {
+                        "type": [
+                          "null",
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "rawUnit": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "origin": {
+                        "enum": [
+                          "explicit",
+                          "inherited",
+                          "extractor_default"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "value",
+                      "raw",
+                      "rawUnit",
+                      "origin",
+                      "evidenceRef"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "state": {
+                        "const": "not_measured"
+                      },
+                      "reason": {
+                        "enum": [
+                          "absent",
+                          "unsupported",
+                          "unresolved_reference"
+                        ]
+                      },
+                      "evidenceRef": {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    },
+                    "required": [
+                      "state",
+                      "reason",
+                      "evidenceRef"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "hangul",
+              "latin",
+              "hanja",
+              "japanese",
+              "other",
+              "symbol",
+              "user"
+            ]
+          }
+        },
+        "required": [
+          "fonts",
+          "sizePt",
+          "colorRgb",
+          "bold",
+          "italic",
+          "ratioPct",
+          "spacingPct"
+        ]
+      },
+      "maxItems": 4096
+    },
+    "paragraphStyles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "align": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "enum": [
+                      "left",
+                      "right",
+                      "center",
+                      "justify",
+                      "distribute"
+                    ]
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "leftPt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "rightPt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "firstLinePt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "beforePt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "afterPt": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "lineSpacing": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "const": "percent"
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "const": "pct"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "value",
+                          "unit"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "kind": {
+                            "enum": [
+                              "fixed",
+                              "minimum",
+                              "between"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "unit": {
+                            "const": "pt"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "value",
+                          "unit"
+                        ]
+                      }
+                    ]
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "pageBreakBefore": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "outlineLevel": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "align",
+          "leftPt",
+          "rightPt",
+          "firstLinePt",
+          "beforePt",
+          "afterPt",
+          "lineSpacing",
+          "pageBreakBefore",
+          "outlineLevel"
+        ]
+      },
+      "maxItems": 4096
+    },
+    "paragraphs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+            "maxLength": 256
+          },
+          "sourceStyleId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paragraphStyle": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4095
+          },
+          "textCodePoints": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 33554432
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "start": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 33554432
+                },
+                "length": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 33554432
+                },
+                "characterStyle": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4095
+                }
+              },
+              "required": [
+                "start",
+                "length",
+                "characterStyle"
+              ]
+            },
+            "maxItems": 50000
+          },
+          "prefix": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "rule": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "evidenceRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "maxItems": 32
+                }
+              },
+              "required": [
+                "role",
+                "rule",
+                "evidenceRefs"
+              ]
+            },
+            "maxItems": 128
+          }
+        },
+        "required": [
+          "ref",
+          "sourceStyleId",
+          "paragraphStyle",
+          "textCodePoints",
+          "runs",
+          "prefix",
+          "candidates"
+        ]
+      },
+      "maxItems": 10000
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+            "maxLength": 256
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50000
+          },
+          "columnCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50000
+          },
+          "columnRatios": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "measured"
+                  },
+                  "value": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "maxItems": 50000
+                  },
+                  "raw": {
+                    "type": [
+                      "null",
+                      "boolean",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "rawUnit": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "origin": {
+                    "enum": [
+                      "explicit",
+                      "inherited",
+                      "extractor_default"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "value",
+                  "raw",
+                  "rawUnit",
+                  "origin",
+                  "evidenceRef"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "const": "not_measured"
+                  },
+                  "reason": {
+                    "enum": [
+                      "absent",
+                      "unsupported",
+                      "unresolved_reference"
+                    ]
+                  },
+                  "evidenceRef": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "state",
+                  "reason",
+                  "evidenceRef"
+                ]
+              }
+            ]
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+                  "maxLength": 256
+                },
+                "row": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 49999
+                },
+                "column": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 49999
+                },
+                "rowSpan": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 50000
+                },
+                "columnSpan": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 50000
+                },
+                "borders": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "left": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "maxLength": 64
+                                },
+                                "widthPt": {
+                                  "type": "number"
+                                },
+                                "colorRgb": {
+                                  "type": "string",
+                                  "pattern": "^#[0-9A-Fa-f]{6}$"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "widthPt",
+                                "colorRgb"
+                              ]
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "right": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "maxLength": 64
+                                },
+                                "widthPt": {
+                                  "type": "number"
+                                },
+                                "colorRgb": {
+                                  "type": "string",
+                                  "pattern": "^#[0-9A-Fa-f]{6}$"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "widthPt",
+                                "colorRgb"
+                              ]
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "top": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "maxLength": 64
+                                },
+                                "widthPt": {
+                                  "type": "number"
+                                },
+                                "colorRgb": {
+                                  "type": "string",
+                                  "pattern": "^#[0-9A-Fa-f]{6}$"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "widthPt",
+                                "colorRgb"
+                              ]
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "bottom": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "maxLength": 64
+                                },
+                                "widthPt": {
+                                  "type": "number"
+                                },
+                                "colorRgb": {
+                                  "type": "string",
+                                  "pattern": "^#[0-9A-Fa-f]{6}$"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "widthPt",
+                                "colorRgb"
+                              ]
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "right",
+                    "top",
+                    "bottom"
+                  ]
+                },
+                "fillRgb": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "state": {
+                          "const": "measured"
+                        },
+                        "value": {
+                          "type": "string",
+                          "pattern": "^#[0-9A-Fa-f]{6}$"
+                        },
+                        "raw": {
+                          "type": [
+                            "null",
+                            "boolean",
+                            "number",
+                            "string"
+                          ]
+                        },
+                        "rawUnit": {
+                          "type": "string",
+                          "maxLength": 64
+                        },
+                        "origin": {
+                          "enum": [
+                            "explicit",
+                            "inherited",
+                            "extractor_default"
+                          ]
+                        },
+                        "evidenceRef": {
+                          "type": "string",
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "state",
+                        "value",
+                        "raw",
+                        "rawUnit",
+                        "origin",
+                        "evidenceRef"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "state": {
+                          "const": "not_measured"
+                        },
+                        "reason": {
+                          "enum": [
+                            "absent",
+                            "unsupported",
+                            "unresolved_reference"
+                          ]
+                        },
+                        "evidenceRef": {
+                          "type": "string",
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "state",
+                        "reason",
+                        "evidenceRef"
+                      ]
+                    }
+                  ]
+                },
+                "paddingPt": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "left": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "right": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "top": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    },
+                    "bottom": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "measured"
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "raw": {
+                              "type": [
+                                "null",
+                                "boolean",
+                                "number",
+                                "string"
+                              ]
+                            },
+                            "rawUnit": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "origin": {
+                              "enum": [
+                                "explicit",
+                                "inherited",
+                                "extractor_default"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "value",
+                            "raw",
+                            "rawUnit",
+                            "origin",
+                            "evidenceRef"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "state": {
+                              "const": "not_measured"
+                            },
+                            "reason": {
+                              "enum": [
+                                "absent",
+                                "unsupported",
+                                "unresolved_reference"
+                              ]
+                            },
+                            "evidenceRef": {
+                              "type": "string",
+                              "maxLength": 256
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "reason",
+                            "evidenceRef"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "right",
+                    "top",
+                    "bottom"
+                  ]
+                },
+                "paragraphRefs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+                    "maxLength": 256
+                  },
+                  "maxItems": 10000
+                }
+              },
+              "required": [
+                "ref",
+                "row",
+                "column",
+                "rowSpan",
+                "columnSpan",
+                "borders",
+                "fillRgb",
+                "paddingPt",
+                "paragraphRefs"
+              ]
+            },
+            "maxItems": 50000
+          }
+        },
+        "required": [
+          "ref",
+          "rowCount",
+          "columnCount",
+          "columnRatios",
+          "cells"
+        ]
+      },
+      "maxItems": 1000
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "feature": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^s[0-9]+(?:/(?:p[0-9]+|t[0-9]+|c[0-9]+\\.[0-9]+|h[0-9]+|f[0-9]+))*$",
+              "maxLength": 256
+            },
+            "maxItems": 10000
+          }
+        },
+        "required": [
+          "feature",
+          "refs"
+        ]
+      },
+      "maxItems": 1024
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200000
+          }
+        },
+        "required": [
+          "code",
+          "count"
+        ]
+      },
+      "maxItems": 1024
+    }
+  },
+  "required": [
+    "schema",
+    "extractorVersion",
+    "source",
+    "complete",
+    "sections",
+    "nodes",
+    "characterStyles",
+    "paragraphStyles",
+    "paragraphs",
+    "tables",
+    "unsupported",
+    "warnings"
+  ]
+}

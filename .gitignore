@@ -1,0 +1,10 @@
+/node_modules/
+/main.js
+/data.json
+/runtime/
+/pdfjs-assets/
+AGENTS.md
+CLAUDE.md
+*PLAN*.md
+*REVIEW*.md
+HANDOFF*.md
