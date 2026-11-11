@@ -212,7 +212,7 @@ export class KordocHwpxView extends FileView {
     const session = this.session;
     const result = this.renderResult;
     const approximate = !!session?.isDirty || !this.hasCache;
-    const badge = title.createEl("span", {
+    const badge = title.createSpan({
       cls: approximate
         ? "kordoc-hwpx-badge kordoc-hwpx-badge-approx"
         : "kordoc-hwpx-badge",
@@ -228,7 +228,7 @@ export class KordocHwpxView extends FileView {
     );
 
     if (result) {
-      toolbar.createEl("span", {
+      toolbar.createSpan({
         cls: "kordoc-hwpx-stats",
         text: `${result.pageCount}쪽 · 텍스트 ${result.stats.texts} · 표 ${result.stats.tables}`,
       });
@@ -264,16 +264,13 @@ export class KordocHwpxView extends FileView {
     const result = this.renderResult;
     if (!result) return;
     const scroll = container.createDiv({ cls: "kordoc-hwpx-svg-scroll" });
-    const image = document.createElement("img");
-    image.className = "kordoc-hwpx-svg-image";
-    image.alt = `${this.file?.name ?? "HWPX"} 미리보기`;
+    const image = scroll.createEl("img", { cls: "kordoc-hwpx-svg-image", attr: { alt: `${this.file?.name ?? "HWPX"} 미리보기` } });
     image.width = Math.max(1, Math.round(result.width));
     image.style.width = `${result.width}pt`;
     this.blobUrl = URL.createObjectURL(
       new Blob([result.svg], { type: "image/svg+xml" }),
     );
     image.src = this.blobUrl;
-    scroll.appendChild(image);
 
     if (result.warnings.length > 0) {
       const details = container.createEl("details", { cls: "kordoc-hwpx-warnings" });
@@ -292,7 +289,7 @@ export class KordocHwpxView extends FileView {
 
     if (this.selectedBlockIndex !== null) {
       const lock = container.createDiv({ cls: "kordoc-hwpx-selection-lock" });
-      lock.createEl("span", {
+      lock.createSpan({
         text: `현재 ${this.selectedBlockIndex + 1}번 블록을 Verbex 편집 대상으로 고정했습니다.`,
       });
       const clear = lock.createEl("button", { text: "선택 해제하고 문서에서 찾기" });
@@ -312,12 +309,12 @@ export class KordocHwpxView extends FileView {
           : "kordoc-hwpx-block",
       });
       const button = item.createEl("button", { cls: "kordoc-hwpx-block-button" });
-      button.createEl("span", { cls: "kordoc-hwpx-block-index", text: `${index + 1}` });
+      button.createSpan({ cls: "kordoc-hwpx-block-index", text: `${index + 1}` });
       const copy = button.createDiv({ cls: "kordoc-hwpx-block-copy" });
-      copy.createEl("span", { cls: "kordoc-hwpx-block-type", text: blockTypeLabel(block) });
-      copy.createEl("span", { cls: "kordoc-hwpx-block-text", text: previewText(block) });
+      copy.createSpan({ cls: "kordoc-hwpx-block-type", text: blockTypeLabel(block) });
+      copy.createSpan({ cls: "kordoc-hwpx-block-text", text: previewText(block) });
       if (capability?.capability === "locked") {
-        item.createEl("span", { cls: "kordoc-hwpx-lock", text: "잠금" });
+        item.createSpan({ cls: "kordoc-hwpx-lock", text: "잠금" });
         button.title = capability.reason ?? "편집할 수 없는 블록";
       }
       button.addEventListener("click", () => {
@@ -461,7 +458,7 @@ export class KordocHwpxView extends FileView {
         // kordoc__inspect_blocks while the host still verifies path/hash.
         scope: selectedBlock ? "single-block" : "document",
         operation: "transform",
-        contextId: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
+        contextId: window.crypto.randomUUID(),
         path: file.path,
         sourceHash: session.sourceHash,
         ...(selectedBlock && this.selectedBlockIndex !== null

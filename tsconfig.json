@@ -5,5 +5,5 @@
     "noImplicitAny": false, "strictNullChecks": true, "skipLibCheck": true,
     "lib": ["DOM", "ES2020"], "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/style-profile/generated/*.js"]
+  "include": ["src/**/*.ts"]
 }

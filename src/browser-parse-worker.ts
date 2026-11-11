@@ -9,9 +9,9 @@ export class BrowserParseWorker {
   private ready = false;
   private terminated = false;
   private pending?: { value: unknown; transfer: ArrayBuffer[] };
-  private messageHandler?: (value: any) => void;
+  private messageHandler?: (value: unknown) => void;
   private errorHandler?: (error: Error) => void;
-  private readonly startupTimer: ReturnType<typeof setTimeout>;
+  private readonly startupTimer: number;
 
   constructor(workerFile: string, startupTimeoutMs = 10_000) {
     const source = readFileSync(workerFile, "utf8");
@@ -25,13 +25,13 @@ export class BrowserParseWorker {
       URL.revokeObjectURL(this.url);
       throw error;
     }
-    this.startupTimer = setTimeout(() => this.fail(new Error("변환 워커 준비 시간이 초과되었습니다.")), startupTimeoutMs);
+    this.startupTimer = window.setTimeout(() => this.fail(new Error("변환 워커 준비 시간이 초과되었습니다.")), startupTimeoutMs);
     this.worker.onmessage = (event) => {
       if (this.terminated) return;
       const data: unknown = event.data;
       if (data && typeof data === "object" && "__kordocWorkerReady" in data && data.__kordocWorkerReady === true && !this.ready) {
         this.ready = true;
-        clearTimeout(this.startupTimer);
+        window.clearTimeout(this.startupTimer);
         const pending = this.pending;
         this.pending = undefined;
         if (pending) {
@@ -50,7 +50,9 @@ export class BrowserParseWorker {
   }
 
   get startupPending(): boolean { return !this.ready; }
-  on(event: string, callback: (...args: any[]) => void): this {
+  on(event: "message", callback: (value: unknown) => void): this;
+  on(event: "error", callback: (error: Error) => void): this;
+  on(event: "message" | "error", callback: ((value: unknown) => void) | ((error: Error) => void)): this {
     if (event === "message") this.messageHandler = callback;
     if (event === "error") this.errorHandler = callback;
     return this;
@@ -67,7 +69,7 @@ export class BrowserParseWorker {
   async terminate(): Promise<number> {
     if (!this.terminated) {
       this.terminated = true;
-      clearTimeout(this.startupTimer);
+      window.clearTimeout(this.startupTimer);
       this.pending = undefined;
       this.worker.terminate();
       URL.revokeObjectURL(this.url);

@@ -1,5 +1,5 @@
 import { isAbsolute, join } from "node:path";
-import { createRequire } from "node:module";
+import { loadEngineEntry } from "./lazy-modules";
 import type * as Engine from "./engine-entry";
 import { configureRuntimePaths } from "./runtime-paths";
 
@@ -17,9 +17,7 @@ export function configureEngineDirectory(pluginDirectory: string): void {
 }
 
 export function loadEngine(): typeof Engine {
-  return engine ??= (typeof require === "function"
-    ? require("./engine-entry")
-    : createRequire(import.meta.url)("../runtime/engine.cjs")) as typeof Engine;
+  return engine ??= loadEngineEntry();
 }
 
 export function workerPath(): string {

@@ -8,3 +8,4 @@ CLAUDE.md
 *PLAN*.md
 *REVIEW*.md
 HANDOFF*.md
+/src/style-profile/generated/*.js

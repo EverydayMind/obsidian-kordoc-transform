@@ -90,7 +90,7 @@ export class LocalMcpServer {
         res.once("close", () => { this.sessions.delete(server); void server.close(); });
         await server.connect(transport);
         await transport.handleRequest(req, res, body);
-      } catch (error) {
+      } catch {
         if (!res.headersSent) { res.writeHead(400); res.end("Invalid MCP request"); } else if (!res.writableEnded) res.end();
       }
     })(); });

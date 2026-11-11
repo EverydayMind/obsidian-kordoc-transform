@@ -10,6 +10,7 @@ for (const [name, input] of schemas) {
   const schema = JSON.parse(await readFile(input, 'utf8'));
   const ajv = new Ajv({ strict: false, strictNumbers: true, coerceTypes: false, useDefaults: false, removeAdditional: false, code: { source: true, esm: true } });
   let code = standaloneCode(ajv, ajv.compile(schema));
+  code = code.replace(/^"use strict";\s*/, '');
   code = code.replaceAll('require("ajv/dist/runtime/ucs2length").default', 'ucs2length');
   if (/\brequire\s*\(/.test(code)) throw new Error(`${name}: unexpected runtime require`);
   code = `function ucs2length(value) { return [...value].length; }\n${code}`;

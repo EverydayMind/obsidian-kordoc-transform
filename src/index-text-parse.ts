@@ -13,7 +13,7 @@ export async function parseIndexSource(pool: ParseWorkerPool, bytes: ArrayBuffer
   const blocks = [...first.blocks], warnings = [...(first.warnings ?? [])], outline = [...(first.outline ?? [])], qualities = [...(first.pageQuality ?? [])];
   for (let start = 2; start <= pageCount; start++) {
     check();
-    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
     const next = await pool.parse(bytes, { ...options, pages: String(start) });
     check();
     if (!next.success) return next;

@@ -148,7 +148,7 @@ export class ParseWorkerPool {
   private async parseLocally(job: Job): Promise<void> {
     try {
       // Give notices and cancellation a turn before starting each document.
-      await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
       if (this.closed) return;
       await guardZipInput(job.buffer, this.abort.signal);
       if (this.closed) return;

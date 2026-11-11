@@ -7,6 +7,7 @@ import {
   TFile,
   TFolder,
   normalizePath,
+  requestUrl,
   Menu,
   Modal,
   type EventRef,
@@ -15,10 +16,10 @@ import { resolve } from "node:path";
 import { configureEngineDirectory, workerPath } from "./engine-loader";
 import { clearLoadedStyleTextCache, configureStyleProfileDirectory } from './style-profile-loader';
 import { createStyleProfileApi } from './style-profile-api';
+import { notifyWebhook } from "./webhook";
 import { waitForNoteMetadata } from "./note-metadata";
 import {
   markdownToHwpx,
-  parse,
   VERSION,
   type ExtractedImage,
   type GongmunPresetInput,
@@ -31,6 +32,7 @@ import { DocumentToolsModal, askPassword } from "./tool-modal";
 import { TOOL_ACTIONS, jsonStringify, offlineParseOptions, parseOffline, parseValues, preciseDocumentFormat, runDocumentTool, type ToolAction, type ToolResult, type ToolRequest } from "./document-tools";
 import { ParseWorkerPool } from "./batch-worker";
 import { runtimePackError } from "./runtime-paths";
+export { engineProbe } from "./engine-probe";
 import { createBrowserParseWorker } from "./browser-parse-worker";
 import { createIndexText, INDEX_TEXT_EXTRACTOR } from "./index-text";
 import { collectVaultImages } from "./vault-images";
@@ -159,7 +161,7 @@ export default class KordocImporterPlugin extends Plugin {
   private parsePool?: ParseWorkerPool;
   private poolSize = 0;
   private browserWorkerEnabled = false;
-  private readonly watchTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly watchTimers = new Map<string, number>();
   private readonly conversionTails = new Map<string, Promise<void>>();
   /** 플러그인이 방금 복사한 원본 — 폴더 자동 변환이 다시 집어들지 않도록 잠시 제외 */
   private readonly selfWritten = new Set<string>();
@@ -273,7 +275,7 @@ export default class KordocImporterPlugin extends Plugin {
     });
 
     this.addCommand({
-      id: "kordoc-hwpx-edit-command",
+      id: "kordoc-hwpx-edit-palette",
       name: "HWPX 편집 명령 실행",
       checkCallback: (checking: boolean) => {
         const view = this.app.workspace.getActiveViewOfType(KordocHwpxView);
@@ -355,7 +357,7 @@ export default class KordocImporterPlugin extends Plugin {
     this.app.workspace.trigger(PROVIDERS_CHANGED_EVENT);
     void this.localMcp?.stop();
     this.parsePool?.dispose();
-    for (const timer of this.watchTimers.values()) clearTimeout(timer);
+    for (const timer of this.watchTimers.values()) window.clearTimeout(timer);
     this.watchTimers.clear();
     this.verbexRegistrationManager?.dispose();
     this.verbexRegistrationManager = undefined;
@@ -445,8 +447,8 @@ export default class KordocImporterPlugin extends Plugin {
     if (!this.settings.watchEnabled || !folder || !this.isSupported(file) || !file.path.startsWith(folder + "/")) return;
     if (file.path === output || file.path.startsWith(output + "/")) return;
     if (this.selfWritten.has(file.path)) return;
-    clearTimeout(this.watchTimers.get(file.path));
-    this.watchTimers.set(file.path, setTimeout(() => {
+    window.clearTimeout(this.watchTimers.get(file.path));
+    this.watchTimers.set(file.path, window.setTimeout(() => {
       this.watchTimers.delete(file.path);
       const previous = this.conversionTails.get(file.path) ?? Promise.resolve();
       // 자동 변환은 묻지 않고 설정의 저장 폴더를 쓰며, 이미 볼트에 있는 원본은 복사하지 않는다.
@@ -571,12 +573,10 @@ export default class KordocImporterPlugin extends Plugin {
 
   /** 숨김 input[type=file] 로 외부 파일을 받아 변환 (Electron remote 불필요) */
   private pickAndConvertExternal() {
-    const input = document.createElement("input");
-    input.type = "file";
+    const input = activeDocument.body.createEl("input", { type: "file" });
     input.multiple = true;
     input.accept = SUPPORTED_EXTENSIONS.map((e) => "." + e).join(",");
     input.hidden = true;
-    document.body.appendChild(input);
 
     input.addEventListener("change", () => { void (async () => {
       const files = Array.from(input.files ?? []);
@@ -649,7 +649,7 @@ export default class KordocImporterPlugin extends Plugin {
 
   private markSelfWritten(path: string): void {
     this.selfWritten.add(path);
-    setTimeout(() => this.selfWritten.delete(path), 5000);
+    window.setTimeout(() => this.selfWritten.delete(path), 5000);
   }
 
   /** Markdown 전체(선택 영역 아님)를 HWPX로 생성해 볼트에 저장 */
@@ -814,10 +814,7 @@ export default class KordocImporterPlugin extends Plugin {
   private async notifyWebhook(source: string, output: string, format: string): Promise<void> {
     if (!this.settings.webhookUrl.trim()) return;
     try {
-      const endpoint = new URL(this.settings.webhookUrl);
-      if (!/^https?:$/.test(endpoint.protocol)) throw new Error("웹훅은 HTTP(S) 주소여야 합니다.");
-      const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ source, output, format, success: true }), signal: AbortSignal.timeout(5000) });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await notifyWebhook(requestUrl, this.settings.webhookUrl, { source, output, format, success: true });
     } catch (error) { new Notice(`문서 변환은 완료했지만 웹훅 알림에 실패했습니다: ${String(error)}`, 6000); }
   }
 
@@ -1034,6 +1031,12 @@ function yamlEscape(s: string): string {
 
 /* ---------- 설정 탭 ---------- */
 
+type KordocSettingRow =
+  | { kind: "setting"; name: string; desc?: string; build: (setting: Setting) => void }
+  | { kind: "footer"; name: string; render: (container: HTMLElement) => void };
+
+const SETTINGS_HEADING = "KorDoc 문서 변환기 설정";
+
 class KordocSettingTab extends PluginSettingTab {
   plugin: KordocImporterPlugin;
 
@@ -1042,14 +1045,10 @@ class KordocSettingTab extends PluginSettingTab {
     this.plugin = plugin;
   }
 
-  display(): void {
-    const { containerEl } = this;
-    containerEl.empty();
-    new Setting(containerEl).setName("KorDoc 문서 변환기 설정").setHeading();
-
-    new Setting(containerEl)
-      .setName("저장 폴더")
-      .setDesc("변환된 마크다운을 저장할 볼트 내 기본 폴더 경로 (위치 선택 창을 끄거나 폴더 자동 변환 시 사용)")
+  private settingRows(): KordocSettingRow[] {
+    const rows: KordocSettingRow[] = [];
+    const addRow = (name: string, desc: string | undefined, build: (setting: Setting) => void) => { rows.push({ kind: "setting", name, desc, build }); };
+    addRow("저장 폴더", "변환된 마크다운을 저장할 볼트 내 기본 폴더 경로 (위치 선택 창을 끄거나 폴더 자동 변환 시 사용)", (setting) => { setting
       .addText((t) =>
         t
           .setPlaceholder("KorDoc")
@@ -1058,51 +1057,41 @@ class KordocSettingTab extends PluginSettingTab {
             this.plugin.settings.outputFolder = v.trim() || "KorDoc";
             await this.plugin.saveSettings();
           })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("변환할 때 저장 위치 묻기")
-      .setDesc("켜면 변환 전에 볼트 안 저장 폴더를 고르고, 그 아래 새 폴더를 만들 수 있습니다. 끄면 위 저장 폴더를 씁니다 (폴더 자동 변환은 항상 위 저장 폴더)")
+    addRow("변환할 때 저장 위치 묻기", "켜면 변환 전에 볼트 안 저장 폴더를 고르고, 그 아래 새 폴더를 만들 수 있습니다. 끄면 위 저장 폴더를 씁니다 (폴더 자동 변환은 항상 위 저장 폴더)", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.askImportTarget).onChange(async (v) => {
           this.plugin.settings.askImportTarget = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("원본 파일 함께 복사")
-      .setDesc("변환 전 원본 문서를 노트와 같은 폴더에 복사합니다 (위치 선택 창의 기본값). 이미 그 폴더에 있는 볼트 파일과 폴더 자동 변환은 복사하지 않습니다")
+    addRow("원본 파일 함께 복사", "변환 전 원본 문서를 노트와 같은 폴더에 복사합니다 (위치 선택 창의 기본값). 이미 그 폴더에 있는 볼트 파일과 폴더 자동 변환은 복사하지 않습니다", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.copyOriginal).onChange(async (v) => {
           this.plugin.settings.copyOriginal = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("노트 이름에 원본 확장자 포함")
-      .setDesc("켜면 보고서.hwpx → 보고서.hwpx.md, 끄면 보고서.md")
+    addRow("노트 이름에 원본 확장자 포함", "켜면 보고서.hwpx → 보고서.hwpx.md, 끄면 보고서.md", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.noteNameWithExtension).onChange(async (v) => {
           this.plugin.settings.noteNameWithExtension = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("이미지 추출 저장")
-      .setDesc("문서에 포함된 이미지를 함께 볼트에 저장하고 링크를 연결합니다")
+    addRow("이미지 추출 저장", "문서에 포함된 이미지를 함께 볼트에 저장하고 링크를 연결합니다", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.saveImages).onChange(async (v) => {
           this.plugin.settings.saveImages = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("이미지 하위 폴더")
-      .setDesc("이미지를 저장할 하위 폴더명 (저장 폴더 기준, 비우면 노트와 같은 폴더)")
+    addRow("이미지 하위 폴더", "이미지를 저장할 하위 폴더명 (저장 폴더 기준, 비우면 노트와 같은 폴더)", (setting) => { setting
       .addText((t) =>
         t
           .setPlaceholder("_attachments")
@@ -1111,40 +1100,33 @@ class KordocSettingTab extends PluginSettingTab {
             this.plugin.settings.imageSubfolder = v.trim();
             await this.plugin.saveSettings();
           })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("Frontmatter 추가")
-      .setDesc("출처 파일명·포맷·변환일시·메타데이터를 YAML frontmatter로 추가")
+    addRow("Frontmatter 추가", "출처 파일명·포맷·변환일시·메타데이터를 YAML frontmatter로 추가", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.addFrontmatter).onChange(async (v) => {
           this.plugin.settings.addFrontmatter = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("변환 후 노트 열기")
+    addRow("변환 후 노트 열기", undefined, (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.openAfterConvert).onChange(async (v) => {
           this.plugin.settings.openAfterConvert = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("같은 이름 노트 덮어쓰기")
-      .setDesc("끄면 기존 노트를 보존하고 -1, -2 … 를 붙여 새로 만듭니다")
+    addRow("같은 이름 노트 덮어쓰기", "끄면 기존 노트를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.overwrite).onChange(async (v) => {
           this.plugin.settings.overwrite = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("HWPX 저장 폴더")
-      .setDesc("볼트 기준 상대 경로. 비우면 원본 Markdown 노트와 같은 폴더에 저장합니다")
+    addRow("HWPX 저장 폴더", "볼트 기준 상대 경로. 비우면 원본 Markdown 노트와 같은 폴더에 저장합니다", (setting) => { setting
       .addText((t) =>
         t
           .setPlaceholder("(원본 노트 폴더)")
@@ -1159,11 +1141,9 @@ class KordocSettingTab extends PluginSettingTab {
             this.plugin.settings.hwpxOutputFolder = normalized;
             await this.plugin.saveSettings();
           })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("공문서 프리셋")
-      .setDesc("HWPX 생성 시 적용할 문서 형식. 기본값은 범용 Markdown 변환입니다")
+    addRow("공문서 프리셋", "HWPX 생성 시 적용할 문서 형식. 기본값은 범용 Markdown 변환입니다", (setting) => { setting
       .addDropdown((d) => {
         d.addOption("none", "범용 (프리셋 없음)");
         const labels: Record<string, string> = {
@@ -1185,36 +1165,32 @@ class KordocSettingTab extends PluginSettingTab {
           this.plugin.settings.gongmunPreset = normalizeGongmunPreset(v);
           await this.plugin.saveSettings();
         });
-      });
+      }); });
 
-    new Setting(containerEl)
-      .setName("같은 이름 HWPX 덮어쓰기")
-      .setDesc("끄면 기존 .hwpx를 보존하고 -1, -2 … 를 붙여 새로 만듭니다")
+    addRow("같은 이름 HWPX 덮어쓰기", "끄면 기존 .hwpx를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.hwpxOverwrite).onChange(async (v) => {
           this.plugin.settings.hwpxOverwrite = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl)
-      .setName("수동 편집 시 원본 HWPX 덮어쓰기")
-      .setDesc("기본값은 -편집.hwpx로 저장합니다. 켜면 편집 결과가 원본에 직접 저장됩니다")
+    addRow("수동 편집 시 원본 HWPX 덮어쓰기", "기본값은 -편집.hwpx로 저장합니다. 켜면 편집 결과가 원본에 직접 저장됩니다", (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.hwpxEditOverwrite).onChange(async (v) => {
           this.plugin.settings.hwpxEditOverwrite = v;
           await this.plugin.saveSettings();
         })
-      );
+      ); });
 
-    new Setting(containerEl).setName("변환 결과 형식").addDropdown((d) => d
+    addRow("변환 결과 형식", undefined, (setting) => { setting.addDropdown((d) => d
       .addOptions({ markdown: "Markdown 노트", json: "구조화 JSON", chunks: "RAG 청크 JSON", pages: "쪽별 Markdown" })
-      .setValue(this.plugin.settings.outputMode).onChange(async (v) => { this.plugin.settings.outputMode = v as KordocSettings["outputMode"]; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("변환할 쪽 범위").setDesc("비우면 전체 문서. 예: 1-3,5").addText((t) => t
+      .setValue(this.plugin.settings.outputMode).onChange(async (v) => { this.plugin.settings.outputMode = v as KordocSettings["outputMode"]; await this.plugin.saveSettings(); })); });
+    addRow("변환할 쪽 범위", "비우면 전체 문서. 예: 1-3,5", (setting) => { setting.addText((t) => t
       .setValue(String(this.plugin.settings.parseConfig.pages ?? "")).onChange(async (v) => {
         try { this.plugin.settings.parseConfig = offlineParseOptions({ ...this.plugin.settings.parseConfig, pages: v }); await this.plugin.saveSettings(); }
         catch (error) { new Notice(String(error)); }
-      }));
+      })); });
     const parseToggles: Array<[keyof ParseOptions, string, boolean]> = [
       ["ocr", "로컬 OCR로 스캔·그림 속 글자 인식", false],
       ["formulaOcr", "로컬 수식 OCR (LaTeX)", false],
@@ -1225,7 +1201,7 @@ class KordocSettingTab extends PluginSettingTab {
       ["images", "변환 시 이미지 데이터 추출", true], ["tables", "PDF 표 감지", true],
       ["removeHeaderFooter", "PDF 머리글·바닥글 제거", true],
     ];
-    for (const [key, label, defaultValue] of parseToggles) new Setting(containerEl).setName(label).addToggle((t) => t
+    for (const [key, label, defaultValue] of parseToggles) addRow(label, undefined, (setting) => { setting.addToggle((t) => t
       .setValue((this.plugin.settings.parseConfig[key] as boolean | undefined) ?? defaultValue)
       .onChange(async (v) => {
         if (v && (key === "ocr" || key === "formulaOcr")) {
@@ -1233,21 +1209,21 @@ class KordocSettingTab extends PluginSettingTab {
           if (error) { new Notice(error); t.setValue(false); return; }
         }
         this.plugin.settings.parseConfig = offlineParseOptions({ ...this.plugin.settings.parseConfig, [key]: v }); await this.plugin.saveSettings();
-      }));
-    new Setting(containerEl).setName("위·아래첨자 표시").addDropdown((d) => d.addOptions({ auto: "포맷별 기본값", on: "첨자 태그 보존", off: "평문" })
+      })); });
+    addRow("위·아래첨자 표시", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: "포맷별 기본값", on: "첨자 태그 보존", off: "평문" })
       .setValue(this.plugin.settings.parseConfig.scriptTags === undefined ? "auto" : this.plugin.settings.parseConfig.scriptTags ? "on" : "off")
-      .onChange(async (v) => { const config = { ...this.plugin.settings.parseConfig }; delete config.scriptTags; if (v !== "auto") config.scriptTags = v === "on"; this.plugin.settings.parseConfig = config; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("레이아웃 표 처리").addDropdown((d) => d.addOptions({ visual: "보이는 구조에 맞춰 정리", keep: "원본 표 구조 보존" })
-      .setValue(this.plugin.settings.parseConfig.layoutTables ?? "visual").onChange(async (v) => { this.plugin.settings.parseConfig.layoutTables = v as "visual" | "keep"; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("동시 변환 파일 수").setDesc("1~4개. 파일 수만큼 메모리 사용량이 늘어납니다.").addDropdown((d) => d
+      .onChange(async (v) => { const config = { ...this.plugin.settings.parseConfig }; delete config.scriptTags; if (v !== "auto") config.scriptTags = v === "on"; this.plugin.settings.parseConfig = config; await this.plugin.saveSettings(); })); });
+    addRow("레이아웃 표 처리", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ visual: "보이는 구조에 맞춰 정리", keep: "원본 표 구조 보존" })
+      .setValue(this.plugin.settings.parseConfig.layoutTables ?? "visual").onChange(async (v) => { this.plugin.settings.parseConfig.layoutTables = v as "visual" | "keep"; await this.plugin.saveSettings(); })); });
+    addRow("동시 변환 파일 수", "1~4개. 파일 수만큼 메모리 사용량이 늘어납니다.", (setting) => { setting.addDropdown((d) => d
       .addOptions({ "1": "1", "2": "2", "3": "3", "4": "4" }).setValue(String(this.plugin.settings.concurrency))
-      .onChange(async (v) => { this.plugin.settings.concurrency = Number(v); await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("격리 변환 워커 (실험)").setDesc("변환을 별도 워커에서 시도합니다. 환경에 따라 시작하지 못하면 기존 방식으로 처리합니다. 플러그인을 다시 켠 뒤 적용됩니다.").addToggle((t) => t
-      .setValue(this.plugin.settings.browserParseWorker).onChange(async (v) => { this.plugin.settings.browserParseWorker = v; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("볼트 첨부 이미지를 HWPX에 삽입").addToggle((t) => t.setValue(this.plugin.settings.embedImages)
-      .onChange(async (v) => { this.plugin.settings.embedImages = v; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("참조 표 서식 프로필").setDesc("‘표 서식 프로필 추출’로 만든 JSON의 볼트 경로").addText((t) => t
-      .setValue(this.plugin.settings.profilePath).onChange(async (v) => { this.plugin.settings.profilePath = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); }));
+      .onChange(async (v) => { this.plugin.settings.concurrency = Number(v); await this.plugin.saveSettings(); })); });
+    addRow("격리 변환 워커 (실험)", "변환을 별도 워커에서 시도합니다. 환경에 따라 시작하지 못하면 기존 방식으로 처리합니다. 플러그인을 다시 켠 뒤 적용됩니다.", (setting) => { setting.addToggle((t) => t
+      .setValue(this.plugin.settings.browserParseWorker).onChange(async (v) => { this.plugin.settings.browserParseWorker = v; await this.plugin.saveSettings(); })); });
+    addRow("볼트 첨부 이미지를 HWPX에 삽입", undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.embedImages)
+      .onChange(async (v) => { this.plugin.settings.embedImages = v; await this.plugin.saveSettings(); })); });
+    addRow("참조 표 서식 프로필", "‘표 서식 프로필 추출’로 만든 JSON의 볼트 경로", (setting) => { setting.addText((t) => t
+      .setValue(this.plugin.settings.profilePath).onChange(async (v) => { this.plugin.settings.profilePath = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); })); });
 
     let parsedConfig: unknown = {};
     try { parsedConfig = JSON.parse(this.plugin.settings.hwpxOptionsJson || "{}"); } catch { /* The JSON editor retains invalid text until corrected. */ }
@@ -1261,36 +1237,40 @@ class KordocSettingTab extends PluginSettingTab {
         this.plugin.settings.hwpxOptionsJson = JSON.stringify(config, null, 2); await this.plugin.saveSettings();
       } catch (error) { new Notice(String(error)); }
     };
-    new Setting(containerEl).setName("HWPX 용지").addDropdown((d) => d.addOptions({ A4: "A4", A3: "A3", B4: "B4", B5: "B5", Letter: "Letter" })
-      .setValue((exportConfig.page?.size ?? "A4") as string).onChange((v) => setExport("page", "size", v)));
-    new Setting(containerEl).setName("HWPX 용지 방향").addDropdown((d) => d.addOptions({ portrait: "세로", landscape: "가로" })
-      .setValue(exportConfig.page?.orientation ?? "portrait").onChange((v) => setExport("page", "orientation", v)));
-    new Setting(containerEl).setName("HWPX 단 수").addDropdown((d) => { for (let i = 1; i <= 8; i++) d.addOption(String(i), String(i)); d
-      .setValue(String(exportConfig.page?.columns ?? 1)).onChange((v) => setExport("page", "columns", Number(v))); });
-    for (const [key, label] of [["header", "HWPX 머리말"], ["footer", "HWPX 꼬리말"]] as const) new Setting(containerEl).setName(label).addText((t) => t
-      .setValue(exportConfig.page?.[key] ?? "").onChange((v) => setExport("page", key, v)));
-    for (const [key, label, min, max] of [["bodyPt", "공문서 본문 크기 (pt)", 6, 60], ["lineSpacing", "공문서 줄간격 (%)", 50, 500]] as const) new Setting(containerEl)
-      .setName(label).setDesc("비우면 프리셋 기본값").addText((t) => t.setValue(String(exportConfig.gongmun?.[key] ?? ""))
-        .onChange(async (v) => { if (v === "") { await setExport("gongmun", key, undefined); return; } const n = Number(v); if (Number.isFinite(n) && n >= min && n <= max) await setExport("gongmun", key, n); }));
-    new Setting(containerEl).setName("공문서 글꼴 계열").addDropdown((d) => d.addOptions({ auto: "프리셋 기본값", myeongjo: "명조", gothic: "고딕" })
-      .setValue(exportConfig.gongmun?.bodyFont ?? "auto").onChange((v) => setExport("gongmun", "bodyFont", v === "auto" ? undefined : v)));
-    new Setting(containerEl).setName("결재란 직위").setDesc("쉼표로 구분. 예: 담당,팀장,과장").addText((t) => t
+    addRow("HWPX 용지", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ A4: "A4", A3: "A3", B4: "B4", B5: "B5", Letter: "Letter" })
+      .setValue((exportConfig.page?.size ?? "A4") as string).onChange((v) => setExport("page", "size", v))); });
+    addRow("HWPX 용지 방향", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ portrait: "세로", landscape: "가로" })
+      .setValue(exportConfig.page?.orientation ?? "portrait").onChange((v) => setExport("page", "orientation", v))); });
+    addRow("HWPX 단 수", undefined, (setting) => { setting.addDropdown((d) => { for (let i = 1; i <= 8; i++) d.addOption(String(i), String(i)); d
+      .setValue(String(exportConfig.page?.columns ?? 1)).onChange((v) => setExport("page", "columns", Number(v))); }); });
+    for (const [key, label] of [["header", "HWPX 머리말"], ["footer", "HWPX 꼬리말"]] as const) addRow(label, undefined, (setting) => { setting.addText((t) => t
+      .setValue(exportConfig.page?.[key] ?? "").onChange((v) => setExport("page", key, v))); });
+    for (const [key, label, min, max] of [["bodyPt", "공문서 본문 크기 (pt)", 6, 60], ["lineSpacing", "공문서 줄간격 (%)", 50, 500]] as const) addRow(label, "비우면 프리셋 기본값", (setting) => { setting.addText((t) => t.setValue(String(exportConfig.gongmun?.[key] ?? ""))
+        .onChange(async (v) => { if (v === "") { await setExport("gongmun", key, undefined); return; } const n = Number(v); if (Number.isFinite(n) && n >= min && n <= max) await setExport("gongmun", key, n); })); });
+    addRow("공문서 글꼴 계열", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: "프리셋 기본값", myeongjo: "명조", gothic: "고딕" })
+      .setValue(exportConfig.gongmun?.bodyFont ?? "auto").onChange((v) => setExport("gongmun", "bodyFont", v === "auto" ? undefined : v))); });
+    addRow("결재란 직위", "쉼표로 구분. 예: 담당,팀장,과장", (setting) => { setting.addText((t) => t
       .setValue(Array.isArray(exportConfig.gongmun?.approval) ? exportConfig.gongmun.approval.join(",") : "")
-      .onChange((v) => setExport("gongmun", "approval", v.trim() ? v.split(",").map((s) => s.trim()).filter(Boolean) : undefined)));
-    for (const [key, label] of [["toc", "공문서 목차"], ["pageNumbers", "공문서 쪽번호"], ["cover", "공문서 표지"]]) new Setting(containerEl).setName(label).addDropdown((d) => d
+      .onChange((v) => setExport("gongmun", "approval", v.trim() ? v.split(",").map((s) => s.trim()).filter(Boolean) : undefined))); });
+    for (const [key, label] of [["toc", "공문서 목차"], ["pageNumbers", "공문서 쪽번호"], ["cover", "공문서 표지"]]) addRow(label, undefined, (setting) => { setting.addDropdown((d) => d
       .addOptions({ auto: "프리셋 기본값", on: "포함", off: "생략" }).setValue(exportConfig.gongmun?.[key] === undefined ? "auto" : exportConfig.gongmun[key] ? "on" : "off")
-      .onChange((v) => setExport("gongmun", key, v === "auto" ? undefined : v === "on")));
-    new Setting(containerEl).setName("HWPX 고급 설정 (JSON)").setDesc("page·theme·gongmun의 개별 서식. 표지 기관명·여백·항목별 글꼴 등도 지정할 수 있습니다.").addTextArea((t) => t
+      .onChange((v) => setExport("gongmun", key, v === "auto" ? undefined : v === "on"))); });
+    addRow("HWPX 고급 설정 (JSON)", "page·theme·gongmun의 개별 서식. 표지 기관명·여백·항목별 글꼴 등도 지정할 수 있습니다.", (setting) => { setting.addTextArea((t) => t
       .setValue(this.plugin.settings.hwpxOptionsJson).setPlaceholder('{"gongmun":{"cover":{"org":"기관명"}}}')
-      .onChange(async (v) => { this.plugin.settings.hwpxOptionsJson = v; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("자동 변환할 볼트 폴더").setDesc("이 폴더 아래 문서가 생성·변경되면 변환합니다. 결과 폴더와 다른 경로를 사용하세요.").addText((t) => t
-      .setValue(this.plugin.settings.watchFolder).onChange(async (v) => { this.plugin.settings.watchFolder = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("폴더 자동 변환").addToggle((t) => t.setValue(this.plugin.settings.watchEnabled)
-      .onChange(async (v) => { this.plugin.settings.watchEnabled = v; await this.plugin.saveSettings(); }));
-    new Setting(containerEl).setName("변환 완료 웹훅").setDesc("선택 사항. 설정한 HTTP(S) 주소에 파일명·결과 경로·성공 여부를 보냅니다.").addText((t) => t
-      .setValue(this.plugin.settings.webhookUrl).onChange(async (v) => { this.plugin.settings.webhookUrl = v.trim(); await this.plugin.saveSettings(); }));
+      .onChange(async (v) => { this.plugin.settings.hwpxOptionsJson = v; await this.plugin.saveSettings(); })); });
+    addRow("자동 변환할 볼트 폴더", "이 폴더 아래 문서가 생성·변경되면 변환합니다. 결과 폴더와 다른 경로를 사용하세요.", (setting) => { setting.addText((t) => t
+      .setValue(this.plugin.settings.watchFolder).onChange(async (v) => { this.plugin.settings.watchFolder = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); })); });
+    addRow("폴더 자동 변환", undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.watchEnabled)
+      .onChange(async (v) => { this.plugin.settings.watchEnabled = v; await this.plugin.saveSettings(); })); });
+    addRow("변환 완료 웹훅", "선택 사항. 설정한 HTTP(S) 주소에 파일명·결과 경로·성공 여부를 보냅니다.", (setting) => { setting.addText((t) => t
+      .setValue(this.plugin.settings.webhookUrl).onChange(async (v) => { this.plugin.settings.webhookUrl = v.trim(); await this.plugin.saveSettings(); })); });
 
-    const info = containerEl.createEl("div", { cls: "kordoc-info" });
+    rows.push({ kind: "footer", name: "KorDoc information and license", render: (container) => this.renderFooter(container) });
+    return rows;
+  }
+
+  private renderFooter(containerEl: HTMLElement): void {
+    const info = containerEl.createDiv({ cls: "kordoc-info" });
     info.createEl("p", {
       text:
         "지원 포맷: HWP, HWPX, HWPML, PDF, XLS, XLSX, DOCX, PPTX. HWPX 미리보기·문단/셀 편집과 로컬 텍스트·수식 OCR을 제공합니다. OCR은 위 설정에서 켤 수 있으며, 엔진과 모델은 문서 작업 시 불러옵니다. Windows x64 배포본은 인터넷 없이 동작합니다.",
@@ -1314,5 +1294,40 @@ class KordocSettingTab extends PluginSettingTab {
     const licenseDetails = license.createEl("details");
     licenseDetails.createEl("summary", { text: "MIT License 전문 보기" });
     licenseDetails.createEl("pre", { text: KORDOC_LICENSE_TEXT });
+  }
+
+  display(): void {
+    const { containerEl } = this;
+    containerEl.empty();
+    new Setting(containerEl).setName(SETTINGS_HEADING).setHeading();
+    for (const row of this.settingRows()) {
+      if (row.kind === "footer") { row.render(containerEl); continue; }
+      const setting = new Setting(containerEl).setName(row.name);
+      if (row.desc !== undefined) setting.setDesc(row.desc);
+      row.build(setting);
+    }
+  }
+
+  getSettingDefinitions(): import("obsidian").SettingDefinitionItem[] {
+    const rows = this.settingRows();
+    const items: import("obsidian").SettingDefinitionRender[] = rows.filter((row): row is Extract<KordocSettingRow, { kind: "setting" }> => row.kind === "setting").map(row => ({
+      name: row.name,
+      ...(row.desc === undefined ? {} : { desc: row.desc }),
+      render: (setting) => {
+        setting.setName(row.name);
+        if (row.desc !== undefined) setting.setDesc(row.desc);
+        row.build(setting);
+      },
+    }));
+    return [
+      { type: "group", heading: SETTINGS_HEADING, items },
+      ...rows.filter((row): row is Extract<KordocSettingRow, { kind: "footer" }> => row.kind === "footer").map(row => ({
+        name: row.name, searchable: false, render: (setting: Setting) => {
+          setting.setName(row.name);
+          setting.settingEl.empty();
+          row.render(setting.settingEl);
+        },
+      })),
+    ];
   }
 }

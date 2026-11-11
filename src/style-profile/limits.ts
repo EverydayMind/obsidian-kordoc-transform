@@ -7,6 +7,6 @@ export class Guard {
   private xmlNodes = 0;
   constructor(private signal?: AbortSignal) {}
   check() { if (this.signal?.aborted) throw new StyleError('cancelled', 'Style measurement cancelled.'); if (Date.now() > this.deadline) throw new StyleError('timeout', 'Style measurement deadline exceeded.'); }
-  async tick() { this.check(); if (performance.now() - this.lastYield >= 8) { await new Promise(resolve => setTimeout(resolve, 0)); this.lastYield = performance.now(); this.check(); } }
+  async tick() { this.check(); if (performance.now() - this.lastYield >= 8) { await new Promise(resolve => window.setTimeout(resolve, 0)); this.lastYield = performance.now(); this.check(); } }
   xmlNode(depth: number) { if (++this.xmlNodes > LIMITS.nodes || depth > LIMITS.depth) throw new StyleError('too_large', 'XML depth/node limit.'); }
 }

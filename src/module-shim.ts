@@ -28,16 +28,16 @@ const bundled: Record<string, unknown> = {
 const realCreateRequire = (nodeModule as unknown as typeof import("node:module"))
   .createRequire;
 
-export function createRequire(filename: string | URL): NodeRequire {
+export function createRequire(filename: string | URL): NodeJS.Require {
   const real = realCreateRequire(filename);
   const patched = ((id: string) => {
     if (Object.prototype.hasOwnProperty.call(bundled, id)) {
       return bundled[id];
     }
     return real(id) as unknown;
-  }) as NodeRequire;
+  }) as NodeJS.Require;
   // resolve / cache / main 등 원본 require 의 속성 보존
-  return Object.assign(patched, real) as NodeRequire;
+  return Object.assign(patched, real);
 }
 
 // "module" 의 나머지 named export 들을 그대로 재노출 (다른 코드가 쓸 수 있으므로).

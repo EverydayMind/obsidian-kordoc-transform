@@ -3,7 +3,7 @@ export const STYLE_TEXT_CACHE_MAX_BYTES = 2 * 1024 * 1024;
 /** One in-memory document, with an absolute lifetime and an explicit unload boundary. */
 export class StyleTextCache<T> {
   private entry?: { key: string; value: T; expires: number };
-  private timer?: ReturnType<typeof setTimeout>;
+  private timer?: number;
   private generation = 0;
   constructor(private readonly ttl = 60_000, private readonly maxBytes = STYLE_TEXT_CACHE_MAX_BYTES, private readonly now = Date.now) {}
   version(): number { return this.generation; }
@@ -25,12 +25,13 @@ export class StyleTextCache<T> {
     this.clear();
     const entry = { key, value, expires: this.now() + this.ttl };
     this.entry = entry;
-    this.timer = setTimeout(() => { if (this.entry === entry) this.clear(); }, this.ttl);
-    this.timer.unref?.();
+    this.timer = window.setTimeout(() => { if (this.entry === entry) this.clear(); }, this.ttl);
+    const handle: unknown = this.timer;
+    if (typeof handle === "object" && handle !== null && "unref" in handle && typeof handle.unref === "function") (handle.unref as () => void)();
   }
   clear(): void {
     this.generation++;
-    if (this.timer) clearTimeout(this.timer);
+    if (this.timer) window.clearTimeout(this.timer);
     this.timer = undefined;
     this.entry = undefined;
   }

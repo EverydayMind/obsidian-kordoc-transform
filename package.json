@@ -1,13 +1,13 @@
 {
   "name": "kordoc-transform",
-  "version": "4.24.59",
+  "version": "4.24.59r1",
   "description": "Convert Korean HWP, HWPX and HWPML documents, PDF, Excel, Word and PowerPoint files to Markdown, preview and edit HWPX, and export Markdown to HWPX offline.",
   "private": true,
   "type": "module",
   "author": "everydaymind",
   "license": "MIT",
   "scripts": {
-    "build": "node scripts/prepare-lazy.mjs --check && node scripts/embed-assets.mjs --check && node esbuild.config.mjs production",
+    "build": "node scripts/generate-validators.mjs && node scripts/prepare-lazy.mjs --check && node scripts/embed-assets.mjs --check && node esbuild.config.mjs production",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint src",
     "release:check": "node scripts/check-release.mjs",

@@ -1,4 +1,5 @@
 // Generated engine entry.
-(globalThis as typeof globalThis & { __kordocEngineEvaluations?: number }).__kordocEngineEvaluations = ((globalThis as typeof globalThis & { __kordocEngineEvaluations?: number }).__kordocEngineEvaluations ?? 0) + 1;
+import { engineProbe } from "./engine-probe";
+engineProbe.evaluations++;
 export * from "kordoc";
 export { redactDocument } from "../node_modules/kordoc/dist/redact-doc-QPZN5OOW.js";

@@ -6,14 +6,14 @@ export function waitForNoteMetadata(cache: MetadataCache, file: TFile, timeoutMs
   if (cache.getFileCache(file)) return Promise.resolve(true);
   return new Promise(resolve => {
     const finish = (ready: boolean) => {
-      clearTimeout(timer);
+      window.clearTimeout(timer);
       cache.offref(ref);
       resolve(ready);
     };
     const ref = cache.on("changed", changed => {
       if (changed.path === file.path && cache.getFileCache(file)) finish(true);
     });
-    const timer = setTimeout(() => finish(false), timeoutMs);
+    const timer = window.setTimeout(() => finish(false), timeoutMs);
     if (cache.getFileCache(file)) finish(true);
   });
 }

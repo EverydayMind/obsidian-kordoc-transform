@@ -143,7 +143,7 @@ export async function inspectStyleOverlapBytes(bytes: Uint8Array, source: StyleS
     const text = texts.get(paragraph.ref);
     if (text === undefined) throw new StyleError('corrupted', 'Overlap source text is incomplete.');
     let points = 0;
-    for (const _point of text) { if ((++points & 2047) === 0) await guard.tick(); }
+    for (let offset = 0; offset < text.length;) { const point = text.codePointAt(offset); offset += point !== undefined && point > 0xffff ? 2 : 1; if ((++points & 2047) === 0) await guard.tick(); }
     if (points !== paragraph.textCodePoints) throw new StyleError('corrupted', 'Overlap source text length mismatch.');
     if (matched.size < normalized.length) {
       const normalizedText = text.normalize('NFKC').toLowerCase();

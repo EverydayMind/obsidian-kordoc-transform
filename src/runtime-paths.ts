@@ -5,9 +5,11 @@ import { isAbsolute, join, resolve, sep } from "node:path";
 
 // The pack must match the bundled engine; plugin and engine versions are kept equal.
 import { VERSION } from "./engine-version";
+import { setKordocModelDir } from "./model-dir";
+declare const __KORDOC_RUNTIME_DIRECTORY__: string | undefined;
 const HELP = "https://github.com/everydaymind/obsidian-kordoc-transform#ocr-add-on";
 const required = ["engine.cjs", "parse-worker.cjs", "web-worker-engine.cjs", "models/manifest.json", "models/Pix2Text-LICENSE", "models/PaddleOCR-LICENSE", "node_modules/onnxruntime-node/package.json", "node_modules/sharp/package.json", "node_modules/@hyzyla/pdfium/package.json", "node_modules/@huggingface/tokenizers/package.json", "README.md", "THIRD_PARTY_NOTICES.md"];
-let directory = (globalThis as typeof globalThis & { kordocRuntimeDirectory?: string }).kordocRuntimeDirectory ?? "";
+let directory = typeof __KORDOC_RUNTIME_DIRECTORY__ === "string" ? __KORDOC_RUNTIME_DIRECTORY__ : "";
 let verified: string | undefined;
 let workerVerified = false;
 let failure: string | undefined;
@@ -15,7 +17,7 @@ export function configureRuntimePaths(pluginDirectory: string): void {
   if (!isAbsolute(pluginDirectory)) throw new Error("Absolute plugin directory required.");
   directory = join(pluginDirectory, "runtime");
   verified = undefined; workerVerified = false; failure = undefined;
-  (globalThis as typeof globalThis & { kordocModelDir: string }).kordocModelDir = join(directory, "models");
+  setKordocModelDir(join(directory, "models"));
 }
 export function runtimePath(...parts: string[]): string { return join(directory, ...parts); }
 function inspect(): { files: Record<string, string> } {
@@ -53,5 +55,5 @@ export function runtimePackError(verify: boolean | "worker" = false): string | u
 export function hasRuntimePack(): boolean { return !runtimePackError(); }
 export function requireRuntimePack(): void { const error = runtimePackError(true); if (error) throw new Error(error); }
 export function requireWorkerPack(): void { const error = runtimePackError("worker"); if (error) throw new Error(error); }
-export function runtimeRequire(name: string): any { requireRuntimePack(); return createRequire(runtimePath("loader.cjs"))(name); }
+export function runtimeRequire(name: string): unknown { requireRuntimePack(); return createRequire(runtimePath("loader.cjs"))(name); }
 export function runtimeResolve(name: string): string { requireRuntimePack(); return createRequire(runtimePath("loader.cjs")).resolve(name); }

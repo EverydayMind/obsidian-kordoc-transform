@@ -82,7 +82,7 @@ export class DocumentToolsModal extends Modal {
       const field = new Setting(this.contentEl).setName("대상 문서");
       const pathInput = this.pathInput(field.controlEl, "볼트 파일 경로", this.external?.name ?? this.path, DOCUMENT_EXTENSIONS, (v) => { this.path = v; this.external = undefined; });
       field.addButton((b) => b.setButtonText("외부 파일 선택").onClick(() => {
-        const picker = document.createElement("input"); picker.type = "file";
+        const picker = createEl("input", { type: "file" });
         picker.accept = DOCUMENT_EXTENSIONS.split(",").map((x) => `.${x}`).join(",");
         picker.addEventListener("change", () => { void (async () => {
           const file = picker.files?.[0];

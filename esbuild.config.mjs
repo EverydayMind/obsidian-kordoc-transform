@@ -1,4 +1,5 @@
 import esbuild from "esbuild";
+import { lazyModules } from "./scripts/lazy-modules.mjs";
 import process from "process";
 import { builtinModules } from "node:module";
 import { fileURLToPath } from "url";
@@ -72,7 +73,7 @@ const ctx = await esbuild.context({
   logLevel: "info",
   sourcemap: production ? false : "inline",
   treeShaking: true,
-  plugins: [nativeLoader, dependencyShimsPlugin({ mcpValidator: 1 }), zip.plugin, isolatePdfjs({ expectedAssetModules: 2 })],
+  plugins: [lazyModules(), nativeLoader, dependencyShimsPlugin({ mcpValidator: 1 }), zip.plugin, isolatePdfjs({ expectedAssetModules: 2 })],
   minify: production,
   outfile: "main.js",
   banner: { js: banner },
@@ -85,13 +86,15 @@ const ctx = await esbuild.context({
   // pdfjs-dist 등 ESM .mjs 를 CJS 로 인터롭
   mainFields: ["module", "main"],
   conditions: ["import", "node", "default"],
+  inject: ["src/model-dir.ts"],
   define: {
+    "__KORDOC_RUNTIME_DIRECTORY__": "undefined",
     "process.env.NODE_ENV": production ? '"production"' : '"development"',
     // kordoc/pdfjs 가 ESM 의 import.meta.url 로 createRequire 를 호출한다.
     // Obsidian 은 main.js 를 CJS 로 로드하므로 import.meta.url 이 비어 크래시.
     // __filename(=main.js 경로) 기반 file URL 로 shim 한다.
     "import.meta.url": "import_meta_url",
-    "process.env.KORDOC_MODEL_CACHE": "globalThis.kordocModelDir",
+    "process.env.KORDOC_MODEL_CACHE": "kordocModelDir",
     "process.env.KORDOC_OFFLINE": '"1"',
   },
 });
