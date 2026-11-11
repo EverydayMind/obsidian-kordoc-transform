@@ -4,7 +4,7 @@
 
 Convert Korean office documents to Markdown notes inside Obsidian Desktop, preview and edit HWPX, and export Markdown back to HWPX. Everything runs locally and offline; the conversion engine is bundled.
 
-The user interface is in Korean. This is an unofficial plugin built on the MIT-licensed [kordoc](https://github.com/chrisryugj/kordoc) library (bundled engine version 4.24.59; plugin version 4.24.59.1).
+The user interface is in Korean. This is an unofficial plugin built on the MIT-licensed [kordoc](https://github.com/chrisryugj/kordoc) library (bundled engine version 4.24.59; plugin version 4.24.60).
 
 ## Features
 
@@ -38,11 +38,11 @@ You can also right-click a supported file in the file explorer. Settings cover t
 
 OCR needs native libraries (ONNX Runtime, sharp, PDFium) and recognition models of about 200 MB, which cannot be shipped through the community directory. They come as a separate ZIP attached to each GitHub release.
 
-1. Download `kordoc-transform-ocr-pack-<version>-windows-x64.zip` from the release that matches your installed plugin version.
+1. Download `kordoc-transform-ocr-pack-<engine version>-windows-x64.zip` from the release that matches your installed plugin version. The pack is named after the bundled kordoc engine version, which can differ from the plugin version.
 2. Extract it into `.obsidian/plugins/kordoc-transform/` so that a `runtime/` folder appears next to `main.js`.
 3. Restart Obsidian, then enable text or formula OCR in the plugin settings.
 
-The plugin uses the pack only when its plugin version, engine version, platform and file hashes match; otherwise OCR stays off and the plugin tells you why. Install the matching pack again after every plugin update. Only Windows x64 packs are provided.
+The plugin uses the pack only when its engine version, platform and file hashes match; otherwise OCR stays off and the plugin tells you why. Install the matching pack again after every plugin update. Only Windows x64 packs are provided.
 
 ## Limitations
 

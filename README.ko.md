@@ -4,7 +4,7 @@
 
 Obsidian 데스크톱에서 한국 공공·사무 문서를 Markdown 노트로 변환하고, HWPX를 미리 보고 편집하며, Markdown을 다시 HWPX로 내보냅니다. 변환 엔진이 함께 들어 있어 인터넷 연결 없이 내 컴퓨터에서만 처리합니다.
 
-MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)을 쓰는 비공식 플러그인입니다(엔진 버전 4.24.59, 플러그인 버전 4.24.59.1).
+MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)을 쓰는 비공식 플러그인입니다(엔진 버전 4.24.59, 플러그인 버전 4.24.60).
 
 ## 기능
 
@@ -38,11 +38,11 @@ MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)�
 
 OCR에는 네이티브 라이브러리(ONNX Runtime, sharp, PDFium)와 약 200MB의 인식 모델이 필요해 커뮤니티 디렉터리로는 배포할 수 없습니다. 각 GitHub 릴리스에 별도 ZIP으로 첨부합니다.
 
-1. 설치한 플러그인 버전과 같은 릴리스에서 `kordoc-transform-ocr-pack-<버전>-windows-x64.zip`을 내려받습니다.
+1. 설치한 플러그인 버전과 같은 릴리스에서 `kordoc-transform-ocr-pack-<엔진 버전>-windows-x64.zip`을 내려받습니다. 팩 이름에는 번들된 kordoc 엔진 버전이 들어가며, 플러그인 버전과 다를 수 있습니다.
 2. `.obsidian/plugins/kordoc-transform/`에 압축을 풀어 `main.js` 옆에 `runtime/` 폴더가 생기게 합니다.
 3. Obsidian을 다시 시작한 뒤 플러그인 설정에서 글자 OCR 또는 수식 OCR을 켭니다.
 
-플러그인은 팩의 플러그인 버전·엔진 버전·플랫폼·파일 해시가 맞을 때만 팩을 씁니다. 맞지 않으면 OCR을 켜지 않고 이유를 알려 줍니다. 플러그인을 업데이트할 때마다 맞는 팩을 다시 설치하세요. 팩은 Windows x64용만 제공합니다.
+플러그인은 팩의 엔진 버전·플랫폼·파일 해시가 맞을 때만 팩을 씁니다. 맞지 않으면 OCR을 켜지 않고 이유를 알려 줍니다. 플러그인을 업데이트할 때마다 맞는 팩을 다시 설치하세요. 팩은 Windows x64용만 제공합니다.
 
 ## 한계
 

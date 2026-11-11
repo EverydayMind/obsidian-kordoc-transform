@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { isAbsolute, join, resolve, sep } from "node:path";
 
-// The pack must match the bundled engine; plugin and engine versions are kept equal.
+// The pack must match the bundled engine version; the plugin version may be a later patch.
 import { VERSION } from "./engine-version";
 import { setKordocModelDir } from "./model-dir";
 declare const __KORDOC_RUNTIME_DIRECTORY__: string | undefined;
