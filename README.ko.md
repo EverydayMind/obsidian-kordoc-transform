@@ -4,7 +4,7 @@
 
 Obsidian 데스크톱에서 한국 공공·사무 문서를 Markdown 노트로 변환하고, HWPX를 미리 보고 편집하며, Markdown을 다시 HWPX로 내보냅니다. 변환 엔진이 함께 들어 있어 인터넷 연결 없이 내 컴퓨터에서만 처리합니다.
 
-MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)을 쓰는 비공식 플러그인입니다(엔진 버전 4.24.59, 플러그인 버전 4.24.59r1).
+MIT 라이선스 라이브러리 [kordoc](https://github.com/chrisryugj/kordoc)을 쓰는 비공식 플러그인입니다(엔진 버전 4.24.59, 플러그인 버전 4.24.59.1).
 
 ## 기능
 
