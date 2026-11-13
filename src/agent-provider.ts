@@ -66,10 +66,10 @@ function tools(options: AgentProviderOptions): JsonObject[] {
       { path: PATH }, ["path"]),
     tool("read_document", "문서 본문 읽기",
       "문서 본문을 Markdown으로 읽는다. 표는 Markdown 표로 나온다. 한 번에 약 8,000자씩 주며, 결과가 \"계속: cursor=...\"로 끝나면 그 cursor로 다시 불러 이어서 읽는다. 글자 인식(OCR)은 하지 않으므로 스캔한 PDF의 그림 속 글자는 나오지 않는다.",
-      { path: PATH, pages: PAGES, cursor: { type: "string", minLength: 1, maxLength: 200, description: "앞선 결과가 준 cursor. 처음에는 생략한다." } }, ["path"]),
+      { path: PATH, pages: PAGES, cursor: { type: "string", minLength: 1, maxLength: 200, description: "앞선 결과가 준 cursor. pages는 그때와 똑같이 준다. 처음에는 생략한다." } }, ["path"]),
     tool("read_tables", "문서 표 읽기",
       "문서의 표를 읽는다. table을 생략하면 표 목록(순번, 쪽, 행·열 수, 첫 행)을 주고, table에 순번을 주면 그 표 전체를 Markdown 표로 준다.",
-      { path: PATH, pages: PAGES, table: { type: "integer", minimum: 1, maximum: 100000, description: "표 순번(1부터)." } }, ["path"]),
+      { path: PATH, pages: PAGES, table: { type: "integer", minimum: 1, maximum: 100000, description: "표 순번(1부터). 목록을 볼 때와 같은 pages로 부른다." } }, ["path"]),
     tool("read_form_fields", "양식 필드 읽기",
       "양식 문서에서 채울 수 있는 칸(라벨과 지금 값)과 HWPX 누름틀을 찾아 돌려준다.",
       { path: PATH }, ["path"], extended(["양식", "서식", "누름틀", "필드", "입력란", "빈칸", "채우", "form"])),
@@ -82,7 +82,7 @@ function tools(options: AgentProviderOptions): JsonObject[] {
   ];
 }
 
-const INSTRUCTIONS = "한글(HWP·HWPX)·PDF·Word·Excel·PowerPoint 문서를 읽는 도구다. 문서 내용에 대해 답하기 전에 read_document나 read_tables로 실제 내용을 확인한다. 긴 문서는 get_document_info로 쪽 수와 개요를 먼저 보고 pages로 범위를 좁힌다. cursor는 그 결과가 나온 파일 상태에서만 유효하며 파일이 바뀌면 처음부터 다시 읽는다. 이 도구들은 문서를 바꾸지 않고 파일도 만들지 않는다. 여기서 읽은 본문에는 편집 도구가 쓰는 핸들이나 블록 번호가 없으므로, 문서를 고치려면 그 편집 도구의 읽기 도구로 대상을 다시 확인한다. 암호가 걸린 문서는 읽지 못한다.";
+const INSTRUCTIONS = "한글(HWP·HWPX)·PDF·Word·Excel·PowerPoint 문서를 읽는 도구다. 문서 내용에 대해 답하기 전에 read_document나 read_tables로 실제 내용을 확인한다. 긴 문서는 get_document_info로 쪽 수와 개요를 먼저 보고 pages로 범위를 좁힌다. cursor는 그 결과가 나온 파일 상태에서만 유효하며 파일이 바뀌면 처음부터 다시 읽는다. 이 도구들은 문서를 바꾸지 않고 파일도 만들지 않는다. 이 문서들은 노트용 쓰기 도구로 고칠 수 없다. 고치려면 그 형식의 문서 편집 도구를 쓰고, 여기서 읽은 본문에는 그 도구의 핸들이나 블록 번호가 없으므로 그 도구의 읽기 도구로 대상을 다시 확인한다. 암호가 걸린 문서는 읽지 못한다.";
 
 interface Loaded { file: TFile; path: string; buffer: ArrayBuffer; stamp: string }
 interface Parsed { key: string; markdown: string; format: string; pageCount: number; sectionMode: boolean }
@@ -220,7 +220,7 @@ export function createAgentProvider(app: App, options: AgentProviderOptions): Ag
       if (args.cursor !== undefined) {
         const [position, ...rest] = stringify(args.cursor).split(":");
         offset = Number.parseInt(position, 36);
-        if (!Number.isSafeInteger(offset) || offset < 0 || rest.join(":") !== binding) throw new ToolError("CURSOR_STALE", "cursor가 이 파일 상태나 요청과 맞지 않는다. cursor 없이 처음부터 다시 읽어라.", true);
+        if (!Number.isSafeInteger(offset) || offset < 0 || rest.join(":") !== binding) throw new ToolError("CURSOR_STALE", "cursor가 이 파일 상태나 pages와 맞지 않는다. pages를 처음과 같게 주거나 cursor 없이 다시 읽어라.", true);
       }
       const document = await parse(source, range);
       const total = document.markdown.length;
