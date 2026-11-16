@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import type { BlockEdit, IRBlock } from "./engine";
 
 /** importer ↔ Verbex provider registry의 프로토콜 버전. */
@@ -285,26 +286,26 @@ export class KordocProviderError extends Error {
 /** 절대경로·상위 탈출·제어문자를 거부하는 볼트 상대경로 정규화. */
 export function normalizeKordocProviderPath(value: unknown): KordocProviderPath {
   if (typeof value !== "string") {
-    throw new KordocProviderError("INVALID_PATH", "경로는 문자열이어야 합니다.");
+    throw new KordocProviderError("INVALID_PATH", L({ ko: "경로는 문자열이어야 합니다.", en: "The path must be a string." }));
   }
   const raw = value.trim().replace(/\\/g, "/");
   // eslint-disable-next-line no-control-regex -- Reject control characters in provider paths.
   if (!raw || /^(?:[A-Za-z]:|\/)/.test(raw) || /[\u0000-\u001F]/.test(raw)) {
     throw new KordocProviderError(
       "INVALID_PATH",
-      "provider 경로는 볼트 기준 상대경로여야 하며 절대경로를 사용할 수 없습니다.",
+      L({ ko: "provider 경로는 볼트 기준 상대경로여야 하며 절대경로를 사용할 수 없습니다.", en: "Provider paths must be vault-relative; absolute paths are not allowed." }),
     );
   }
   const parts = raw.split("/");
   if (parts.some((part) => part === "..")) {
     throw new KordocProviderError(
       "INVALID_PATH",
-      "provider 경로에서 상위 디렉터리 이동(..)은 허용되지 않습니다.",
+      L({ ko: "provider 경로에서 상위 디렉터리 이동(..)은 허용되지 않습니다.", en: "Parent directory traversal (..) is not allowed in provider paths." }),
     );
   }
   const normalized = parts.filter((part) => part && part !== ".").join("/");
   if (!normalized) {
-    throw new KordocProviderError("INVALID_PATH", "빈 provider 경로는 허용되지 않습니다.");
+    throw new KordocProviderError("INVALID_PATH", L({ ko: "빈 provider 경로는 허용되지 않습니다.", en: "Empty provider paths are not allowed." }));
   }
   return normalized as KordocProviderPath;
 }

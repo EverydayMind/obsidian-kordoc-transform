@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import { createInflateRaw } from 'node:zlib';
 import { ZipBudgetError } from './zip-budget';
 
@@ -27,9 +28,9 @@ export async function verifyRecoveryBudget(bytes: Uint8Array, limit = 256 * 1024
     const count = (chunk: Uint8Array) => {
       signal?.throwIfAborted();
       totalBytes += chunk.byteLength;
-      if (totalBytes > limit) throw new ZipBudgetError('손상 ZIP의 압축 해제 크기가 너무 큽니다.');
+      if (totalBytes > limit) throw new ZipBudgetError(L({ ko: '손상 ZIP의 압축 해제 크기가 너무 큽니다.', en: "The damaged ZIP's decompressed size is too large." }));
       totalText += decoder.decode(chunk, { stream: true }).length * 2;
-      if (totalText > limit) throw new ZipBudgetError('손상 ZIP의 압축 해제 크기가 너무 큽니다.');
+      if (totalText > limit) throw new ZipBudgetError(L({ ko: '손상 ZIP의 압축 해제 크기가 너무 큽니다.', en: "The damaged ZIP's decompressed size is too large." }));
     };
     if (method === 0) {
       for (let i = 0; i < data.length; i += 64 * 1024) count(data.subarray(i, i + 64 * 1024));
@@ -43,7 +44,7 @@ export async function verifyRecoveryBudget(bytes: Uint8Array, limit = 256 * 1024
       finally { signal?.removeEventListener('abort', abort); inflater.destroy(); }
     }
     totalText += decoder.decode().length * 2;
-    if (totalText > limit) throw new ZipBudgetError('손상 ZIP의 압축 해제 크기가 너무 큽니다.');
+    if (totalText > limit) throw new ZipBudgetError(L({ ko: '손상 ZIP의 압축 해제 크기가 너무 큽니다.', en: "The damaged ZIP's decompressed size is too large." }));
   }
   signal?.throwIfAborted();
 }

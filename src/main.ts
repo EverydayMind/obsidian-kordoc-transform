@@ -1,5 +1,8 @@
+import { artifactName } from "./artifact-formats";
+import { L, initLocale } from "./locale";
 import {
   App,
+  moment,
   Notice,
   Plugin,
   PluginSettingTab,
@@ -29,14 +32,14 @@ import {
   blocksToChunks,
 } from "./engine";
 import { DocumentToolsModal, askPassword } from "./tool-modal";
-import { TOOL_ACTIONS, jsonStringify, offlineParseOptions, parseOffline, parseValues, preciseDocumentFormat, runDocumentTool, type ToolAction, type ToolResult, type ToolRequest } from "./document-tools";
+import { createToolActions, jsonStringify, offlineParseOptions, parseOffline, parseValues, preciseDocumentFormat, runDocumentTool, type ToolAction, type ToolResult, type ToolRequest } from "./document-tools";
 import { ParseWorkerPool } from "./batch-worker";
 import { runtimePackError } from "./runtime-paths";
 export { engineProbe } from "./engine-probe";
 import { createBrowserParseWorker } from "./browser-parse-worker";
 import { createIndexText, INDEX_TEXT_EXTRACTOR } from "./index-text";
 import { collectVaultImages } from "./vault-images";
-import { LocalMcpServer, LOCAL_MCP_TOOLS } from "./local-mcp";
+import { LocalMcpServer, createLocalMcpTools } from "./local-mcp";
 import {
   GONGMUN_PRESETS,
   isMarkdownFilename,
@@ -169,16 +172,17 @@ export default class KordocImporterPlugin extends Plugin {
   private unloading = false;
 
   async onload() {
+    initLocale(() => moment.locale());
     const adapter = this.app.vault.adapter as typeof this.app.vault.adapter & { getBasePath(): string };
     configureEngineDirectory(resolve(adapter.getBasePath(), this.manifest.dir ?? `${this.app.vault.configDir}/plugins/${this.manifest.id}`));
     configureStyleProfileDirectory(resolve(adapter.getBasePath(), this.manifest.dir ?? `${this.app.vault.configDir}/plugins/${this.manifest.id}`));
     await this.loadSettings();
     this.browserWorkerEnabled = this.settings.browserParseWorker;
 
-    this.addCommand({ id: "kordoc-document-tools", name: "문서 도구 열기", callback: () => new DocumentToolsModal(this).open() });
-    this.addCommand({ id: "kordoc-start-local-mcp", name: "로컬 MCP 서버 시작·연결 정보", callback: () => void this.showMcpConnection() });
-    this.addCommand({ id: "kordoc-stop-local-mcp", name: "로컬 MCP 서버 중지", callback: () => { void this.localMcp?.stop().then(() => new Notice("KorDoc MCP 서버를 중지했습니다.")); } });
-    for (const [action, name] of Object.entries(TOOL_ACTIONS)) {
+    this.addCommand({ id: "kordoc-document-tools", name: L({ ko: "문서 도구 열기", en: "Open document tools" }), callback: () => new DocumentToolsModal(this).open() });
+    this.addCommand({ id: "kordoc-start-local-mcp", name: L({ ko: "로컬 MCP 서버 시작·연결 정보", en: "Start local MCP server / connection details" }), callback: () => void this.showMcpConnection() });
+    this.addCommand({ id: "kordoc-stop-local-mcp", name: L({ ko: "로컬 MCP 서버 중지", en: "Stop local MCP server" }), callback: () => { void this.localMcp?.stop().then(() => new Notice(L({ ko: "KorDoc MCP 서버를 중지했습니다.", en: "KorDoc MCP server stopped." }))); } });
+    for (const [action, name] of Object.entries(createToolActions())) {
       this.addCommand({ id: `kordoc-tool-${action}`, name, callback: () => new DocumentToolsModal(this, action as ToolAction).open() });
     }
     // Obsidian also emits "create" for every existing file while the vault loads.
@@ -207,7 +211,7 @@ export default class KordocImporterPlugin extends Plugin {
       indexText: createIndexText(this.app, () => this.getPool()),
       protocolVersion: KORDOC_PROVIDER_PROTOCOL_VERSION,
       provider: this.verbexProvider,
-      tools: { list: () => LOCAL_MCP_TOOLS, execute: (name, args) => this.executeMcpTool(name, args) },
+      tools: { list: () => createLocalMcpTools(), execute: (name, args) => this.executeMcpTool(name, args) },
     };
     this.verbexRegistrationManager = new KordocVerbexRegistrationManager(
       this.app,
@@ -239,21 +243,21 @@ export default class KordocImporterPlugin extends Plugin {
     );
 
     // 리본 아이콘 — 외부 파일 선택 변환
-    this.addRibbonIcon("file-input", "KorDoc: 외부 문서 변환", () => {
+    this.addRibbonIcon("file-input", L({ ko: "KorDoc: 외부 문서 변환", en: "KorDoc: Convert external documents" }), () => {
       this.pickAndConvertExternal();
     });
 
     // 명령어 — 외부 파일 선택 변환
     this.addCommand({
       id: "kordoc-import-external",
-      name: "외부 문서를 마크다운으로 변환 (파일 선택)",
+      name: L({ ko: "외부 문서를 마크다운으로 변환 (파일 선택)", en: "Convert external documents to Markdown (choose files)" }),
       callback: () => this.pickAndConvertExternal(),
     });
 
     // 명령어 — 현재 활성 파일 변환 (볼트 내)
     this.addCommand({
       id: "kordoc-convert-active",
-      name: "현재 파일을 마크다운으로 변환",
+      name: L({ ko: "현재 파일을 마크다운으로 변환", en: "Convert current file to Markdown" }),
       checkCallback: (checking: boolean) => {
         const file = this.app.workspace.getActiveFile();
         const ok = !!file && this.isSupported(file);
@@ -265,7 +269,7 @@ export default class KordocImporterPlugin extends Plugin {
     // HWPX 미리보기 — 등록된 확장자 더블클릭 외에도 명령 팔레트에서 진입 가능
     this.addCommand({
       id: "kordoc-hwpx-preview",
-      name: "HWPX 미리보기",
+      name: L({ ko: "HWPX 미리보기", en: "HWPX preview" }),
       checkCallback: (checking: boolean) => {
         const file = this.app.workspace.getActiveFile();
         const ok = !!file && file.extension.toLowerCase() === "hwpx";
@@ -276,7 +280,7 @@ export default class KordocImporterPlugin extends Plugin {
 
     this.addCommand({
       id: "kordoc-hwpx-edit-palette",
-      name: "HWPX 편집 명령 실행",
+      name: L({ ko: "HWPX 편집 명령 실행", en: "Run HWPX edit command" }),
       checkCallback: (checking: boolean) => {
         const view = this.app.workspace.getActiveViewOfType(KordocHwpxView);
         if (view && !checking) view.openCommandPalette();
@@ -287,7 +291,7 @@ export default class KordocImporterPlugin extends Plugin {
     // 명령어 — 현재 Markdown 편집기 전체를 HWPX로 내보내기
     this.addCommand({
       id: "kordoc-export-hwpx",
-      name: "현재 Markdown을 HWPX로 내보내기",
+      name: L({ ko: "현재 Markdown을 HWPX로 내보내기", en: "Export current Markdown to HWPX" }),
       editorCheckCallback: (checking, editor, info) => {
         const file = info.file;
         const ok = !!file && isMarkdownFilename(file.name);
@@ -304,16 +308,16 @@ export default class KordocImporterPlugin extends Plugin {
         if (file instanceof TFile && file.extension.toLowerCase() === "hwpx") {
           menu.addItem((item) => {
             item
-              .setTitle("KorDoc: HWPX 미리보기")
+              .setTitle(L({ ko: "KorDoc: HWPX 미리보기", en: "KorDoc: HWPX preview" }))
               .setIcon("layout-dashboard")
               .onClick(() => void this.openHwpxPreview(file));
           });
         }
         if (file instanceof TFile && this.isSupported(file)) {
-          menu.addItem((item) => item.setTitle("KorDoc: 문서 도구").setIcon("wrench").onClick(() => new DocumentToolsModal(this, "json", file).open()));
+          menu.addItem((item) => item.setTitle(L({ ko: "KorDoc: 문서 도구", en: "KorDoc: Document tools" })).setIcon("wrench").onClick(() => new DocumentToolsModal(this, "json", file).open()));
           menu.addItem((item) => {
             item
-              .setTitle("KorDoc: 마크다운으로 변환")
+              .setTitle(L({ ko: "KorDoc: 마크다운으로 변환", en: "KorDoc: Convert to Markdown" }))
               .setIcon("file-input")
               .onClick(() => this.convertVaultFile(file));
           });
@@ -321,7 +325,7 @@ export default class KordocImporterPlugin extends Plugin {
         if (file instanceof TFile && isMarkdownFilename(file.name)) {
           menu.addItem((item) => {
             item
-              .setTitle("KorDoc: HWPX로 내보내기")
+              .setTitle(L({ ko: "KorDoc: HWPX로 내보내기", en: "KorDoc: Export to HWPX" }))
               .setIcon("file-output")
               .onClick(() => void this.exportMarkdownFile(file));
           });
@@ -336,7 +340,7 @@ export default class KordocImporterPlugin extends Plugin {
         if (!file || !isMarkdownFilename(file.name)) return;
         menu.addItem((item) => {
           item
-            .setTitle("KorDoc: HWPX로 내보내기")
+            .setTitle(L({ ko: "KorDoc: HWPX로 내보내기", en: "KorDoc: Export to HWPX" }))
             .setIcon("file-output")
             .onClick(() =>
               void this.exportMarkdownFile(file, editor?.getValue())
@@ -378,7 +382,7 @@ export default class KordocImporterPlugin extends Plugin {
   async loadSettings() {
     const merged = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<KordocSettings> | null);
     let parseConfig: ParseOptions = {};
-    try { parseConfig = offlineParseOptions(merged.parseConfig); } catch { new Notice("변환 옵션을 기본값으로 복구했습니다. 쪽 범위를 확인하세요."); }
+    try { parseConfig = offlineParseOptions(merged.parseConfig); } catch { new Notice(L({ ko: "변환 옵션을 기본값으로 복구했습니다. 쪽 범위를 확인하세요.", en: "Conversion options reset to defaults. Check the page range." })); }
     this.settings = {
       ...merged,
       hwpxOutputFolder:
@@ -418,7 +422,7 @@ export default class KordocImporterPlugin extends Plugin {
       ? await collectVaultImages(this.app, file, sourceMarkdown)
       : { aliases: {}, images: {}, warnings: [] as string[] };
     const extras: unknown = this.settings.hwpxOptionsJson.trim() ? JSON.parse(this.settings.hwpxOptionsJson) : {};
-    if (!extras || typeof extras !== "object" || Array.isArray(extras)) throw new Error("HWPX 고급 설정은 JSON 객체여야 합니다.");
+    if (!extras || typeof extras !== "object" || Array.isArray(extras)) throw new Error(L({ ko: "HWPX 고급 설정은 JSON 객체여야 합니다.", en: "Advanced HWPX settings must be a JSON object." }));
     const extraOptions = extras as MarkdownToHwpxOptions;
     const preset = this.settings.gongmunPreset;
     const options: MarkdownToHwpxOptions = { page: extraOptions.page, theme: extraOptions.theme,
@@ -426,14 +430,14 @@ export default class KordocImporterPlugin extends Plugin {
       images: attachments.images, warnings: attachments.warnings };
     if (this.settings.profilePath.trim()) {
       const profileFile = this.app.vault.getAbstractFileByPath(this.settings.profilePath.trim());
-      if (!(profileFile instanceof TFile)) throw new Error("참조할 표 서식 프로필 파일을 찾지 못했습니다.");
+      if (!(profileFile instanceof TFile)) throw new Error(L({ ko: "참조할 표 서식 프로필 파일을 찾지 못했습니다.", en: "The reference table format profile file was not found." }));
       options.profile = JSON.parse(await this.app.vault.read(profileFile)) as MarkdownToHwpxOptions["profile"];
     }
     return { markdown: preprocessObsidianMarkdown(sourceMarkdown, attachments.aliases), options };
   }
 
   private getPool(): ParseWorkerPool {
-    if (this.unloading) throw new Error("플러그인이 종료되었습니다.");
+    if (this.unloading) throw new Error(L({ ko: "플러그인이 종료되었습니다.", en: "The plugin has shut down." }));
     if (!this.parsePool || this.poolSize !== this.settings.concurrency) {
       this.parsePool?.dispose(); this.poolSize = this.settings.concurrency;
       this.parsePool = new ParseWorkerPool(this.poolSize, this.browserWorkerEnabled ? () => createBrowserParseWorker(workerPath()) : undefined);
@@ -459,8 +463,9 @@ export default class KordocImporterPlugin extends Plugin {
   }
 
   async saveToolResult(name: string, action: ToolAction, result: ToolResult, targetFolder?: string): Promise<{ paths: string[]; reportPath: string }> {
+    const TOOL_ACTIONS = createToolActions();
     const folder = normalizeVaultRelativeFolder(targetFolder ?? this.settings.outputFolder);
-    if (folder === null) throw new Error("저장 폴더는 볼트 기준 상대 경로여야 합니다.");
+    if (folder === null) throw new Error(L({ ko: "저장 폴더는 볼트 기준 상대 경로여야 합니다.", en: "The output folder must be a vault-relative path." }));
     await this.ensureFolder(folder);
     const base = sanitizeFilename(stripExtension(name));
     const paths: string[] = [];
@@ -469,9 +474,20 @@ export default class KordocImporterPlugin extends Plugin {
       const path = await this.createUniqueArtifact(folder, `${base}-${artifact.suffix}`, artifact.extension, artifact.data);
       paths.push(path);
     }
-    const report = `# ${TOOL_ACTIONS[action]}\n\n` + paths.map((p) => p.endsWith(".svg") && action === "preview" ? `![[${p}]]` : `- [[${p}]]`).join("\n\n") + `\n\n## 처리 결과\n\n\`\`\`json\n${jsonStringify(result.report)}\n\`\`\`\n`;
-    const reportPath = await this.createUniqueArtifact(folder, `${base}-${TOOL_ACTIONS[action]}-결과`, "md", report);
-    new Notice(`✅ ${TOOL_ACTIONS[action]} 완료: ${reportPath}`, 6000);
+    const report = `# ${createToolActions()[action]}\n\n` + paths.map((p) => p.endsWith(".svg") && action === "preview" ? `![[${p}]]` : `- [[${p}]]`).join("\n\n") + L({ ko: `\n\n## 처리 결과\n\n\`\`\`json\n${jsonStringify(result.report)}\n\`\`\`\n`, en: `
+
+## Processing results
+
+\`\`\`json
+${jsonStringify(result.report)}
+\`\`\`
+` });
+    let reportPath: string;
+    {
+      const TOOL_ACTIONS = createToolActions();
+      reportPath = await this.createUniqueArtifact(folder, artifactName("results", [base, TOOL_ACTIONS[action]]), "md", report);
+    }
+    new Notice(L({ ko: `✅ ${TOOL_ACTIONS[action]} 완료: ${reportPath}`, en: `✅ ${TOOL_ACTIONS[action]} complete: ${reportPath}` }), 6000);
     if (this.settings.openAfterConvert) {
       const reportFile = this.app.vault.getAbstractFileByPath(reportPath);
       if (reportFile instanceof TFile) await this.app.workspace.getLeaf(false).openFile(reportFile);
@@ -484,30 +500,30 @@ export default class KordocImporterPlugin extends Plugin {
       this.localMcp ??= new LocalMcpServer((name, args) => this.executeMcpTool(name, args));
       await this.localMcp.start();
       const modal = new Modal(this.app);
-      if (typeof modal.setTitle === "function") modal.setTitle("KorDoc 로컬 MCP 연결");
-      else modal.titleEl.setText("KorDoc 로컬 MCP 연결");
-      modal.contentEl.createEl("p", { text: "이 앱에서 실행 중인 서버에 연결할 주소와 인증 정보입니다. 앱이나 플러그인을 종료하면 서버가 중지됩니다." });
+      if (typeof modal.setTitle === "function") modal.setTitle(L({ ko: "KorDoc 로컬 MCP 연결", en: "KorDoc local MCP connection" }));
+      else modal.titleEl.setText(L({ ko: "KorDoc 로컬 MCP 연결", en: "KorDoc local MCP connection" }));
+      modal.contentEl.createEl("p", { text: L({ ko: "이 앱에서 실행 중인 서버에 연결할 주소와 인증 정보입니다. 앱이나 플러그인을 종료하면 서버가 중지됩니다.", en: "Connection address and credentials for the server running in this app. The server stops when the app or plugin closes." }) });
       const config = jsonStringify({ mcpServers: { "kordoc-obsidian": this.localMcp.connection } });
       modal.contentEl.createEl("pre").setText(config);
-      new Setting(modal.contentEl).addButton((b) => b.setButtonText("연결 정보 복사").onClick(() => { void navigator.clipboard.writeText(config); }));
+      new Setting(modal.contentEl).addButton((b) => b.setButtonText(L({ ko: "연결 정보 복사", en: "Copy connection details" })).onClick(() => { void navigator.clipboard.writeText(config); }));
       modal.open();
-    } catch (error) { this.reportError("MCP 서버", error); }
+    } catch (error) { this.reportError(L({ ko: "MCP 서버", en: "MCP server" }), error); }
   }
 
   private async executeMcpTool(name: string, args: Record<string, unknown>): Promise<unknown> {
     const read = async (path: unknown) => {
       const normalized = normalizeVaultRelativeFolder(path);
       const file = normalized ? this.app.vault.getAbstractFileByPath(normalized) : null;
-      if (!(file instanceof TFile)) throw new Error("볼트 기준 상대 파일 경로를 지정하세요.");
+      if (!(file instanceof TFile)) throw new Error(L({ ko: "볼트 기준 상대 파일 경로를 지정하세요.", en: "Specify a vault-relative file path." }));
       return { file, name: file.name, buffer: await this.app.vault.readBinary(file),
         markdown: file.extension === "md" ? await this.app.vault.read(file) : undefined };
     };
     const source = args.path ? await read(args.path) : undefined;
     const options = offlineParseOptions({ ...this.parseOptions(), ...(args.options && typeof args.options === "object" ? args.options : {}),
       ...(args.pages !== undefined ? { pages: args.pages } : {}), ...(args.password !== undefined ? { password: args.password } : {}) });
-    if (name === "detect_format") { if (!source) throw new Error("대상 문서를 지정하세요."); return { format: await preciseDocumentFormat(source.buffer) }; }
+    if (name === "detect_format") { if (!source) throw new Error(L({ ko: "대상 문서를 지정하세요.", en: "Specify a target document." })); return { format: await preciseDocumentFormat(source.buffer) }; }
     if (name === "parse_document" || name === "parse_metadata") {
-      if (!source) throw new Error("대상 문서를 지정하세요.");
+      if (!source) throw new Error(L({ ko: "대상 문서를 지정하세요.", en: "Specify a target document." }));
       const result = await parseOffline(source.buffer, { ...options, images: false });
       return name === "parse_metadata" ? { format: result.fileType, metadata: result.metadata, pageCount: result.pageCount, outline: result.outline } : result;
     }
@@ -519,10 +535,10 @@ export default class KordocImporterPlugin extends Plugin {
       crop_regions: "regions", extract_tables: "tables", validate_document: "validate", lint_document: "lint",
     };
     const action = actions[name];
-    if (!action) throw new Error("지원하지 않는 도구입니다.");
-    if (name === "render_document" && args.format !== undefined && args.format !== "svg" && args.format !== "html") throw new Error("현재 배포본은 SVG·HTML 렌더를 제공합니다.");
+    if (!action) throw new Error(L({ ko: "지원하지 않는 도구입니다.", en: "Unsupported tool." }));
+    if (name === "render_document" && args.format !== undefined && args.format !== "svg" && args.format !== "html") throw new Error(L({ ko: "현재 배포본은 SVG·HTML 렌더를 제공합니다.", en: "This distribution provides SVG and HTML rendering." }));
     const stringify: (value: unknown) => string = String;
-    const request: ToolRequest = { action, name: source?.name ?? stringify(args.template ?? "작성문서"), buffer: source?.buffer,
+    const request: ToolRequest = { action, name: source?.name ?? stringify(args.template ?? artifactName("generatedDocument")), buffer: source?.buffer,
       markdown: source?.markdown, options, template: args.template as string | undefined,
       tableIndex: args.table_index as number | undefined, requireUnique: args.require_unique !== false,
       highlights: Array.isArray(args.highlights) ? args.highlights.map(String) : undefined,
@@ -535,7 +551,7 @@ export default class KordocImporterPlugin extends Plugin {
     if (args.markdown_path) request.markdown = (await read(args.markdown_path)).markdown;
     if (args.image_path) {
       const image = await read(args.image_path); request.image = new Uint8Array(image.buffer);
-      if (!/^(png|jpg|jpeg|bmp|gif)$/i.test(image.file.extension)) throw new Error("지원하는 도장 이미지 형식을 지정하세요.");
+      if (!/^(png|jpg|jpeg|bmp|gif)$/i.test(image.file.extension)) throw new Error(L({ ko: "지원하는 도장 이미지 형식을 지정하세요.", en: "Specify a supported seal image format." }));
       request.imageExt = image.file.extension.toLowerCase() as ToolRequest["imageExt"];
       request.anchor = typeof args.anchor === "string" ? args.anchor : undefined;
       request.sealOptions = args.seal_options && typeof args.seal_options === "object" ? args.seal_options : undefined;
@@ -564,7 +580,7 @@ export default class KordocImporterPlugin extends Plugin {
         return path;
       } catch (error) { if (!await this.app.vault.adapter.exists(path)) throw error; }
     }
-    throw new Error("결과를 저장할 빈 파일 경로를 찾지 못했습니다.");
+    throw new Error(L({ ko: "결과를 저장할 빈 파일 경로를 찾지 못했습니다.", en: "Could not find an unused file path for the results." }));
   }
 
   private isSupported(file: TFile): boolean {
@@ -595,7 +611,7 @@ export default class KordocImporterPlugin extends Plugin {
         }
       };
       await Promise.allSettled(Array.from({ length: Math.min(files.length, this.settings.concurrency) }, consume));
-    })().catch((error: unknown) => this.reportError("외부 문서 변환", error)); });
+    })().catch((error: unknown) => this.reportError(L({ ko: "외부 문서 변환", en: "Convert external documents" }), error)); });
 
     input.click();
   }
@@ -615,7 +631,7 @@ export default class KordocImporterPlugin extends Plugin {
   /** 저장 위치 선택 창을 띄우거나(설정 켜짐) 설정의 저장 폴더를 그대로 쓴다. 취소하면 null. */
   private async chooseImportTarget(fileNames: string[]): Promise<ImportTarget | null> {
     const fallback = normalizeVaultRelativeFolder(this.settings.outputFolder);
-    if (fallback === null) throw new Error("저장 폴더는 볼트 기준 상대 경로여야 합니다.");
+    if (fallback === null) throw new Error(L({ ko: "저장 폴더는 볼트 기준 상대 경로여야 합니다.", en: "The output folder must be a vault-relative path." }));
     const initial: ImportTarget = { folder: this.settings.lastImportFolder || fallback, copyOriginal: this.settings.copyOriginal };
     if (!this.settings.askImportTarget) return { folder: fallback, copyOriginal: this.settings.copyOriginal };
     const target = await askImportTarget(this.app, fileNames, initial);
@@ -654,7 +670,7 @@ export default class KordocImporterPlugin extends Plugin {
 
   /** Markdown 전체(선택 영역 아님)를 HWPX로 생성해 볼트에 저장 */
   private async exportMarkdownFile(file: TFile, editorMarkdown?: string) {
-    const notice = new Notice(`HWPX 내보내기 중: ${file.name} …`, 0);
+    const notice = new Notice(L({ ko: `HWPX 내보내기 중: ${file.name} …`, en: `Exporting HWPX: ${file.name} …` }), 0);
     try {
       const source = editorMarkdown ?? await this.app.vault.read(file);
       const sourceMarkdown = stripFrontmatter(source);
@@ -664,7 +680,7 @@ export default class KordocImporterPlugin extends Plugin {
       const markdown = preprocessObsidianMarkdown(sourceMarkdown, attachments.aliases);
       const preset = this.settings.gongmunPreset;
       const extras: unknown = this.settings.hwpxOptionsJson.trim() ? JSON.parse(this.settings.hwpxOptionsJson) : {};
-      if (!extras || typeof extras !== "object" || Array.isArray(extras)) throw new Error("HWPX 고급 설정은 JSON 객체여야 합니다.");
+      if (!extras || typeof extras !== "object" || Array.isArray(extras)) throw new Error(L({ ko: "HWPX 고급 설정은 JSON 객체여야 합니다.", en: "Advanced HWPX settings must be a JSON object." }));
       const extraOptions = extras as MarkdownToHwpxOptions;
       const options: MarkdownToHwpxOptions = {
         page: extraOptions.page, theme: extraOptions.theme,
@@ -673,7 +689,7 @@ export default class KordocImporterPlugin extends Plugin {
       };
       if (this.settings.profilePath.trim()) {
         const profileFile = this.app.vault.getAbstractFileByPath(this.settings.profilePath.trim());
-        if (!(profileFile instanceof TFile)) throw new Error("참조할 표 서식 프로필 파일을 찾지 못했습니다.");
+        if (!(profileFile instanceof TFile)) throw new Error(L({ ko: "참조할 표 서식 프로필 파일을 찾지 못했습니다.", en: "The reference table format profile file was not found." }));
         options.profile = JSON.parse(await this.app.vault.read(profileFile)) as MarkdownToHwpxOptions["profile"];
       }
       const buffer = await markdownToHwpx(markdown, options);
@@ -685,11 +701,11 @@ export default class KordocImporterPlugin extends Plugin {
       const outputFile = await this.writeHwpx(outputPath, folder, baseName, buffer);
 
       notice.hide();
-      new Notice(`✅ HWPX 내보내기 완료: ${outputFile.path}`, 6000);
+      new Notice(L({ ko: `✅ HWPX 내보내기 완료: ${outputFile.path}`, en: `✅ HWPX export complete: ${outputFile.path}` }), 6000);
       if (options.warnings?.length) await this.saveToolResult(file.name, "json", { artifacts: [], report: { warnings: options.warnings } });
     } catch (e) {
       notice.hide();
-      this.reportError(`${file.name} HWPX 내보내기`, e);
+      this.reportError(L({ ko: `${file.name} HWPX 내보내기`, en: `${file.name} HWPX export` }), e);
     }
   }
 
@@ -698,7 +714,7 @@ export default class KordocImporterPlugin extends Plugin {
       this.settings.hwpxOutputFolder,
     );
     if (configured === null) {
-      throw new Error("HWPX 저장 폴더는 볼트 기준 상대 경로만 사용할 수 있습니다.");
+      throw new Error(L({ ko: "HWPX 저장 폴더는 볼트 기준 상대 경로만 사용할 수 있습니다.", en: "The HWPX output folder must be a vault-relative path." }));
     }
     if (configured) return configured;
     return normalizeVaultRelativeFolder(file.parent?.path ?? "") ?? "";
@@ -712,12 +728,12 @@ export default class KordocImporterPlugin extends Plugin {
     /** 볼트 안의 파일을 변환할 때 그 경로 (이미 저장 폴더에 있으면 원본을 다시 복사하지 않음) */
     sourcePath?: string,
   ) {
-    const notice = new Notice(`변환 중: ${originalName} …`, 0);
+    const notice = new Notice(L({ ko: `변환 중: ${originalName} …`, en: `Converting: ${originalName} …` }), 0);
     try {
       const options = this.parseOptions();
       let result: ParseResult;
       // OCR options are explicit; bundled models never download at runtime.
-        result = await this.getPool().parse(buffer, options, (current, total) => notice.setMessage(`변환 중: ${originalName} · ${current}/${total}`));
+        result = await this.getPool().parse(buffer, options, (current, total) => notice.setMessage(L({ ko: `변환 중: ${originalName} · ${current}/${total}`, en: `Converting: ${originalName} · ${current}/${total}` })));
         if (!result.success && result.code === "ENCRYPTED") {
           const password = await askPassword(this.app);
           if (password === null) { notice.hide(); return; }
@@ -727,9 +743,10 @@ export default class KordocImporterPlugin extends Plugin {
       if (!result.success) {
         notice.hide();
         new Notice(
-          `변환 실패: ${originalName}\n${result.error}${
+          L({ ko: `변환 실패: ${originalName}\n${result.error}${
             result.code ? ` (${result.code})` : ""
-          }`,
+          }`, en: `Conversion failed: ${originalName}
+${result.error}${result.code ? ` (${result.code})` : ""}` }),
           8000
         );
         return;
@@ -737,12 +754,12 @@ export default class KordocImporterPlugin extends Plugin {
 
       if (result.fileType === "pdf" && result.qualitySummary?.needsOcr && result.qualitySummary.totalTextChars === 0 && !result.warnings?.some(w => w.code === "OCR_APPLIED")) {
         throw new Error(options.ocr === false
-          ? "텍스트가 없는 스캔 PDF입니다. KorDoc 설정의 ‘로컬 OCR로 스캔·그림 속 글자 인식’을 켜고 다시 변환하세요. 빈 본문 노트는 저장하지 않았습니다."
-          : "스캔 PDF의 OCR 본문을 얻지 못했습니다. " + (result.warnings ?? []).map(w => w.message).join("\n"));
+          ? L({ ko: "텍스트가 없는 스캔 PDF입니다. KorDoc 설정의 ‘로컬 OCR로 스캔·그림 속 글자 인식’을 켜고 다시 변환하세요. 빈 본문 노트는 저장하지 않았습니다.", en: "This scanned PDF has no text. Enable 'Recognize scanned and image text with local OCR' in KorDoc settings and convert again. No empty body note was saved." })
+          : L({ ko: "스캔 PDF의 OCR 본문을 얻지 못했습니다. ", en: "Could not obtain OCR text from the scanned PDF. " }) + (result.warnings ?? []).map(w => w.message).join("\n"));
       }
 
       const folder = normalizeVaultRelativeFolder(target.folder);
-      if (folder === null) throw new Error("저장 폴더는 볼트 기준 상대 경로여야 합니다.");
+      if (folder === null) throw new Error(L({ ko: "저장 폴더는 볼트 기준 상대 경로여야 합니다.", en: "The output folder must be a vault-relative path." }));
       await this.ensureFolder(folder);
 
       // 원본 복사 — 이름이 겹쳐 -1 등이 붙으면 노트 이름도 그 이름을 따른다.
@@ -757,11 +774,11 @@ export default class KordocImporterPlugin extends Plugin {
       if (this.settings.outputMode !== "markdown") {
         const mode = this.settings.outputMode;
         const artifacts = mode === "json"
-          ? [{ suffix: "구조", extension: "json", data: jsonStringify(result) }]
+          ? [{ suffix: artifactName("structure"), extension: "json", data: jsonStringify(result) }]
           : mode === "chunks"
-          ? [{ suffix: "청크", extension: "json", data: jsonStringify(blocksToChunks(result.blocks, { includeTableCells: true })) }]
-          : (result.pages ?? []).map((page) => ({ suffix: `${page.pageNumber}쪽`, extension: "md", data: page.markdown }));
-        if (!artifacts.length) throw new Error("이 문서는 쪽별 본문을 제공하지 않습니다.");
+          ? [{ suffix: artifactName("chunks"), extension: "json", data: jsonStringify(blocksToChunks(result.blocks, { includeTableCells: true })) }]
+          : (result.pages ?? []).map((page) => ({ suffix: artifactName("page", [page.pageNumber]), extension: "md", data: page.markdown }));
+        if (!artifacts.length) throw new Error(L({ ko: "이 문서는 쪽별 본문을 제공하지 않습니다.", en: "This document does not provide page-by-page text." }));
         const saved = await this.saveToolResult(sourceName, mode, { artifacts, report: { format: result.fileType, warnings: result.warnings, qualitySummary: result.qualitySummary } }, folder);
         await this.notifyWebhook(originalName, saved.reportPath, result.fileType);
         notice.hide(); return;
@@ -783,16 +800,17 @@ export default class KordocImporterPlugin extends Plugin {
 
       notice.hide();
       const imgMsg = images.length > 0 && this.settings.saveImages
-        ? ` (이미지 ${images.length}개)`
+        ? L({ ko: ` (이미지 ${images.length}개)`, en: ` (${images.length} images)` })
         : "";
       const warnMsg =
         result.warnings && result.warnings.length > 0
-          ? ` · 경고 ${result.warnings.length}건`
+          ? L({ ko: ` · 경고 ${result.warnings.length}건`, en: ` · ${result.warnings.length} warnings` })
           : "";
-      const copyMsg = copiedPath ? `\n원본 복사: ${copiedPath}` : "";
-      new Notice(`✅ 변환 완료: ${created.path}${imgMsg}${warnMsg}${copyMsg}`, 6000);
+      const copyMsg = copiedPath ? L({ ko: `\n원본 복사: ${copiedPath}`, en: `
+Source copy: ${copiedPath}` }) : "";
+      new Notice(L({ ko: `✅ 변환 완료: ${created.path}${imgMsg}${warnMsg}${copyMsg}`, en: `✅ Conversion complete: ${created.path}${imgMsg}${warnMsg}${copyMsg}` }), 6000);
       if (result.warnings?.length || result.qualitySummary?.needsOcr) {
-        await this.createUniqueArtifact(folder, `${baseName}-변환진단`, "json", jsonStringify({ engineVersion: VERSION, parseOptions: { ocr: options.ocr ?? false, formulaOcr: options.formulaOcr ?? false }, warnings: result.warnings, pageQuality: result.pageQuality, qualitySummary: result.qualitySummary, metadata: result.metadata }));
+        await this.createUniqueArtifact(folder, artifactName("diagnostics", [baseName]), "json", jsonStringify({ engineVersion: VERSION, parseOptions: { ocr: options.ocr ?? false, formulaOcr: options.formulaOcr ?? false }, warnings: result.warnings, pageQuality: result.pageQuality, qualitySummary: result.qualitySummary, metadata: result.metadata }));
       }
 
       await this.notifyWebhook(originalName, created.path, result.fileType);
@@ -801,7 +819,7 @@ export default class KordocImporterPlugin extends Plugin {
         if (await waitForNoteMetadata(this.app.metadataCache, created)) {
           await this.app.workspace.getLeaf(false).openFile(created);
         } else {
-          new Notice(`변환 파일을 저장했습니다. Obsidian 메타데이터 준비가 늦어 자동 열기를 생략했습니다: ${created.path}`, 6000);
+          new Notice(L({ ko: `변환 파일을 저장했습니다. Obsidian 메타데이터 준비가 늦어 자동 열기를 생략했습니다: ${created.path}`, en: `The converted file was saved. Automatic opening was skipped because Obsidian metadata was not ready: ${created.path}` }), 6000);
         }
       }
     } catch (e) {
@@ -815,7 +833,7 @@ export default class KordocImporterPlugin extends Plugin {
     if (!this.settings.webhookUrl.trim()) return;
     try {
       await notifyWebhook(requestUrl, this.settings.webhookUrl, { source, output, format, success: true });
-    } catch (error) { new Notice(`문서 변환은 완료했지만 웹훅 알림에 실패했습니다: ${String(error)}`, 6000); }
+    } catch (error) { new Notice(L({ ko: `문서 변환은 완료했지만 웹훅 알림에 실패했습니다: ${String(error)}`, en: `Document conversion completed, but the webhook notification failed: ${String(error)}` }), 6000); }
   }
 
   /** 추출 이미지를 볼트에 쓰고, 마크다운 내 파일명 참조를 상대경로로 교체 */
@@ -826,7 +844,7 @@ export default class KordocImporterPlugin extends Plugin {
     images: ExtractedImage[]
   ): Promise<string> {
     const sub = normalizeVaultRelativeFolder(this.settings.imageSubfolder);
-    if (sub === null) throw new Error("이미지 폴더는 볼트 기준 상대 경로여야 합니다.");
+    if (sub === null) throw new Error(L({ ko: "이미지 폴더는 볼트 기준 상대 경로여야 합니다.", en: "The image folder must be a vault-relative path." }));
     const imgFolder = normalizePath(
       sub ? `${noteFolder}/${sub}/${baseName}` : noteFolder
     );
@@ -845,7 +863,7 @@ export default class KordocImporterPlugin extends Plugin {
   private async ensureFolder(path: string) {
     const normalized = normalizeVaultRelativeFolder(path);
     if (normalized === null) {
-      throw new Error("볼트 폴더 경로가 올바르지 않습니다.");
+      throw new Error(L({ ko: "볼트 폴더 경로가 올바르지 않습니다.", en: "Invalid vault folder path." }));
     }
     if (!normalized) return;
 
@@ -855,7 +873,7 @@ export default class KordocImporterPlugin extends Plugin {
       const existing = this.app.vault.getAbstractFileByPath(current);
       if (existing instanceof TFolder) continue;
       if (existing) {
-        throw new Error(`출력 폴더 경로가 파일과 충돌합니다: ${current}`);
+        throw new Error(L({ ko: `출력 폴더 경로가 파일과 충돌합니다: ${current}`, en: `The output folder path conflicts with a file: ${current}` }));
       }
       try {
         await this.app.vault.createFolder(current);
@@ -892,12 +910,12 @@ export default class KordocImporterPlugin extends Plugin {
       const path = joinVaultPath(folder, `${safe}${suffix}.hwpx`);
       const abstract = this.app.vault.getAbstractFileByPath(path);
       if (abstract instanceof TFolder) {
-        throw new Error(`HWPX 출력 경로가 폴더와 충돌합니다: ${path}`);
+        throw new Error(L({ ko: `HWPX 출력 경로가 폴더와 충돌합니다: ${path}`, en: `The HWPX output path conflicts with a folder: ${path}` }));
       }
       if (this.settings.hwpxOverwrite && i === 0) return path;
       if (!abstract && !(await this.app.vault.adapter.exists(path))) return path;
     }
-    throw new Error("같은 이름의 HWPX 파일이 너무 많습니다.");
+    throw new Error(L({ ko: "같은 이름의 HWPX 파일이 너무 많습니다.", en: "Too many HWPX files have the same name." }));
   }
 
   private async writeHwpx(
@@ -908,11 +926,11 @@ export default class KordocImporterPlugin extends Plugin {
   ): Promise<TFile> {
     const existing = this.app.vault.getAbstractFileByPath(path);
     if (existing instanceof TFolder) {
-      throw new Error(`HWPX 출력 경로가 폴더와 충돌합니다: ${path}`);
+      throw new Error(L({ ko: `HWPX 출력 경로가 폴더와 충돌합니다: ${path}`, en: `The HWPX output path conflicts with a folder: ${path}` }));
     }
     if (existing instanceof TFile) {
       if (!this.settings.hwpxOverwrite) {
-        throw new Error(`HWPX 파일이 이미 존재합니다: ${path}`);
+        throw new Error(L({ ko: `HWPX 파일이 이미 존재합니다: ${path}`, en: `An HWPX file already exists: ${path}` }));
       }
       await this.app.vault.modifyBinary(existing, data);
       return existing;
@@ -938,7 +956,7 @@ export default class KordocImporterPlugin extends Plugin {
       const candidate = joinVaultPath(folder, `${safe}-${i}.hwpx`);
       const abstract = this.app.vault.getAbstractFileByPath(candidate);
       if (abstract instanceof TFolder) {
-        throw new Error(`HWPX 출력 경로가 폴더와 충돌합니다: ${candidate}`);
+        throw new Error(L({ ko: `HWPX 출력 경로가 폴더와 충돌합니다: ${candidate}`, en: `The HWPX output path conflicts with a folder: ${candidate}` }));
       }
       if (abstract || await this.app.vault.adapter.exists(candidate)) continue;
       try {
@@ -948,7 +966,7 @@ export default class KordocImporterPlugin extends Plugin {
         throw error;
       }
     }
-    throw new Error("HWPX 출력 파일을 생성할 빈 경로를 찾지 못했습니다.");
+    throw new Error(L({ ko: "HWPX 출력 파일을 생성할 빈 경로를 찾지 못했습니다.", en: "Could not find an unused path for the HWPX output file." }));
   }
 
   private async writeNote(path: string, content: string): Promise<TFile> {
@@ -967,15 +985,16 @@ export default class KordocImporterPlugin extends Plugin {
         try { return await this.app.vault.create(candidate, content); }
         catch (error) { if (!await this.app.vault.adapter.exists(candidate)) throw error; }
       }
-      throw new Error("노트를 저장할 빈 파일 경로를 찾지 못했습니다.");
+      throw new Error(L({ ko: "노트를 저장할 빈 파일 경로를 찾지 못했습니다.", en: "Could not find an unused path to save the note." }));
     }
     return await this.app.vault.create(path, content);
   }
 
   private reportError(name: string, e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error(`[KorDoc] ${name} 변환 오류:`, e);
-    new Notice(`변환 오류: ${name}\n${msg}`, 8000);
+    console.error(L({ ko: `[KorDoc] ${name} 변환 오류:`, en: `[KorDoc] ${name} conversion error:` }), e);
+    new Notice(L({ ko: `변환 오류: ${name}\n${msg}`, en: `Conversion error: ${name}
+${msg}` }), 8000);
   }
 }
 
@@ -993,7 +1012,7 @@ function stripExtension(name: string): string {
 function sanitizeFilename(name: string): string {
   // 볼트 경로에서 금지/문제되는 문자 제거
   return name.replace(/[\\/:*?"<>|#^[\]]/g, " ").replace(/\s+/g, " ").trim() ||
-    "변환문서";
+    artifactName("convertedDocument");
 }
 
 function toArrayBuffer(u8: Uint8Array): ArrayBuffer {
@@ -1035,7 +1054,7 @@ type KordocSettingRow =
   | { kind: "setting"; name: string; desc?: string; build: (setting: Setting) => void }
   | { kind: "footer"; name: string; render: (container: HTMLElement) => void };
 
-const SETTINGS_HEADING = "KorDoc 문서 변환기 설정";
+const settingsHeading = () => L({ ko: "KorDoc 문서 변환기 설정", en: "KorDoc document converter settings" });
 
 class KordocSettingTab extends PluginSettingTab {
   plugin: KordocImporterPlugin;
@@ -1048,7 +1067,7 @@ class KordocSettingTab extends PluginSettingTab {
   private settingRows(): KordocSettingRow[] {
     const rows: KordocSettingRow[] = [];
     const addRow = (name: string, desc: string | undefined, build: (setting: Setting) => void) => { rows.push({ kind: "setting", name, desc, build }); };
-    addRow("저장 폴더", "변환된 마크다운을 저장할 볼트 내 기본 폴더 경로 (위치 선택 창을 끄거나 폴더 자동 변환 시 사용)", (setting) => { setting
+    addRow(L({ ko: "저장 폴더", en: "Output folder" }), L({ ko: "변환된 마크다운을 저장할 볼트 내 기본 폴더 경로 (위치 선택 창을 끄거나 폴더 자동 변환 시 사용)", en: "Default folder path in the vault for converted Markdown (used when the location dialog is disabled or for automatic folder conversion)" }), (setting) => { setting
       .addText((t) =>
         t
           .setPlaceholder("KorDoc")
@@ -1059,7 +1078,7 @@ class KordocSettingTab extends PluginSettingTab {
           })
       ); });
 
-    addRow("변환할 때 저장 위치 묻기", "켜면 변환 전에 볼트 안 저장 폴더를 고르고, 그 아래 새 폴더를 만들 수 있습니다. 끄면 위 저장 폴더를 씁니다 (폴더 자동 변환은 항상 위 저장 폴더)", (setting) => { setting
+    addRow(L({ ko: "변환할 때 저장 위치 묻기", en: "Ask for output location when converting" }), L({ ko: "켜면 변환 전에 볼트 안 저장 폴더를 고르고, 그 아래 새 폴더를 만들 수 있습니다. 끄면 위 저장 폴더를 씁니다 (폴더 자동 변환은 항상 위 저장 폴더)", en: "Choose an output folder in the vault before conversion and optionally create a subfolder. When disabled, use the output folder above (automatic folder conversion always uses that folder)" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.askImportTarget).onChange(async (v) => {
           this.plugin.settings.askImportTarget = v;
@@ -1067,7 +1086,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("원본 파일 함께 복사", "변환 전 원본 문서를 노트와 같은 폴더에 복사합니다 (위치 선택 창의 기본값). 이미 그 폴더에 있는 볼트 파일과 폴더 자동 변환은 복사하지 않습니다", (setting) => { setting
+    addRow(L({ ko: "원본 파일 함께 복사", en: "Copy source files too" }), L({ ko: "변환 전 원본 문서를 노트와 같은 폴더에 복사합니다 (위치 선택 창의 기본값). 이미 그 폴더에 있는 볼트 파일과 폴더 자동 변환은 복사하지 않습니다", en: "Copy source documents into the note folder before conversion (default for the location dialog). Vault files already in that folder and automatic folder conversion are not copied" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.copyOriginal).onChange(async (v) => {
           this.plugin.settings.copyOriginal = v;
@@ -1075,7 +1094,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("노트 이름에 원본 확장자 포함", "켜면 보고서.hwpx → 보고서.hwpx.md, 끄면 보고서.md", (setting) => { setting
+    addRow(L({ ko: "노트 이름에 원본 확장자 포함", en: "Include source extension in note names" }), L({ ko: "켜면 보고서.hwpx → 보고서.hwpx.md, 끄면 보고서.md", en: "Enabled: report.hwpx → report.hwpx.md; disabled: report.md" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.noteNameWithExtension).onChange(async (v) => {
           this.plugin.settings.noteNameWithExtension = v;
@@ -1083,7 +1102,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("이미지 추출 저장", "문서에 포함된 이미지를 함께 볼트에 저장하고 링크를 연결합니다", (setting) => { setting
+    addRow(L({ ko: "이미지 추출 저장", en: "Save extracted images" }), L({ ko: "문서에 포함된 이미지를 함께 볼트에 저장하고 링크를 연결합니다", en: "Save embedded document images to the vault and link them" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.saveImages).onChange(async (v) => {
           this.plugin.settings.saveImages = v;
@@ -1091,7 +1110,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("이미지 하위 폴더", "이미지를 저장할 하위 폴더명 (저장 폴더 기준, 비우면 노트와 같은 폴더)", (setting) => { setting
+    addRow(L({ ko: "이미지 하위 폴더", en: "Image subfolder" }), L({ ko: "이미지를 저장할 하위 폴더명 (저장 폴더 기준, 비우면 노트와 같은 폴더)", en: "Subfolder name for images, relative to the output folder (leave empty to use the note folder)" }), (setting) => { setting
       .addText((t) =>
         t
           .setPlaceholder("_attachments")
@@ -1102,7 +1121,7 @@ class KordocSettingTab extends PluginSettingTab {
           })
       ); });
 
-    addRow("Frontmatter 추가", "출처 파일명·포맷·변환일시·메타데이터를 YAML frontmatter로 추가", (setting) => { setting
+    addRow(L({ ko: "Frontmatter 추가", en: "Add frontmatter" }), L({ ko: "출처 파일명·포맷·변환일시·메타데이터를 YAML frontmatter로 추가", en: "Add source filename, format, conversion timestamp and metadata as YAML frontmatter" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.addFrontmatter).onChange(async (v) => {
           this.plugin.settings.addFrontmatter = v;
@@ -1110,7 +1129,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("변환 후 노트 열기", undefined, (setting) => { setting
+    addRow(L({ ko: "변환 후 노트 열기", en: "Open note after conversion" }), undefined, (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.openAfterConvert).onChange(async (v) => {
           this.plugin.settings.openAfterConvert = v;
@@ -1118,7 +1137,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("같은 이름 노트 덮어쓰기", "끄면 기존 노트를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", (setting) => { setting
+    addRow(L({ ko: "같은 이름 노트 덮어쓰기", en: "Overwrite notes with the same name" }), L({ ko: "끄면 기존 노트를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", en: "When disabled, preserve existing notes and create new ones with -1, -2 …" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.overwrite).onChange(async (v) => {
           this.plugin.settings.overwrite = v;
@@ -1126,15 +1145,15 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("HWPX 저장 폴더", "볼트 기준 상대 경로. 비우면 원본 Markdown 노트와 같은 폴더에 저장합니다", (setting) => { setting
+    addRow(L({ ko: "HWPX 저장 폴더", en: "HWPX output folder" }), L({ ko: "볼트 기준 상대 경로. 비우면 원본 Markdown 노트와 같은 폴더에 저장합니다", en: "Vault-relative path. Leave empty to save beside the source Markdown note" }), (setting) => { setting
       .addText((t) =>
         t
-          .setPlaceholder("(원본 노트 폴더)")
+          .setPlaceholder(L({ ko: "(원본 노트 폴더)", en: "(Source note folder)" }))
           .setValue(this.plugin.settings.hwpxOutputFolder)
           .onChange(async (v) => {
             const normalized = normalizeVaultRelativeFolder(v);
             if (normalized === null) {
-              new Notice("HWPX 저장 폴더는 절대 경로와 .. 경로를 사용할 수 없습니다.", 5000);
+              new Notice(L({ ko: "HWPX 저장 폴더는 절대 경로와 .. 경로를 사용할 수 없습니다.", en: "The HWPX output folder cannot use absolute paths or .. paths." }), 5000);
               t.setValue(this.plugin.settings.hwpxOutputFolder);
               return;
             }
@@ -1143,19 +1162,19 @@ class KordocSettingTab extends PluginSettingTab {
           })
       ); });
 
-    addRow("공문서 프리셋", "HWPX 생성 시 적용할 문서 형식. 기본값은 범용 Markdown 변환입니다", (setting) => { setting
+    addRow(L({ ko: "공문서 프리셋", en: "Official document preset" }), L({ ko: "HWPX 생성 시 적용할 문서 형식. 기본값은 범용 Markdown 변환입니다", en: "Document format applied when generating HWPX. The default is general Markdown conversion" }), (setting) => { setting
       .addDropdown((d) => {
-        d.addOption("none", "범용 (프리셋 없음)");
+        d.addOption("none", L({ ko: "범용 (프리셋 없음)", en: "General (no preset)" }));
         const labels: Record<string, string> = {
-          official: "기안문",
-          report: "보고서",
-          plan: "계획서",
-          notice: "통지",
-          minutes: "회의록",
-          gaejosik: "개조식",
-          press: "보도자료",
-          ministry: "업무보고",
-          bangchim: "서울방침",
+          official: L({ ko: "기안문", en: "Draft" }),
+          report: L({ ko: "보고서", en: "Report" }),
+          plan: L({ ko: "계획서", en: "Plan" }),
+          notice: L({ ko: "통지", en: "Notice" }),
+          minutes: L({ ko: "회의록", en: "Minutes" }),
+          gaejosik: L({ ko: "개조식", en: "Bullet-style report" }),
+          press: L({ ko: "보도자료", en: "Press release" }),
+          ministry: L({ ko: "업무보고", en: "Business report" }),
+          bangchim: L({ ko: "서울방침", en: "Seoul policy" }),
         };
         for (const preset of GONGMUN_PRESETS) {
           d.addOption(preset, labels[preset]);
@@ -1167,7 +1186,7 @@ class KordocSettingTab extends PluginSettingTab {
         });
       }); });
 
-    addRow("같은 이름 HWPX 덮어쓰기", "끄면 기존 .hwpx를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", (setting) => { setting
+    addRow(L({ ko: "같은 이름 HWPX 덮어쓰기", en: "Overwrite HWPX with the same name" }), L({ ko: "끄면 기존 .hwpx를 보존하고 -1, -2 … 를 붙여 새로 만듭니다", en: "When disabled, preserve existing .hwpx files and create new ones with -1, -2 …" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.hwpxOverwrite).onChange(async (v) => {
           this.plugin.settings.hwpxOverwrite = v;
@@ -1175,7 +1194,7 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("수동 편집 시 원본 HWPX 덮어쓰기", "기본값은 -편집.hwpx로 저장합니다. 켜면 편집 결과가 원본에 직접 저장됩니다", (setting) => { setting
+    addRow(L({ ko: "수동 편집 시 원본 HWPX 덮어쓰기", en: "Overwrite source HWPX during manual editing" }), L({ ko: "기본값은 -편집.hwpx로 저장합니다. 켜면 편집 결과가 원본에 직접 저장됩니다", en: "By default, save as -edited.hwpx. When enabled, save edits directly to the source" }), (setting) => { setting
       .addToggle((t) =>
         t.setValue(this.plugin.settings.hwpxEditOverwrite).onChange(async (v) => {
           this.plugin.settings.hwpxEditOverwrite = v;
@@ -1183,23 +1202,23 @@ class KordocSettingTab extends PluginSettingTab {
         })
       ); });
 
-    addRow("변환 결과 형식", undefined, (setting) => { setting.addDropdown((d) => d
-      .addOptions({ markdown: "Markdown 노트", json: "구조화 JSON", chunks: "RAG 청크 JSON", pages: "쪽별 Markdown" })
+    addRow(L({ ko: "변환 결과 형식", en: "Conversion output format" }), undefined, (setting) => { setting.addDropdown((d) => d
+      .addOptions({ markdown: L({ ko: "Markdown 노트", en: "Markdown note" }), json: L({ ko: "구조화 JSON", en: "Structured JSON" }), chunks: L({ ko: "RAG 청크 JSON", en: "RAG chunks JSON" }), pages: L({ ko: "쪽별 Markdown", en: "Markdown by page" }) })
       .setValue(this.plugin.settings.outputMode).onChange(async (v) => { this.plugin.settings.outputMode = v as KordocSettings["outputMode"]; await this.plugin.saveSettings(); })); });
-    addRow("변환할 쪽 범위", "비우면 전체 문서. 예: 1-3,5", (setting) => { setting.addText((t) => t
+    addRow(L({ ko: "변환할 쪽 범위", en: "Page range to convert" }), L({ ko: "비우면 전체 문서. 예: 1-3,5", en: "Leave empty for the entire document. Example: 1-3,5" }), (setting) => { setting.addText((t) => t
       .setValue(String(this.plugin.settings.parseConfig.pages ?? "")).onChange(async (v) => {
         try { this.plugin.settings.parseConfig = offlineParseOptions({ ...this.plugin.settings.parseConfig, pages: v }); await this.plugin.saveSettings(); }
         catch (error) { new Notice(String(error)); }
       })); });
     const parseToggles: Array<[keyof ParseOptions, string, boolean]> = [
-      ["ocr", "로컬 OCR로 스캔·그림 속 글자 인식", false],
-      ["formulaOcr", "로컬 수식 OCR (LaTeX)", false],
-      ["plain", "평문 위주 Markdown", false], ["htmlTables", "모든 표를 HTML로 출력", false],
-      ["keepTrailingEmptyCols", "표 끝의 빈 열 보존", false], ["keepEmptyParagraphs", "빈 문단 보존", false],
-      ["includeFieldPlaceholders", "누름틀 안내문 출력", false], ["dedupeRunningHeaders", "반복 러닝 헤더 제거", false],
-      ["classifyTables", "표의 의미·레이아웃 분류 추가", false], ["inlineImages", "HWP5 이미지를 본문에 인라인", false],
-      ["images", "변환 시 이미지 데이터 추출", true], ["tables", "PDF 표 감지", true],
-      ["removeHeaderFooter", "PDF 머리글·바닥글 제거", true],
+      ["ocr", L({ ko: "로컬 OCR로 스캔·그림 속 글자 인식", en: "Recognize scanned and image text with local OCR" }), false],
+      ["formulaOcr", L({ ko: "로컬 수식 OCR (LaTeX)", en: "Local formula OCR (LaTeX)" }), false],
+      ["plain", L({ ko: "평문 위주 Markdown", en: "Plain-text-oriented Markdown" }), false], ["htmlTables", L({ ko: "모든 표를 HTML로 출력", en: "Output all tables as HTML" }), false],
+      ["keepTrailingEmptyCols", L({ ko: "표 끝의 빈 열 보존", en: "Preserve trailing empty table columns" }), false], ["keepEmptyParagraphs", L({ ko: "빈 문단 보존", en: "Preserve empty paragraphs" }), false],
+      ["includeFieldPlaceholders", L({ ko: "누름틀 안내문 출력", en: "Include click-here field prompts" }), false], ["dedupeRunningHeaders", L({ ko: "반복 러닝 헤더 제거", en: "Remove repeated running headers" }), false],
+      ["classifyTables", L({ ko: "표의 의미·레이아웃 분류 추가", en: "Add table semantic and layout classification" }), false], ["inlineImages", L({ ko: "HWP5 이미지를 본문에 인라인", en: "Inline HWP5 images in the body" }), false],
+      ["images", L({ ko: "변환 시 이미지 데이터 추출", en: "Extract image data during conversion" }), true], ["tables", L({ ko: "PDF 표 감지", en: "Detect PDF tables" }), true],
+      ["removeHeaderFooter", L({ ko: "PDF 머리글·바닥글 제거", en: "Remove PDF headers and footers" }), true],
     ];
     for (const [key, label, defaultValue] of parseToggles) addRow(label, undefined, (setting) => { setting.addToggle((t) => t
       .setValue((this.plugin.settings.parseConfig[key] as boolean | undefined) ?? defaultValue)
@@ -1210,19 +1229,19 @@ class KordocSettingTab extends PluginSettingTab {
         }
         this.plugin.settings.parseConfig = offlineParseOptions({ ...this.plugin.settings.parseConfig, [key]: v }); await this.plugin.saveSettings();
       })); });
-    addRow("위·아래첨자 표시", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: "포맷별 기본값", on: "첨자 태그 보존", off: "평문" })
+    addRow(L({ ko: "위·아래첨자 표시", en: "Superscript and subscript display" }), undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: L({ ko: "포맷별 기본값", en: "Format defaults" }), on: L({ ko: "첨자 태그 보존", en: "Preserve script tags" }), off: L({ ko: "평문", en: "Plain text" }) })
       .setValue(this.plugin.settings.parseConfig.scriptTags === undefined ? "auto" : this.plugin.settings.parseConfig.scriptTags ? "on" : "off")
       .onChange(async (v) => { const config = { ...this.plugin.settings.parseConfig }; delete config.scriptTags; if (v !== "auto") config.scriptTags = v === "on"; this.plugin.settings.parseConfig = config; await this.plugin.saveSettings(); })); });
-    addRow("레이아웃 표 처리", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ visual: "보이는 구조에 맞춰 정리", keep: "원본 표 구조 보존" })
+    addRow(L({ ko: "레이아웃 표 처리", en: "Layout table handling" }), undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ visual: L({ ko: "보이는 구조에 맞춰 정리", en: "Clean up to match the visible structure" }), keep: L({ ko: "원본 표 구조 보존", en: "Preserve original table structure" }) })
       .setValue(this.plugin.settings.parseConfig.layoutTables ?? "visual").onChange(async (v) => { this.plugin.settings.parseConfig.layoutTables = v as "visual" | "keep"; await this.plugin.saveSettings(); })); });
-    addRow("동시 변환 파일 수", "1~4개. 파일 수만큼 메모리 사용량이 늘어납니다.", (setting) => { setting.addDropdown((d) => d
+    addRow(L({ ko: "동시 변환 파일 수", en: "Concurrent file conversions" }), L({ ko: "1~4개. 파일 수만큼 메모리 사용량이 늘어납니다.", en: "1–4 files. Memory usage increases with the file count." }), (setting) => { setting.addDropdown((d) => d
       .addOptions({ "1": "1", "2": "2", "3": "3", "4": "4" }).setValue(String(this.plugin.settings.concurrency))
       .onChange(async (v) => { this.plugin.settings.concurrency = Number(v); await this.plugin.saveSettings(); })); });
-    addRow("격리 변환 워커 (실험)", "변환을 별도 워커에서 시도합니다. 환경에 따라 시작하지 못하면 기존 방식으로 처리합니다. 플러그인을 다시 켠 뒤 적용됩니다.", (setting) => { setting.addToggle((t) => t
+    addRow(L({ ko: "격리 변환 워커 (실험)", en: "Isolated conversion worker (experimental)" }), L({ ko: "변환을 별도 워커에서 시도합니다. 환경에 따라 시작하지 못하면 기존 방식으로 처리합니다. 플러그인을 다시 켠 뒤 적용됩니다.", en: "Try converting in a separate worker. If the environment cannot start it, use the existing method. Takes effect after re-enabling the plugin." }), (setting) => { setting.addToggle((t) => t
       .setValue(this.plugin.settings.browserParseWorker).onChange(async (v) => { this.plugin.settings.browserParseWorker = v; await this.plugin.saveSettings(); })); });
-    addRow("볼트 첨부 이미지를 HWPX에 삽입", undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.embedImages)
+    addRow(L({ ko: "볼트 첨부 이미지를 HWPX에 삽입", en: "Embed vault attachment images in HWPX" }), undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.embedImages)
       .onChange(async (v) => { this.plugin.settings.embedImages = v; await this.plugin.saveSettings(); })); });
-    addRow("참조 표 서식 프로필", "‘표 서식 프로필 추출’로 만든 JSON의 볼트 경로", (setting) => { setting.addText((t) => t
+    addRow(L({ ko: "참조 표 서식 프로필", en: "Reference table format profile" }), L({ ko: "‘표 서식 프로필 추출’로 만든 JSON의 볼트 경로", en: "Vault path to JSON created by 'Extract table format profile'" }), (setting) => { setting.addText((t) => t
       .setValue(this.plugin.settings.profilePath).onChange(async (v) => { this.plugin.settings.profilePath = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); })); });
 
     let parsedConfig: unknown = {};
@@ -1231,38 +1250,38 @@ class KordocSettingTab extends PluginSettingTab {
     const setExport = async (group: string, key: string, value: unknown) => {
       try {
         const config: unknown = JSON.parse(this.plugin.settings.hwpxOptionsJson || "{}");
-        if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("고급 HWPX 설정을 JSON 객체로 수정하세요.");
+        if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error(L({ ko: "고급 HWPX 설정을 JSON 객체로 수정하세요.", en: "Edit advanced HWPX settings as a JSON object." }));
         const record = config as Record<string, unknown>;
         record[group] = { ...Object(record[group]), [key]: value };
         this.plugin.settings.hwpxOptionsJson = JSON.stringify(config, null, 2); await this.plugin.saveSettings();
       } catch (error) { new Notice(String(error)); }
     };
-    addRow("HWPX 용지", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ A4: "A4", A3: "A3", B4: "B4", B5: "B5", Letter: "Letter" })
+    addRow(L({ ko: "HWPX 용지", en: "HWPX paper size" }), undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ A4: "A4", A3: "A3", B4: "B4", B5: "B5", Letter: "Letter" })
       .setValue((exportConfig.page?.size ?? "A4") as string).onChange((v) => setExport("page", "size", v))); });
-    addRow("HWPX 용지 방향", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ portrait: "세로", landscape: "가로" })
+    addRow(L({ ko: "HWPX 용지 방향", en: "HWPX paper orientation" }), undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ portrait: L({ ko: "세로", en: "Portrait" }), landscape: L({ ko: "가로", en: "Landscape" }) })
       .setValue(exportConfig.page?.orientation ?? "portrait").onChange((v) => setExport("page", "orientation", v))); });
-    addRow("HWPX 단 수", undefined, (setting) => { setting.addDropdown((d) => { for (let i = 1; i <= 8; i++) d.addOption(String(i), String(i)); d
+    addRow(L({ ko: "HWPX 단 수", en: "HWPX columns" }), undefined, (setting) => { setting.addDropdown((d) => { for (let i = 1; i <= 8; i++) d.addOption(String(i), String(i)); d
       .setValue(String(exportConfig.page?.columns ?? 1)).onChange((v) => setExport("page", "columns", Number(v))); }); });
-    for (const [key, label] of [["header", "HWPX 머리말"], ["footer", "HWPX 꼬리말"]] as const) addRow(label, undefined, (setting) => { setting.addText((t) => t
+    for (const [key, label] of [["header", L({ ko: "HWPX 머리말", en: "HWPX header" })], ["footer", L({ ko: "HWPX 꼬리말", en: "HWPX footer" })]] as const) addRow(label, undefined, (setting) => { setting.addText((t) => t
       .setValue(exportConfig.page?.[key] ?? "").onChange((v) => setExport("page", key, v))); });
-    for (const [key, label, min, max] of [["bodyPt", "공문서 본문 크기 (pt)", 6, 60], ["lineSpacing", "공문서 줄간격 (%)", 50, 500]] as const) addRow(label, "비우면 프리셋 기본값", (setting) => { setting.addText((t) => t.setValue(String(exportConfig.gongmun?.[key] ?? ""))
+    for (const [key, label, min, max] of [["bodyPt", L({ ko: "공문서 본문 크기 (pt)", en: "Official document body size (pt)" }), 6, 60], ["lineSpacing", L({ ko: "공문서 줄간격 (%)", en: "Official document line spacing (%)" }), 50, 500]] as const) addRow(label, L({ ko: "비우면 프리셋 기본값", en: "Leave empty for the preset default" }), (setting) => { setting.addText((t) => t.setValue(String(exportConfig.gongmun?.[key] ?? ""))
         .onChange(async (v) => { if (v === "") { await setExport("gongmun", key, undefined); return; } const n = Number(v); if (Number.isFinite(n) && n >= min && n <= max) await setExport("gongmun", key, n); })); });
-    addRow("공문서 글꼴 계열", undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: "프리셋 기본값", myeongjo: "명조", gothic: "고딕" })
+    addRow(L({ ko: "공문서 글꼴 계열", en: "Official document font family" }), undefined, (setting) => { setting.addDropdown((d) => d.addOptions({ auto: L({ ko: "프리셋 기본값", en: "Preset default" }), myeongjo: L({ ko: "명조", en: "Serif" }), gothic: L({ ko: "고딕", en: "Sans serif" }) })
       .setValue(exportConfig.gongmun?.bodyFont ?? "auto").onChange((v) => setExport("gongmun", "bodyFont", v === "auto" ? undefined : v))); });
-    addRow("결재란 직위", "쉼표로 구분. 예: 담당,팀장,과장", (setting) => { setting.addText((t) => t
+    addRow(L({ ko: "결재란 직위", en: "Approval positions" }), L({ ko: "쉼표로 구분. 예: 담당,팀장,과장", en: "Comma-separated. Example: Officer,Team lead,Director" }), (setting) => { setting.addText((t) => t
       .setValue(Array.isArray(exportConfig.gongmun?.approval) ? exportConfig.gongmun.approval.join(",") : "")
       .onChange((v) => setExport("gongmun", "approval", v.trim() ? v.split(",").map((s) => s.trim()).filter(Boolean) : undefined))); });
-    for (const [key, label] of [["toc", "공문서 목차"], ["pageNumbers", "공문서 쪽번호"], ["cover", "공문서 표지"]]) addRow(label, undefined, (setting) => { setting.addDropdown((d) => d
-      .addOptions({ auto: "프리셋 기본값", on: "포함", off: "생략" }).setValue(exportConfig.gongmun?.[key] === undefined ? "auto" : exportConfig.gongmun[key] ? "on" : "off")
+    for (const [key, label] of [["toc", L({ ko: "공문서 목차", en: "Official document table of contents" })], ["pageNumbers", L({ ko: "공문서 쪽번호", en: "Official document page numbers" })], ["cover", L({ ko: "공문서 표지", en: "Official document cover" })]]) addRow(label, undefined, (setting) => { setting.addDropdown((d) => d
+      .addOptions({ auto: L({ ko: "프리셋 기본값", en: "Preset default" }), on: L({ ko: "포함", en: "Include" }), off: L({ ko: "생략", en: "Omit" }) }).setValue(exportConfig.gongmun?.[key] === undefined ? "auto" : exportConfig.gongmun[key] ? "on" : "off")
       .onChange((v) => setExport("gongmun", key, v === "auto" ? undefined : v === "on"))); });
-    addRow("HWPX 고급 설정 (JSON)", "page·theme·gongmun의 개별 서식. 표지 기관명·여백·항목별 글꼴 등도 지정할 수 있습니다.", (setting) => { setting.addTextArea((t) => t
-      .setValue(this.plugin.settings.hwpxOptionsJson).setPlaceholder('{"gongmun":{"cover":{"org":"기관명"}}}')
+    addRow(L({ ko: "HWPX 고급 설정 (JSON)", en: "Advanced HWPX settings (JSON)" }), L({ ko: "page·theme·gongmun의 개별 서식. 표지 기관명·여백·항목별 글꼴 등도 지정할 수 있습니다.", en: "Individual page, theme and gongmun formatting. You can also specify the cover organization, margins and per-item fonts." }), (setting) => { setting.addTextArea((t) => t
+      .setValue(this.plugin.settings.hwpxOptionsJson).setPlaceholder(L({ ko: '{"gongmun":{"cover":{"org":"기관명"}}}', en: "{\"gongmun\":{\"cover\":{\"org\":\"Organization\"}}}" }))
       .onChange(async (v) => { this.plugin.settings.hwpxOptionsJson = v; await this.plugin.saveSettings(); })); });
-    addRow("자동 변환할 볼트 폴더", "이 폴더 아래 문서가 생성·변경되면 변환합니다. 결과 폴더와 다른 경로를 사용하세요.", (setting) => { setting.addText((t) => t
+    addRow(L({ ko: "자동 변환할 볼트 폴더", en: "Vault folder for automatic conversion" }), L({ ko: "이 폴더 아래 문서가 생성·변경되면 변환합니다. 결과 폴더와 다른 경로를 사용하세요.", en: "Convert documents created or modified under this folder. Use a path different from the output folder." }), (setting) => { setting.addText((t) => t
       .setValue(this.plugin.settings.watchFolder).onChange(async (v) => { this.plugin.settings.watchFolder = normalizeVaultRelativeFolder(v) ?? ""; await this.plugin.saveSettings(); })); });
-    addRow("폴더 자동 변환", undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.watchEnabled)
+    addRow(L({ ko: "폴더 자동 변환", en: "Automatic folder conversion" }), undefined, (setting) => { setting.addToggle((t) => t.setValue(this.plugin.settings.watchEnabled)
       .onChange(async (v) => { this.plugin.settings.watchEnabled = v; await this.plugin.saveSettings(); })); });
-    addRow("변환 완료 웹훅", "선택 사항. 설정한 HTTP(S) 주소에 파일명·결과 경로·성공 여부를 보냅니다.", (setting) => { setting.addText((t) => t
+    addRow(L({ ko: "변환 완료 웹훅", en: "Conversion completion webhook" }), L({ ko: "선택 사항. 설정한 HTTP(S) 주소에 파일명·결과 경로·성공 여부를 보냅니다.", en: "Optional. Send filename, output path and success status to the configured HTTP(S) address." }), (setting) => { setting.addText((t) => t
       .setValue(this.plugin.settings.webhookUrl).onChange(async (v) => { this.plugin.settings.webhookUrl = v.trim(); await this.plugin.saveSettings(); })); });
 
     rows.push({ kind: "footer", name: "KorDoc information and license", render: (container) => this.renderFooter(container) });
@@ -1273,33 +1292,33 @@ class KordocSettingTab extends PluginSettingTab {
     const info = containerEl.createDiv({ cls: "kordoc-info" });
     info.createEl("p", {
       text:
-        "지원 포맷: HWP, HWPX, HWPML, PDF, XLS, XLSX, DOCX, PPTX. HWPX 미리보기·문단/셀 편집과 로컬 텍스트·수식 OCR을 제공합니다. OCR은 위 설정에서 켤 수 있으며, 엔진과 모델은 문서 작업 시 불러옵니다. Windows x64 배포본은 인터넷 없이 동작합니다.",
+        L({ ko: "지원 포맷: HWP, HWPX, HWPML, PDF, XLS, XLSX, DOCX, PPTX. HWPX 미리보기·문단/셀 편집과 로컬 텍스트·수식 OCR을 제공합니다. OCR은 위 설정에서 켤 수 있으며, 엔진과 모델은 문서 작업 시 불러옵니다. Windows x64 배포본은 인터넷 없이 동작합니다.", en: "Supported formats: HWP, HWPX, HWPML, PDF, XLS, XLSX, DOCX, PPTX. Provides HWPX preview, paragraph/cell editing, and local text/formula OCR. Enable OCR above; the engine and models load when working with documents. The Windows x64 distribution works without internet." }),
     });
 
     const license = containerEl.createDiv({ cls: "kordoc-license" });
-    new Setting(license).setName("오픈소스 라이선스").setHeading();
+    new Setting(license).setName(L({ ko: "오픈소스 라이선스", en: "Open-source licenses" })).setHeading();
     const attribution = license.createEl("p");
-    attribution.appendText("이 플러그인은 ");
+    attribution.appendText(L({ ko: "이 플러그인은 ", en: "This plugin includes " }));
     attribution.createEl("a", {
       text: "kordoc",
       href: "https://github.com/chrisryugj/kordoc",
     });
     attribution.appendText(
-      ` ${VERSION}을 포함하며, Copyright (c) 2026 chrisryugj, MIT License로 제공됩니다.`,
+      L({ ko: ` ${VERSION}을 포함하며, Copyright (c) 2026 chrisryugj, MIT License로 제공됩니다.`, en: ` ${VERSION}, Copyright (c) 2026 chrisryugj, provided under the MIT License.` }),
     );
     license.createEl("p", {
       text:
-        "라이선스 고지와 전문은 배포 폴더의 THIRD_PARTY_NOTICES.md에서도 확인할 수 있습니다.",
+        L({ ko: "라이선스 고지와 전문은 배포 폴더의 THIRD_PARTY_NOTICES.md에서도 확인할 수 있습니다.", en: "License notices and full text are also available in THIRD_PARTY_NOTICES.md in the distribution folder." }),
     });
     const licenseDetails = license.createEl("details");
-    licenseDetails.createEl("summary", { text: "MIT License 전문 보기" });
+    licenseDetails.createEl("summary", { text: L({ ko: "MIT License 전문 보기", en: "View full MIT License" }) });
     licenseDetails.createEl("pre", { text: KORDOC_LICENSE_TEXT });
   }
 
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    new Setting(containerEl).setName(SETTINGS_HEADING).setHeading();
+    new Setting(containerEl).setName(settingsHeading()).setHeading();
     for (const row of this.settingRows()) {
       if (row.kind === "footer") { row.render(containerEl); continue; }
       const setting = new Setting(containerEl).setName(row.name);
@@ -1320,7 +1339,7 @@ class KordocSettingTab extends PluginSettingTab {
       },
     }));
     return [
-      { type: "group", heading: SETTINGS_HEADING, items },
+      { type: "group", heading: settingsHeading(), items },
       ...rows.filter((row): row is Extract<KordocSettingRow, { kind: "footer" }> => row.kind === "footer").map(row => ({
         name: row.name, searchable: false, render: (setting: Setting) => {
           setting.setName(row.name);

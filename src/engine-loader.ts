@@ -1,7 +1,9 @@
+import { L } from "./locale";
 import { isAbsolute, join } from "node:path";
 import { loadEngineEntry } from "./lazy-modules";
 import type * as Engine from "./engine-entry";
 import { configureRuntimePaths } from "./runtime-paths";
+import { localizedEngine } from './engine-locale';
 
 let runtimeDirectory = "";
 let engine: typeof Engine | undefined;
@@ -10,14 +12,14 @@ let engine: typeof Engine | undefined;
  * provide the installed plugin directory using the Vault adapter/manifest. */
 export function configureEngineDirectory(pluginDirectory: string): void {
   configureRuntimePaths(pluginDirectory);
-  if (!isAbsolute(pluginDirectory)) throw new Error("KorDoc 플러그인 설치 경로는 절대 경로여야 합니다.");
+  if (!isAbsolute(pluginDirectory)) throw new Error(L({ ko: "KorDoc 플러그인 설치 경로는 절대 경로여야 합니다.", en: "The KorDoc plugin installation path must be absolute." }));
   const next = join(pluginDirectory, "runtime");
   if (next !== runtimeDirectory) engine = undefined;
   runtimeDirectory = next;
 }
 
 export function loadEngine(): typeof Engine {
-  return engine ??= loadEngineEntry();
+  return engine ??= localizedEngine(loadEngineEntry());
 }
 
 export function workerPath(): string {

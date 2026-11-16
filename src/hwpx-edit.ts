@@ -1,3 +1,5 @@
+import { artifactName, editedPathLocale } from "./artifact-formats";
+import { L } from "./locale";
 import {
   openHwpxDocument,
   validateHwpx,
@@ -22,8 +24,8 @@ export interface AppliedBlockPatch {
   bytes: Uint8Array;
 }
 
-const SAFE_FALLBACK_MESSAGE =
-  "이해하지 못했습니다. 예: ‘3번째 문단을 새 내용으로 바꿔줘’ 또는 ‘표 2행 3열 값을 새 값으로 바꿔줘’.";
+const safeFallbackMessage = () =>
+  L({ ko: "이해하지 못했습니다. 예: ‘3번째 문단을 새 내용으로 바꿔줘’ 또는 ‘표 2행 3열 값을 새 값으로 바꿔줘’.", en: "Could not understand the command. Examples: '3번째 문단을 새 내용으로 바꿔줘' or '표 2행 3열 값을 새 값으로 바꿔줘'." });
 
 /** Uint8Array의 실제 view 범위를 보존한 ArrayBuffer를 반환한다. */
 export function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
@@ -46,7 +48,7 @@ export async function sha256Hex(bytes: Uint8Array | ArrayBuffer): Promise<string
 export function assertSourceHash(expected: string, actual: string): void {
   if (expected !== actual) {
     throw new Error(
-      "원본 파일이 세션을 연 뒤 변경되었습니다. 저장하지 않고 파일을 다시 여세요.",
+      L({ ko: "원본 파일이 세션을 연 뒤 변경되었습니다. 저장하지 않고 파일을 다시 여세요.", en: "The source file has changed since the session opened. Reopen the file without saving." }),
     );
   }
 }
@@ -55,8 +57,8 @@ export function assertSourceHash(expected: string, actual: string): void {
 export function formatPatchSkips(skipped: PatchResult["skipped"]): string {
   if (skipped.length === 0) return "";
   return skipped.map((item, index) => {
-    const partial = item.partial ? " (부분 적용)" : "";
-    return `${index + 1}. 편집${partial}: ${item.reason}`;
+    const partial = item.partial ? L({ ko: " (부분 적용)", en: " (partially applied)" }) : "";
+    return L({ ko: `${index + 1}. 편집${partial}: ${item.reason}`, en: `${index + 1}. Edit${partial}: ${item.reason}` });
   }).join("\n");
 }
 
@@ -105,7 +107,7 @@ export function parseEditCommand(
   blocks: IRBlock[],
 ): ParsedEditCommand {
   const input = prompt.trim();
-  if (!input) return { matched: false, message: SAFE_FALLBACK_MESSAGE };
+  if (!input) return { matched: false, message: safeFallbackMessage() };
 
   const paragraphRe = new RegExp(
     String.raw`^(\d+)\s*(?:번째|번(?:째)?)\s*(?:문단|단락)\s*(?:을|를)\s*(.+?)\s*(?:으로|로)\s*${commandTail()}[.!。]?\s*$`,
@@ -122,11 +124,11 @@ export function parseEditCommand(
       return {
         matched: true,
         kind: "paragraph",
-        message: `${ordinal}번째 문단을 찾지 못했습니다. 문서의 문단 수는 ${paragraphBlocks.length}개입니다.`,
+        message: L({ ko: `${ordinal}번째 문단을 찾지 못했습니다. 문서의 문단 수는 ${paragraphBlocks.length}개입니다.`, en: `Paragraph ${ordinal} was not found. The document has ${paragraphBlocks.length} paragraphs.` }),
       };
     }
     if (!replacement) {
-      return { matched: true, kind: "paragraph", message: "새 문단 내용이 비어 있습니다." };
+      return { matched: true, kind: "paragraph", message: L({ ko: "새 문단 내용이 비어 있습니다.", en: "The new paragraph text is empty." }) };
     }
     return {
       matched: true,
@@ -154,18 +156,18 @@ export function parseEditCommand(
       return {
         matched: true,
         kind: "table",
-        message: `${tableOrdinal}번째 표를 찾지 못했습니다. 문서의 표 수는 ${tables.length}개입니다.`,
+        message: L({ ko: `${tableOrdinal}번째 표를 찾지 못했습니다. 문서의 표 수는 ${tables.length}개입니다.`, en: `Table ${tableOrdinal} was not found. The document has ${tables.length} tables.` }),
       };
     }
     if (row < 1 || col < 1 || row > target.block.table.rows || col > target.block.table.cols) {
       return {
         matched: true,
         kind: "table",
-        message: `표 범위를 벗어났습니다. 현재 표는 ${target.block.table.rows}행 ${target.block.table.cols}열입니다.`,
+        message: L({ ko: `표 범위를 벗어났습니다. 현재 표는 ${target.block.table.rows}행 ${target.block.table.cols}열입니다.`, en: `Outside the table bounds. The current table has ${target.block.table.rows} rows and ${target.block.table.cols} columns.` }),
       };
     }
     if (!replacement) {
-      return { matched: true, kind: "table", message: "새 셀 내용이 비어 있습니다." };
+      return { matched: true, kind: "table", message: L({ ko: "새 셀 내용이 비어 있습니다.", en: "The new cell text is empty." }) };
     }
     return {
       matched: true,
@@ -177,7 +179,7 @@ export function parseEditCommand(
     };
   }
 
-  return { matched: false, message: SAFE_FALLBACK_MESSAGE };
+  return { matched: false, message: safeFallbackMessage() };
 }
 
 /**
@@ -200,7 +202,8 @@ export class HwpxEditSession {
     await guardZipInput(copied);
     const validation = await validateHwpx(copied);
     if (!validation.ok) {
-      throw new Error(`유효하지 않은 HWPX입니다.\n${validation.issues.map((i) => i.message).join("\n")}`);
+      throw new Error(L({ ko: `유효하지 않은 HWPX입니다.\n${validation.issues.map((i) => i.message).join("\n")}`, en: `Invalid HWPX.
+${validation.issues.map((i) => i.message).join("\n")}` }));
     }
     return new HwpxEditSession(
       await openHwpxDocument(copied),
@@ -248,7 +251,7 @@ export class HwpxEditSession {
     const copied = new Uint8Array(bytes);
     await guardZipInput(copied);
     const validation = await validateHwpx(copied);
-    if (!validation.ok) throw new Error("다시 읽은 파일이 유효한 HWPX가 아닙니다.");
+    if (!validation.ok) throw new Error(L({ ko: "다시 읽은 파일이 유효한 HWPX가 아닙니다.", en: "The reloaded file is not valid HWPX." }));
     this.session = await openHwpxDocument(copied);
     this.originalSourceHash = await sha256Hex(copied);
     this.dirty = false;
@@ -261,8 +264,8 @@ export class HwpxEditSession {
   ): Promise<AppliedBlockPatch> {
     if (expectedRevision !== this.revision) {
       throw new Error(
-        `문서가 변경되어 오래된 편집 요청을 적용하지 않았습니다. ` +
-        `최신 revision=${this.revision}을 사용하세요.`,
+        L({ ko: `문서가 변경되어 오래된 편집 요청을 적용하지 않았습니다. `, en: "The document changed, so the stale edit request was not applied. " }) +
+        L({ ko: `최신 revision=${this.revision}을 사용하세요.`, en: `Use the latest revision=${this.revision}.` }),
       );
     }
     this.validateEdits(edits);
@@ -275,14 +278,15 @@ export class HwpxEditSession {
       const detail = result.skipped.length > 0
         ? `\n${formatPatchSkips(result.skipped)}`
         : "";
-      throw new Error(result.error ?? `HWPX 패치가 완전히 적용되지 않았습니다.${detail}`);
+      throw new Error(result.error ?? L({ ko: `HWPX 패치가 완전히 적용되지 않았습니다.${detail}`, en: `The HWPX patch was not fully applied.${detail}` }));
     }
 
     const validation = await validateHwpx(result.data);
     if (!validation.ok) {
       this.session = await openHwpxDocument(before);
       throw new Error(
-        `패치 결과가 유효한 HWPX가 아닙니다.\n${validation.issues.map((i) => i.message).join("\n")}`,
+        L({ ko: `패치 결과가 유효한 HWPX가 아닙니다.\n${validation.issues.map((i) => i.message).join("\n")}`, en: `The patch result is not valid HWPX.
+${validation.issues.map((i) => i.message).join("\n")}` }),
       );
     }
 
@@ -293,55 +297,55 @@ export class HwpxEditSession {
 
   private validateEdits(edits: BlockEdit[]): void {
     if (!Array.isArray(edits) || edits.length === 0) {
-      throw new Error("적용할 편집 내용이 없습니다.");
+      throw new Error(L({ ko: "적용할 편집 내용이 없습니다.", en: "There are no edits to apply." }));
     }
     const seenBlocks = new Set<number>();
     for (const edit of edits) {
       if (!Number.isInteger(edit.blockIndex) || seenBlocks.has(edit.blockIndex)) {
-        throw new Error(`중복되었거나 올바르지 않은 블록 인덱스입니다: ${edit.blockIndex}`);
+        throw new Error(L({ ko: `중복되었거나 올바르지 않은 블록 인덱스입니다: ${edit.blockIndex}`, en: `Duplicate or invalid block index: ${edit.blockIndex}` }));
       }
       seenBlocks.add(edit.blockIndex);
       const block = this.blocks[edit.blockIndex];
-      if (!block) throw new Error(`블록 인덱스 범위 밖입니다: ${edit.blockIndex}`);
+      if (!block) throw new Error(L({ ko: `블록 인덱스 범위 밖입니다: ${edit.blockIndex}`, en: `Block index out of range: ${edit.blockIndex}` }));
       const capability = this.capability(edit.blockIndex);
 
       if (isTextBlock(block)) {
         if (capability.capability !== "text") {
-          throw new Error(capability.reason ?? "이 문단은 편집할 수 없습니다.");
+          throw new Error(capability.reason ?? L({ ko: "이 문단은 편집할 수 없습니다.", en: "This paragraph cannot be edited." }));
         }
         if (typeof edit.newText !== "string" || !edit.newText.trim()) {
-          throw new Error("문단을 빈 문자열로 만들 수 없습니다.");
+          throw new Error(L({ ko: "문단을 빈 문자열로 만들 수 없습니다.", en: "A paragraph cannot be set to an empty string." }));
         }
-        if (edit.cells?.length) throw new Error("문단 블록에는 셀 편집을 적용할 수 없습니다.");
+        if (edit.cells?.length) throw new Error(L({ ko: "문단 블록에는 셀 편집을 적용할 수 없습니다.", en: "Cell edits cannot be applied to a paragraph block." }));
         continue;
       }
 
       if (block.type === "table" && block.table) {
         if (capability.capability !== "cell-text") {
-          throw new Error(capability.reason ?? "이 표는 편집할 수 없습니다.");
+          throw new Error(capability.reason ?? L({ ko: "이 표는 편집할 수 없습니다.", en: "This table cannot be edited." }));
         }
-        if (!edit.cells?.length) throw new Error("표 블록에는 셀 편집이 필요합니다.");
+        if (!edit.cells?.length) throw new Error(L({ ko: "표 블록에는 셀 편집이 필요합니다.", en: "Table blocks require cell edits." }));
         const seenCells = new Set<string>();
         for (const cellEdit of edit.cells) {
           const key = `${cellEdit.row}:${cellEdit.col}`;
-          if (seenCells.has(key)) throw new Error(`같은 셀을 여러 번 편집할 수 없습니다: ${key}`);
+          if (seenCells.has(key)) throw new Error(L({ ko: `같은 셀을 여러 번 편집할 수 없습니다: ${key}`, en: `The same cell cannot be edited more than once: ${key}` }));
           seenCells.add(key);
           const cell = block.table.cells[cellEdit.row]?.[cellEdit.col];
           const cellCapability = capability.cells?.[cellEdit.row]?.[cellEdit.col];
           if (!cell || !cellCapability?.editable) {
-            throw new Error(cellCapability?.reason ?? `편집할 수 없는 셀입니다: ${key}`);
+            throw new Error(cellCapability?.reason ?? L({ ko: `편집할 수 없는 셀입니다: ${key}`, en: `Cell cannot be edited: ${key}` }));
           }
-          if (typeof cellEdit.text !== "string") throw new Error(`셀 값이 문자열이 아닙니다: ${key}`);
+          if (typeof cellEdit.text !== "string") throw new Error(L({ ko: `셀 값이 문자열이 아닙니다: ${key}`, en: `Cell value is not a string: ${key}` }));
           const tokens = imageTokens(cell.text ?? "");
           if (tokens.some((token) => !cellEdit.text.includes(token))) {
-            throw new Error(`셀 ${key}의 이미지 토큰을 보존해야 합니다.`);
+            throw new Error(L({ ko: `셀 ${key}의 이미지 토큰을 보존해야 합니다.`, en: `Preserve the image tokens in cell ${key}.` }));
           }
         }
-        if (edit.newText !== undefined) throw new Error("표 블록에는 newText 대신 cells를 사용하세요.");
+        if (edit.newText !== undefined) throw new Error(L({ ko: "표 블록에는 newText 대신 cells를 사용하세요.", en: "Use cells instead of newText for table blocks." }));
         continue;
       }
 
-      throw new Error(`${block.type} 블록 편집은 1차 범위에서 지원하지 않습니다.`);
+      throw new Error(L({ ko: `${block.type} 블록 편집은 1차 범위에서 지원하지 않습니다.`, en: `Editing ${block.type} blocks is outside the scope of the initial implementation.` }));
     }
   }
 }
@@ -354,13 +358,14 @@ export async function nextAvailableHwpxPath(
   const slash = originalPath.lastIndexOf("/");
   const folder = slash >= 0 ? originalPath.slice(0, slash) : "";
   const filename = slash >= 0 ? originalPath.slice(slash + 1) : originalPath;
-  const base = filename.replace(/\.hwpx$/i, "") || "문서";
+  const base = filename.replace(/\.hwpx$/i, "") || artifactName("document");
+  const locale = editedPathLocale(filename);
   const join = (name: string) => folder ? `${folder}/${name}` : name;
-  const first = join(`${base}-편집.hwpx`);
+  const first = join(artifactName("edited", [base], locale));
   if (!(await exists(first))) return first;
   for (let i = 2; i < 1000; i++) {
-    const candidate = join(`${base}-편집-${i}.hwpx`);
+    const candidate = join(artifactName("editedNumbered", [base, i], locale));
     if (!(await exists(candidate))) return candidate;
   }
-  return join(`${base}-편집-${Date.now()}.hwpx`);
+  return join(artifactName("editedNumbered", [base, Date.now()], locale));
 }

@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import JSZip from "jszip";
 import {
   App,
@@ -51,16 +52,16 @@ async function hasLayoutCache(bytes: Uint8Array): Promise<boolean> {
 
 function previewText(block: IRBlock): string {
   if (block.type === "table" && block.table) {
-    return `표 ${block.table.rows}행 × ${block.table.cols}열`;
+    return L({ ko: `표 ${block.table.rows}행 × ${block.table.cols}열`, en: `Table: ${block.table.rows} rows × ${block.table.cols} columns` });
   }
   const text = (block.text ?? "").replace(/\s+/g, " ").trim();
-  return text || "(내용 없음)";
+  return text || L({ ko: "(내용 없음)", en: "(No content)" });
 }
 
 function blockTypeLabel(block: IRBlock): string {
-  if (block.type === "heading") return `제목${block.level ? ` H${block.level}` : ""}`;
-  if (block.type === "paragraph") return "문단";
-  if (block.type === "table") return "표";
+  if (block.type === "heading") return L({ ko: `제목${block.level ? ` H${block.level}` : ""}`, en: `Heading${block.level ? ` H${block.level}` : ""}` });
+  if (block.type === "paragraph") return L({ ko: "문단", en: "Paragraph" });
+  if (block.type === "table") return L({ ko: "표", en: "Table" });
   return block.type;
 }
 
@@ -112,7 +113,7 @@ export class KordocHwpxView extends FileView {
   }
 
   getDisplayText(): string {
-    return this.file ? `HWPX 미리보기: ${this.file.basename}` : "HWPX 미리보기";
+    return this.file ? L({ ko: `HWPX 미리보기: ${this.file.basename}`, en: `HWPX preview: ${this.file.basename}` }) : L({ ko: "HWPX 미리보기", en: "HWPX preview" });
   }
 
   async onLoadFile(file: TFile): Promise<void> {
@@ -122,7 +123,7 @@ export class KordocHwpxView extends FileView {
     this.renderResult = null;
     this.selectedBlockIndex = null;
     this.contentEl.empty();
-    this.showMessage("HWPX를 여는 중…");
+    this.showMessage(L({ ko: "HWPX를 여는 중…", en: "Opening HWPX…" }));
 
     try {
       const bytes = new Uint8Array(await this.appRef.vault.readBinary(file));
@@ -130,7 +131,7 @@ export class KordocHwpxView extends FileView {
       const format = await detectZipFormat(makeArrayBuffer(bytes));
       if (format !== "hwpx") {
         throw new Error(
-          "이 파일은 HWPX ZIP이 아닙니다. HWP 5.x 등 다른 형식은 마크다운 변환 명령을 사용하세요.",
+          L({ ko: "이 파일은 HWPX ZIP이 아닙니다. HWP 5.x 등 다른 형식은 마크다운 변환 명령을 사용하세요.", en: "This file is not an HWPX ZIP. For other formats such as HWP 5.x, use the Markdown conversion command." }),
         );
       }
       this.session = await HwpxEditSession.open(bytes);
@@ -163,7 +164,7 @@ export class KordocHwpxView extends FileView {
       await session.reload(bytes);
       await this.renderCurrent();
       this.refreshUi();
-      new Notice("✅ Verbex가 저장한 HWPX 변경을 미리보기에 반영했습니다.", 5000);
+      new Notice(L({ ko: "✅ Verbex가 저장한 HWPX 변경을 미리보기에 반영했습니다.", en: "✅ HWPX changes saved by Verbex are reflected in the preview." }), 5000);
     } catch (error) {
       console.error("[KorDoc] failed to reload externally modified HWPX", error);
     }
@@ -177,7 +178,7 @@ export class KordocHwpxView extends FileView {
   }
 
   private async renderCurrent(): Promise<void> {
-    if (!this.session) throw new Error("HWPX 세션이 열려 있지 않습니다.");
+    if (!this.session) throw new Error(L({ ko: "HWPX 세션이 열려 있지 않습니다.", en: "No HWPX session is open." }));
     const bytes = this.session.bytes;
     this.renderResult = await renderHwpxToSvg(bytes, {
       // 생성본·편집본은 linesegarray가 없으므로 항상 reflow를 켠다.
@@ -190,7 +191,7 @@ export class KordocHwpxView extends FileView {
     this.revokeBlobUrl();
     this.contentEl.empty();
     if (!this.session || !this.renderResult) {
-      this.showMessage("표시할 HWPX가 없습니다.");
+      this.showMessage(L({ ko: "표시할 HWPX가 없습니다.", en: "There is no HWPX to display." }));
       return;
     }
 
@@ -217,28 +218,28 @@ export class KordocHwpxView extends FileView {
         ? "kordoc-hwpx-badge kordoc-hwpx-badge-approx"
         : "kordoc-hwpx-badge",
       text: approximate
-        ? "근사 미리보기 · kordoc reflow"
-        : "조판 캐시 재생",
+        ? L({ ko: "근사 미리보기 · kordoc reflow", en: "Approximate preview · kordoc reflow" })
+        : L({ ko: "조판 캐시 재생", en: "Layout cache playback" }),
     });
     badge.setAttribute(
       "title",
       approximate
-        ? "한글에서 다시 저장하기 전에는 줄바꿈·페이지 배치가 근사치입니다."
-        : "한컴오피스가 저장한 조판 캐시를 재생합니다.",
+        ? L({ ko: "한글에서 다시 저장하기 전에는 줄바꿈·페이지 배치가 근사치입니다.", en: "Line wrapping and pagination are approximate until the document is saved again in Hangul." })
+        : L({ ko: "한컴오피스가 저장한 조판 캐시를 재생합니다.", en: "Replays the layout cache saved by Hancom Office." }),
     );
 
     if (result) {
       toolbar.createSpan({
         cls: "kordoc-hwpx-stats",
-        text: `${result.pageCount}쪽 · 텍스트 ${result.stats.texts} · 표 ${result.stats.tables}`,
+        text: L({ ko: `${result.pageCount}쪽 · 텍스트 ${result.stats.texts} · 표 ${result.stats.tables}`, en: `${result.pageCount} pages · Text ${result.stats.texts} · Tables ${result.stats.tables}` }),
       });
     }
 
     const actions = toolbar.createDiv({ cls: "kordoc-hwpx-toolbar-actions" });
-    const saveAs = actions.createEl("button", { text: "저장 (다른 이름)" });
+    const saveAs = actions.createEl("button", { text: L({ ko: "저장 (다른 이름)", en: "Save as" }) });
     saveAs.addEventListener("click", () => void this.save("save-as"));
     if (this.options.canOverwrite()) {
-      const overwrite = actions.createEl("button", { text: "원본 덮어쓰기" });
+      const overwrite = actions.createEl("button", { text: L({ ko: "원본 덮어쓰기", en: "Overwrite source" }) });
       overwrite.addClass("mod-warning");
       overwrite.addEventListener("click", () => void this.save("overwrite"));
     }
@@ -246,9 +247,9 @@ export class KordocHwpxView extends FileView {
     const prompt = root.createDiv({ cls: "kordoc-hwpx-command" });
     const promptInput = prompt.createEl("input", {
       type: "text",
-      placeholder: "예: 3번째 문단을 새 내용으로 바꿔줘",
+      placeholder: L({ ko: "예: 3번째 문단을 새 내용으로 바꿔줘", en: "Example: 3번째 문단을 새 내용으로 바꿔줘" }),
     });
-    const promptButton = prompt.createEl("button", { text: "편집 명령 실행" });
+    const promptButton = prompt.createEl("button", { text: L({ ko: "편집 명령 실행", en: "Run edit command" }) });
     const run = () => {
       const value = promptInput.value;
       promptInput.value = "";
@@ -264,7 +265,7 @@ export class KordocHwpxView extends FileView {
     const result = this.renderResult;
     if (!result) return;
     const scroll = container.createDiv({ cls: "kordoc-hwpx-svg-scroll" });
-    const image = scroll.createEl("img", { cls: "kordoc-hwpx-svg-image", attr: { alt: `${this.file?.name ?? "HWPX"} 미리보기` } });
+    const image = scroll.createEl("img", { cls: "kordoc-hwpx-svg-image", attr: { alt: L({ ko: `${this.file?.name ?? "HWPX"} 미리보기`, en: `${this.file?.name ?? "HWPX"} preview` }) } });
     image.width = Math.max(1, Math.round(result.width));
     image.style.width = `${result.width}pt`;
     this.blobUrl = URL.createObjectURL(
@@ -274,25 +275,25 @@ export class KordocHwpxView extends FileView {
 
     if (result.warnings.length > 0) {
       const details = container.createEl("details", { cls: "kordoc-hwpx-warnings" });
-      details.createEl("summary", { text: `렌더링 경고 ${result.warnings.length}건` });
+      details.createEl("summary", { text: L({ ko: `렌더링 경고 ${result.warnings.length}건`, en: `${result.warnings.length} rendering warnings` }) });
       const list = details.createEl("ul");
       for (const warning of result.warnings) list.createEl("li", { text: warning });
     }
   }
 
   private renderInspector(container: HTMLElement): void {
-    container.createEl("h3", { text: "블록 편집" });
+    container.createEl("h3", { text: L({ ko: "블록 편집", en: "Edit blocks" }) });
     container.createEl("p", {
       cls: "kordoc-hwpx-help",
-      text: "문단·제목 또는 표 셀 텍스트만 편집할 수 있습니다. 자동 저장되지 않습니다.",
+      text: L({ ko: "문단·제목 또는 표 셀 텍스트만 편집할 수 있습니다. 자동 저장되지 않습니다.", en: "Only paragraph/heading or table-cell text can be edited. Changes are not saved automatically." }),
     });
 
     if (this.selectedBlockIndex !== null) {
       const lock = container.createDiv({ cls: "kordoc-hwpx-selection-lock" });
       lock.createSpan({
-        text: `현재 ${this.selectedBlockIndex + 1}번 블록을 Verbex 편집 대상으로 고정했습니다.`,
+        text: L({ ko: `현재 ${this.selectedBlockIndex + 1}번 블록을 Verbex 편집 대상으로 고정했습니다.`, en: `Block ${this.selectedBlockIndex + 1} is currently pinned as the Verbex edit target.` }),
       });
-      const clear = lock.createEl("button", { text: "선택 해제하고 문서에서 찾기" });
+      const clear = lock.createEl("button", { text: L({ ko: "선택 해제하고 문서에서 찾기", en: "Clear selection and find in document" }) });
       clear.addEventListener("click", () => {
         this.selectedBlockIndex = null;
         this.refreshUi();
@@ -314,8 +315,8 @@ export class KordocHwpxView extends FileView {
       copy.createSpan({ cls: "kordoc-hwpx-block-type", text: blockTypeLabel(block) });
       copy.createSpan({ cls: "kordoc-hwpx-block-text", text: previewText(block) });
       if (capability?.capability === "locked") {
-        item.createSpan({ cls: "kordoc-hwpx-lock", text: "잠금" });
-        button.title = capability.reason ?? "편집할 수 없는 블록";
+        item.createSpan({ cls: "kordoc-hwpx-lock", text: L({ ko: "잠금", en: "Locked" }) });
+        button.title = capability.reason ?? L({ ko: "편집할 수 없는 블록", en: "Block cannot be edited" });
       }
       button.addEventListener("click", () => {
         this.selectedBlockIndex = index;
@@ -329,12 +330,12 @@ export class KordocHwpxView extends FileView {
     const session = this.session;
     if (!block || !session) return;
     const editor = container.createDiv({ cls: "kordoc-hwpx-editor" });
-    editor.createEl("h4", { text: `${blockIndex + 1}번 블록 편집` });
+    editor.createEl("h4", { text: L({ ko: `${blockIndex + 1}번 블록 편집`, en: `Edit block ${blockIndex + 1}` }) });
     const capability = session.capability(blockIndex);
     if (capability.capability === "locked") {
       editor.createEl("p", {
         cls: "kordoc-hwpx-locked-message",
-        text: capability.reason ?? "이 블록은 편집할 수 없습니다.",
+        text: capability.reason ?? L({ ko: "이 블록은 편집할 수 없습니다.", en: "This block cannot be edited." }),
       });
       return;
     }
@@ -342,7 +343,7 @@ export class KordocHwpxView extends FileView {
     if (block.type === "paragraph" || block.type === "heading") {
       const textarea = editor.createEl("textarea", { cls: "kordoc-hwpx-text-editor" });
       textarea.value = block.text ?? "";
-      const apply = editor.createEl("button", { text: "문단에 적용" });
+      const apply = editor.createEl("button", { text: L({ ko: "문단에 적용", en: "Apply to paragraph" }) });
       apply.addEventListener("click", () => {
         void this.applyEdits([{ blockIndex, newText: textarea.value }]);
       });
@@ -352,7 +353,7 @@ export class KordocHwpxView extends FileView {
     if (block.type !== "table" || !block.table) return;
     editor.createEl("p", {
       cls: "kordoc-hwpx-help",
-      text: "이미지 토큰이 있는 셀은 토큰을 지우지 말고 텍스트만 바꾸세요. 행·열 추가/삭제는 지원하지 않습니다.",
+      text: L({ ko: "이미지 토큰이 있는 셀은 토큰을 지우지 말고 텍스트만 바꾸세요. 행·열 추가/삭제는 지원하지 않습니다.", en: "For cells with image tokens, change only the text and preserve the tokens. Adding/deleting rows or columns is not supported." }),
     });
     const table = editor.createEl("table", { cls: "kordoc-hwpx-cell-editor" });
     const fields: Array<{ row: number; col: number; initial: string; input: HTMLTextAreaElement }> = [];
@@ -366,19 +367,19 @@ export class KordocHwpxView extends FileView {
         const cellCapability = capability.cells?.[row]?.[col];
         if (!cell || !cellCapability?.editable) {
           input.disabled = true;
-          input.title = cellCapability?.reason ?? "편집할 수 없는 셀";
+          input.title = cellCapability?.reason ?? L({ ko: "편집할 수 없는 셀", en: "Cell cannot be edited" });
         } else {
           fields.push({ row, col, initial: input.value, input });
         }
       }
     }
-    const apply = editor.createEl("button", { text: "셀 변경 적용" });
+    const apply = editor.createEl("button", { text: L({ ko: "셀 변경 적용", en: "Apply cell changes" }) });
     apply.addEventListener("click", () => {
       const cells = fields
         .filter((field) => field.input.value !== field.initial)
         .map((field) => ({ row: field.row, col: field.col, text: field.input.value }));
       if (cells.length === 0) {
-        new Notice("변경된 셀이 없습니다.");
+        new Notice(L({ ko: "변경된 셀이 없습니다.", en: "No cells have changed." }));
         return;
       }
       void this.applyEdits([{ blockIndex, cells }]);
@@ -388,12 +389,12 @@ export class KordocHwpxView extends FileView {
   private async executePrompt(prompt: string): Promise<void> {
     const session = this.session;
     if (!session) {
-      new Notice("먼저 HWPX 파일을 여세요.");
+      new Notice(L({ ko: "먼저 HWPX 파일을 여세요.", en: "Open an HWPX file first." }));
       return;
     }
     const normalizedPrompt = prompt.trim();
     if (!normalizedPrompt) {
-      new Notice("편집 요청을 입력하세요.");
+      new Notice(L({ ko: "편집 요청을 입력하세요.", en: "Enter an edit request." }));
       return;
     }
 
@@ -403,35 +404,35 @@ export class KordocHwpxView extends FileView {
     } catch (error) {
       console.error("[KorDoc] Verbex chat bridge is incompatible", error);
       const message = error instanceof Error ? error.message : String(error);
-      new Notice(`Verbex 연결 실패: ${message}`, 8000);
+      new Notice(L({ ko: `Verbex 연결 실패: ${message}`, en: `Verbex connection failed: ${message}` }), 8000);
       return;
     }
 
     if (verbexChat) {
       const file = this.file;
       if (!file) {
-        new Notice("HWPX 대상 파일을 확인할 수 없습니다.");
+        new Notice(L({ ko: "HWPX 대상 파일을 확인할 수 없습니다.", en: "Cannot determine the target HWPX file." }));
         return;
       }
       if (session.isDirty) {
         new Notice(
-          "미저장 KORDOC 편집이 있습니다. 먼저 저장한 뒤 Verbex 편집 요청을 보내세요.",
+          L({ ko: "미저장 KORDOC 편집이 있습니다. 먼저 저장한 뒤 Verbex 편집 요청을 보내세요.", en: "There are unsaved KORDOC edits. Save them before sending a Verbex edit request." }),
           8000,
         );
         return;
       }
 
       const request = [
-        "KORDOC HWPX 미리보기에서 전달된 편집 요청입니다.",
-        `대상 HWPX 파일(볼트 상대경로): ${file.path}`,
+        L({ ko: "KORDOC HWPX 미리보기에서 전달된 편집 요청입니다.", en: "Edit request forwarded from the KORDOC HWPX preview." }),
+        L({ ko: `대상 HWPX 파일(볼트 상대경로): ${file.path}`, en: `Target HWPX file (vault-relative path): ${file.path}` }),
         "",
-        "사용자 편집 요청:",
+        L({ ko: "사용자 편집 요청:", en: "User edit request:" }),
         normalizedPrompt,
         "",
-        "작업 규칙:",
-        "- 대상 파일은 위 경로의 HWPX로 고정합니다.",
-        "- 먼저 KORDOC provider 도구로 문서와 블록을 확인합니다.",
-        "- 수정안은 provider의 패치 준비 절차를 사용하고, Verbex의 승인 후에만 저장합니다.",
+        L({ ko: "작업 규칙:", en: "Task rules:" }),
+        L({ ko: "- 대상 파일은 위 경로의 HWPX로 고정합니다.", en: "- The target file is fixed to the HWPX at the path above." }),
+        L({ ko: "- 먼저 KORDOC provider 도구로 문서와 블록을 확인합니다.", en: "- First inspect the document and blocks with KORDOC provider tools." }),
+        L({ ko: "- 수정안은 provider의 패치 준비 절차를 사용하고, Verbex의 승인 후에만 저장합니다.", en: "- Prepare the proposed edits through the provider's patch preparation process; save only after Verbex approval." }),
       ].join("\n");
 
       const selectedBlock = this.selectedBlockIndex === null
@@ -502,26 +503,26 @@ export class KordocHwpxView extends FileView {
             : { status: "rejected", reason: "legacy chat bridge returned false" });
         if (result.status === "submitted") {
           new Notice(
-            "Verbex에 편집 요청을 전달했습니다. Verbex 채팅에서 검사·승인 진행을 확인하세요.",
+            L({ ko: "Verbex에 편집 요청을 전달했습니다. Verbex 채팅에서 검사·승인 진행을 확인하세요.", en: "The edit request was sent to Verbex. Follow validation and approval in the Verbex chat." }),
             6000,
           );
         } else if (result.status === "selection_required") {
           new Notice(
-            "Verbex에서 추천 Skill/workflow를 확인한 뒤 Proceed를 누르세요.",
+            L({ ko: "Verbex에서 추천 Skill/workflow를 확인한 뒤 Proceed를 누르세요.", en: "Review the recommended Skill/workflow in Verbex, then press Proceed." }),
             8000,
           );
         } else if (result.status === "busy") {
-          new Notice(`Verbex가 다른 요청을 처리 중입니다.${result.reason ? ` ${result.reason}` : ""}`, 8000);
+          new Notice(L({ ko: `Verbex가 다른 요청을 처리 중입니다.${result.reason ? ` ${result.reason}` : ""}`, en: `Verbex is processing another request.${result.reason ? ` ${result.reason}` : ""}` }), 8000);
         } else {
           new Notice(
-            `Verbex 편집 요청을 제출하지 못했습니다.${result.reason ? ` ${result.reason}` : ""}`,
+            L({ ko: `Verbex 편집 요청을 제출하지 못했습니다.${result.reason ? ` ${result.reason}` : ""}`, en: `Could not submit the Verbex edit request.${result.reason ? ` ${result.reason}` : ""}` }),
             8000,
           );
         }
       } catch (error) {
         console.error("[KorDoc] failed to send HWPX edit request to Verbex", error);
         const message = error instanceof Error ? error.message : String(error);
-        new Notice(`Verbex 편집 요청 전달 실패: ${message}`, 8000);
+        new Notice(L({ ko: `Verbex 편집 요청 전달 실패: ${message}`, en: `Failed to forward the Verbex edit request: ${message}` }), 8000);
       }
       return;
     }
@@ -536,7 +537,7 @@ export class KordocHwpxView extends FileView {
   ): Promise<void> {
     const parsed = parseEditCommand(prompt, session.blocks);
     if (!parsed.edits?.length) {
-      new Notice(parsed.message ?? "편집 명령을 해석하지 못했습니다.", 7000);
+      new Notice(parsed.message ?? L({ ko: "편집 명령을 해석하지 못했습니다.", en: "Could not interpret the edit command." }), 7000);
       return;
     }
     this.selectedBlockIndex = parsed.edits[0].blockIndex;
@@ -552,10 +553,10 @@ export class KordocHwpxView extends FileView {
       await this.renderCurrent();
       this.refreshUi();
       const changed = applied.result.changes?.diffs.length ?? applied.result.applied;
-      new Notice(`✅ ${changed}건 편집 적용됨. 저장 버튼을 눌러 파일에 반영하세요.`, 5000);
+      new Notice(L({ ko: `✅ ${changed}건 편집 적용됨. 저장 버튼을 눌러 파일에 반영하세요.`, en: `✅ Applied ${changed} edits. Press Save to write them to the file.` }), 5000);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      new Notice(`편집 실패: ${message}`, 8000);
+      new Notice(L({ ko: `편집 실패: ${message}`, en: `Edit failed: ${message}` }), 8000);
       this.refreshUi();
     } finally {
       this.busy = false;
@@ -567,7 +568,7 @@ export class KordocHwpxView extends FileView {
     const file = this.file;
     if (!session || !file || this.busy) return;
     if (mode === "overwrite" && !this.options.canOverwrite()) {
-      new Notice("원본 덮어쓰기는 설정에서 명시적으로 허용해야 합니다.", 6000);
+      new Notice(L({ ko: "원본 덮어쓰기는 설정에서 명시적으로 허용해야 합니다.", en: "Overwriting the source must be explicitly enabled in settings." }), 6000);
       return;
     }
     this.busy = true;
@@ -580,7 +581,8 @@ export class KordocHwpxView extends FileView {
       const validation = await validateHwpx(bytes);
       if (!validation.ok) {
         throw new Error(
-          `저장 전 HWPX 검증 실패:\n${validation.issues.map((i) => i.message).join("\n")}`,
+          L({ ko: `저장 전 HWPX 검증 실패:\n${validation.issues.map((i) => i.message).join("\n")}`, en: `HWPX validation failed before saving:
+${validation.issues.map((i) => i.message).join("\n")}` }),
         );
       }
       const buffer = makeArrayBuffer(bytes);
@@ -590,7 +592,7 @@ export class KordocHwpxView extends FileView {
         await session.markSaved(bytes);
         await this.renderCurrent();
         this.refreshUi();
-        new Notice(`✅ 원본에 저장했습니다: ${file.path}`, 6000);
+        new Notice(L({ ko: `✅ 원본에 저장했습니다: ${file.path}`, en: `✅ Saved to source: ${file.path}` }), 6000);
         return;
       }
 
@@ -611,12 +613,12 @@ export class KordocHwpxView extends FileView {
           );
         }
       }
-      if (!created) throw new Error("편집본을 저장할 빈 경로를 찾지 못했습니다.");
-      new Notice(`✅ 편집본 저장 완료: ${created.path}`, 6000);
+      if (!created) throw new Error(L({ ko: "편집본을 저장할 빈 경로를 찾지 못했습니다.", en: "Could not find an unused path for the edited copy." }));
+      new Notice(L({ ko: `✅ 편집본 저장 완료: ${created.path}`, en: `✅ Edited copy saved: ${created.path}` }), 6000);
       await this.leaf.openFile(created);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      new Notice(`저장 실패: ${message}`, 8000);
+      new Notice(L({ ko: `저장 실패: ${message}`, en: `Save failed: ${message}` }), 8000);
     } finally {
       this.busy = false;
     }
@@ -631,10 +633,10 @@ export class KordocHwpxView extends FileView {
     const message = error instanceof Error ? error.message : String(error);
     this.contentEl.empty();
     const box = this.contentEl.createDiv({ cls: "kordoc-hwpx-error" });
-    box.createEl("h3", { text: "HWPX 미리보기를 열 수 없습니다" });
+    box.createEl("h3", { text: L({ ko: "HWPX 미리보기를 열 수 없습니다", en: "Cannot open HWPX preview" }) });
     box.createEl("p", { text: message });
     box.createEl("p", {
-      text: "HWP/HWPML/PDF/DOCX/PPTX/XLS/XLSX는 ‘마크다운으로 변환’ 명령을 사용하세요.",
+      text: L({ ko: "HWP/HWPML/PDF/DOCX/PPTX/XLS/XLSX는 ‘마크다운으로 변환’ 명령을 사용하세요.", en: "For HWP/HWPML/PDF/DOCX/PPTX/XLS/XLSX, use the 'Convert to Markdown' command." }),
     });
   }
 
@@ -655,18 +657,18 @@ class HwpxPromptModal extends Modal {
   }
 
   onOpen(): void {
-    if (typeof this.setTitle === "function") this.setTitle("KorDoc: 편집 명령 실행");
-    else this.titleEl.setText("KorDoc: 편집 명령 실행");
+    if (typeof this.setTitle === "function") this.setTitle(L({ ko: "KorDoc: 편집 명령 실행", en: "KorDoc: Run edit command" }));
+    else this.titleEl.setText(L({ ko: "KorDoc: 편집 명령 실행", en: "KorDoc: Run edit command" }));
     const input = this.contentEl.createEl("input", {
       type: "text",
-      placeholder: "3번째 문단을 새 내용으로 바꿔줘",
+      placeholder: L({ ko: "3번째 문단을 새 내용으로 바꿔줘", en: "3번째 문단을 새 내용으로 바꿔줘" }),
     });
     input.addClass("kordoc-hwpx-command-input");
     this.contentEl.createEl("p", {
       cls: "kordoc-hwpx-help",
-      text: "지원 패턴: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘",
+      text: L({ ko: "지원 패턴: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘", en: "Supported patterns: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘" }),
     });
-    const button = this.contentEl.createEl("button", { text: "실행" });
+    const button = this.contentEl.createEl("button", { text: L({ ko: "실행", en: "Run" }) });
     const submit = () => {
       const value = input.value.trim();
       if (!value) return;

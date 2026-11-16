@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { Worker as NodeWorker } from "node:worker_threads";
@@ -25,7 +26,7 @@ export class BrowserParseWorker {
       URL.revokeObjectURL(this.url);
       throw error;
     }
-    this.startupTimer = window.setTimeout(() => this.fail(new Error("변환 워커 준비 시간이 초과되었습니다.")), startupTimeoutMs);
+    this.startupTimer = window.setTimeout(() => this.fail(new Error(L({ ko: "변환 워커 준비 시간이 초과되었습니다.", en: "Timed out preparing the conversion worker." }))), startupTimeoutMs);
     this.worker.onmessage = (event) => {
       if (this.terminated) return;
       const data: unknown = event.data;
@@ -44,9 +45,9 @@ export class BrowserParseWorker {
     };
     this.worker.onerror = (event) => {
       event.preventDefault();
-      this.fail(new Error(event.message || "변환 워커 오류"));
+      this.fail(new Error(event.message || L({ ko: "변환 워커 오류", en: "Conversion worker error" })));
     };
-    this.worker.onmessageerror = () => this.fail(new Error("변환 워커 메시지 오류"));
+    this.worker.onmessageerror = () => this.fail(new Error(L({ ko: "변환 워커 메시지 오류", en: "Conversion worker message error" })));
   }
 
   get startupPending(): boolean { return !this.ready; }
@@ -58,9 +59,9 @@ export class BrowserParseWorker {
     return this;
   }
   postMessage(value: unknown, transfer: ArrayBuffer[]): void {
-    if (this.terminated) throw new Error("변환 워커가 종료되었습니다.");
+    if (this.terminated) throw new Error(L({ ko: "변환 워커가 종료되었습니다.", en: "The conversion worker has shut down." }));
     if (!this.ready) {
-      if (this.pending) throw new Error("변환 워커의 이전 요청이 대기 중입니다.");
+      if (this.pending) throw new Error(L({ ko: "변환 워커의 이전 요청이 대기 중입니다.", en: "A previous conversion worker request is still pending." }));
       this.pending = { value, transfer };
       return;
     }

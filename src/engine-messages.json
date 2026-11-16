@@ -1,0 +1,2066 @@
+[
+  {
+    "ko": "배포용으로 암호화된 HWPX 파일입니다 (배포용 복호는 지원하지 않음). 한컴오피스에서 일반 문서로 저장한 뒤 여세요.",
+    "en": "This HWPX file uses distribution encryption (distribution decryption is not supported). Save it as a normal document in Hancom Office before opening."
+  },
+  {
+    "ko": "암호로 보호된 HWPX 파일입니다. password 옵션에 열기 암호를 지정하세요.",
+    "en": "This HWPX file is password-protected. Specify the opening password in the password option."
+  },
+  {
+    "ko": "지원하지 않는 HWPX 암호화 방식입니다: {0}",
+    "en": "Unsupported HWPX encryption algorithm: {0}"
+  },
+  {
+    "ko": "(미상)",
+    "en": "(unknown)"
+  },
+  {
+    "ko": "지원하지 않는 HWPX 시작키 생성 방식입니다: {0}",
+    "en": "Unsupported HWPX start-key generation method: {0}"
+  },
+  {
+    "ko": "지원하지 않는 HWPX 체크섬 방식입니다: {0}",
+    "en": "Unsupported HWPX checksum method: {0}"
+  },
+  {
+    "ko": "HWPX 암호화 반복 횟수가 허용 범위를 벗어났습니다: {0}",
+    "en": "HWPX encryption iteration count is out of range: {0}"
+  },
+  {
+    "ko": "HWPX 암호화 파라미터가 올바르지 않습니다 ({0})",
+    "en": "Invalid HWPX encryption parameters ({0})"
+  },
+  {
+    "ko": "암호 목록에 있는 파일이 문서에 없습니다: {0}",
+    "en": "A file in the encryption list is missing from the document: {0}"
+  },
+  {
+    "ko": "비밀번호가 일치하지 않거나 암호화 데이터가 손상되었습니다.",
+    "en": "The password does not match or the encrypted data is damaged."
+  },
+  {
+    "ko": "ZIP 압축 해제 크기 초과 (ZIP bomb 의심)",
+    "en": "ZIP decompressed size limit exceeded (suspected ZIP bomb)"
+  },
+  {
+    "ko": "이미지 파일 없음: {0}",
+    "en": "Image file missing: {0}"
+  },
+  {
+    "ko": "이미지 추출 실패: {0}",
+    "en": "Image extraction failed: {0}"
+  },
+  {
+    "ko": "ZIP 엔트리 수 초과 (ZIP bomb 의심)",
+    "en": "ZIP entry count limit exceeded (suspected ZIP bomb)"
+  },
+  {
+    "ko": "HWPX에서 섹션 파일을 찾을 수 없습니다",
+    "en": "Cannot find section files in HWPX"
+  },
+  {
+    "ko": "섹션 {0} 파싱 실패: {1}",
+    "en": "Failed to parse section {0}: {1}"
+  },
+  {
+    "ko": "알 수 없는 오류",
+    "en": "Unknown error"
+  },
+  {
+    "ko": "조판 캐시가 없어 pages 필터를 섹션 단위 근사로 적용했습니다",
+    "en": "No layout cache; applied the pages filter approximately by section"
+  },
+  {
+    "ko": "HWP3 그리기 개체 중첩이 {0} 단계를 넘음",
+    "en": "HWP3 drawing object nesting exceeds {0} levels"
+  },
+  {
+    "ko": "HWP3 그리기 개체가 {0}개를 넘음",
+    "en": "HWP3 drawing object count exceeds {0}"
+  },
+  {
+    "ko": "HWP3 그리기 개체 점 개수 비정상 ({0})",
+    "en": "Invalid HWP3 drawing object point count ({0})"
+  },
+  {
+    "ko": "HWP3 암호 문서: 헤더가 잘렸습니다",
+    "en": "Encrypted HWP3 document: truncated header"
+  },
+  {
+    "ko": "HWP3 암호 문서: 본문이 없습니다",
+    "en": "Encrypted HWP3 document: missing body"
+  },
+  {
+    "ko": "지원하지 않는 HWP3 암호화 방식입니다 (압축되지 않은 암호 본문)",
+    "en": "Unsupported HWP3 encryption method (uncompressed encrypted body)"
+  },
+  {
+    "ko": "HWP3 암호 문서: 본문이 너무 짧습니다",
+    "en": "Encrypted HWP3 document: body too short"
+  },
+  {
+    "ko": "HWP3 암호 본문의 압축 해제 결과가 최대 허용 크기({0}MB)를 초과했습니다",
+    "en": "Decompressed encrypted HWP3 body exceeds the maximum allowed size ({0}MB)"
+  },
+  {
+    "ko": "암호로 보호된 HWP3 문서입니다. password 옵션에 열기 암호를 지정하세요.",
+    "en": "This HWP3 document is password-protected. Specify the opening password in the password option."
+  },
+  {
+    "ko": "HWP3 압축 해제 결과가 최대 허용 크기({0}MB)를 초과했습니다",
+    "en": "Decompressed HWP3 data exceeds the maximum allowed size ({0}MB)"
+  },
+  {
+    "ko": "HWP3 압축 해제 실패: {0}",
+    "en": "HWP3 decompression failed: {0}"
+  },
+  {
+    "ko": "HWP3 paragraph stream 도중 파싱 중단: {0}",
+    "en": "Parsing stopped within the HWP3 paragraph stream: {0}"
+  },
+  {
+    "ko": "이미지 인라인 실패 — 원본 파일 참조로 폴백: {0}",
+    "en": "Image inlining failed; falling back to source file reference: {0}"
+  },
+  {
+    "ko": "HWP3 그림 데이터 없음(외부 연결 그림·OLE 개체){0}",
+    "en": "HWP3 image data missing (externally linked image or OLE object){0}"
+  },
+  {
+    "ko": "문단 리스트 중첩이 {0}단계를 넘음",
+    "en": "Paragraph list nesting exceeds {0} levels"
+  },
+  {
+    "ko": "HWP3 비정상 paragraph 헤더 (char_count={0}, line_count={1}) → 이후 stream 포기",
+    "en": "Invalid HWP3 paragraph header (char_count={0}, line_count={1}); abandoning the remaining stream"
+  },
+  {
+    "ko": "HWP3 paragraph char stream 파싱 실패: {0}",
+    "en": "Failed to parse HWP3 paragraph character stream: {0}"
+  },
+  {
+    "ko": "HWP3 숨은 설명 텍스트 본문 제외",
+    "en": "Excluded hidden HWP3 description text from the body"
+  },
+  {
+    "ko": "HWP3 부분 처리 제어 문자 ch={0} (이후 동일 코드 경고 생략)",
+    "en": "Partially handled HWP3 control character ch={0} (further warnings for this code omitted)"
+  },
+  {
+    "ko": "HWP3 표 cell_count={0} 비정상 — 표 본문 추출 포기",
+    "en": "Invalid HWP3 table cell_count={0}; abandoning table text extraction"
+  },
+  {
+    "ko": "HWP3 비정상 cell_count={0}",
+    "en": "Invalid HWP3 cell_count={0}"
+  },
+  {
+    "ko": "시트 \"{0}\": {1}행 × {2}열 중 앞 {3}행만 표로 냈습니다 (표 칸 상한 {4})",
+    "en": "Sheet \"{0}\": output only the first {3} rows of {1} rows × {2} columns (table cell limit {4})"
+  },
+  {
+    "ko": "유효하지 않은 XLSX 파일: xl/workbook.xml이 없습니다",
+    "en": "Invalid XLSX file: xl/workbook.xml is missing"
+  },
+  {
+    "ko": "XLSX 파일에 시트가 없습니다",
+    "en": "The XLSX file has no sheets"
+  },
+  {
+    "ko": "xl/styles.xml 날짜 서식 판정 실패 — 날짜 셀이 시리얼 숫자로 출력될 수 있습니다",
+    "en": "Failed to identify date formats in xl/styles.xml; date cells may be output as serial numbers"
+  },
+  {
+    "ko": "시트 \"{0}\" 파일을 찾을 수 없습니다: {1}",
+    "en": "Cannot find sheet \"{0}\" file: {1}"
+  },
+  {
+    "ko": "시트 \"{0}\" 파싱 실패: {1}",
+    "en": "Failed to parse sheet \"{0}\": {1}"
+  },
+  {
+    "ko": "XLS: 첫 레코드가 BOF가 아님",
+    "en": "XLS: first record is not BOF"
+  },
+  {
+    "ko": "XLS: Globals 서브스트림 BOF 누락",
+    "en": "XLS: missing Globals substream BOF"
+  },
+  {
+    "ko": "XLS: OLE2 시그니처 검증 실패 — {0}",
+    "en": "XLS: OLE2 signature validation failed: {0}"
+  },
+  {
+    "ko": "XLS: Workbook 스트림이 없음 (BIFF5 또는 비표준 파일)",
+    "en": "XLS: no Workbook stream (BIFF5 or nonstandard file)"
+  },
+  {
+    "ko": "XLS: 시그니처 레코드가 없음 (Workbook 스트림 손상)",
+    "en": "XLS: missing signature record (damaged Workbook stream)"
+  },
+  {
+    "ko": "XLS: BIFF8(0x0600)만 지원 — 본 파일은 0x{0}",
+    "en": "XLS: only BIFF8 (0x0600) is supported; this file is 0x{0}"
+  },
+  {
+    "ko": "XLS 파일이 암호화되어 있어 파싱할 수 없습니다",
+    "en": "Cannot parse an encrypted XLS file"
+  },
+  {
+    "ko": "시트 \"{0}\" BOF를 찾을 수 없음 (lbPlyPos={1})",
+    "en": "Cannot find BOF for sheet \"{0}\" (lbPlyPos={1})"
+  },
+  {
+    "ko": "DOCX 이미지 추출 실패 ({0}): {1}",
+    "en": "DOCX image extraction failed ({0}): {1}"
+  },
+  {
+    "ko": "유효하지 않은 DOCX 파일: word/document.xml이 없습니다",
+    "en": "Invalid DOCX file: word/document.xml is missing"
+  },
+  {
+    "ko": "DOCX 스타일(styles.xml) 파싱 실패 — 기본 스타일로 계속: {0}",
+    "en": "DOCX styles.xml parsing failed; continuing with default styles: {0}"
+  },
+  {
+    "ko": "DOCX 번호매기기(numbering.xml) 파싱 실패 — 목록 번호 생략: {0}",
+    "en": "DOCX numbering.xml parsing failed; omitting list numbering: {0}"
+  },
+  {
+    "ko": "DOCX 각주(footnotes.xml) 파싱 실패 — 각주 생략: {0}",
+    "en": "DOCX footnotes.xml parsing failed; omitting footnotes: {0}"
+  },
+  {
+    "ko": "DOCX 본문(w:body)을 찾을 수 없습니다",
+    "en": "Cannot find DOCX body (w:body)"
+  },
+  {
+    "ko": "DOCX 메타데이터(core.xml) 파싱 실패: {0}",
+    "en": "DOCX metadata (core.xml) parsing failed: {0}"
+  },
+  {
+    "ko": "PPTX 슬라이드 수 초과: {0} (최대 {1})",
+    "en": "PPTX slide count exceeded: {0} (maximum {1})"
+  },
+  {
+    "ko": "PPTX 이미지 추출 실패 ({0}): {1}",
+    "en": "PPTX image extraction failed ({0}): {1}"
+  },
+  {
+    "ko": "PPTX {0}의 글은 읽지 않습니다 ({1}쪽)",
+    "en": "Text in PPTX {0} is not read (page {1})"
+  },
+  {
+    "ko": "유효하지 않은 PPTX 파일: ppt/presentation.xml이 없습니다",
+    "en": "Invalid PPTX file: ppt/presentation.xml is missing"
+  },
+  {
+    "ko": "PPTX 숨긴 슬라이드 {0}쪽을 건너뜁니다",
+    "en": "Skipping hidden PPTX slide {0}"
+  },
+  {
+    "ko": "PPTX 메타데이터(core.xml) 파싱 실패: {0}",
+    "en": "PPTX metadata (core.xml) parsing failed: {0}"
+  },
+  {
+    "ko": "HWPML 파일 크기 초과 ({0}MB > 50MB)",
+    "en": "HWPML file size exceeded ({0}MB > 50MB)"
+  },
+  {
+    "ko": "HWPML XML 파싱 경고: {0}",
+    "en": "HWPML XML parsing warning: {0}"
+  },
+  {
+    "ko": "테이블 크기 초과 ({0}x{1}) — 스킵",
+    "en": "Table size exceeded ({0}x{1}); skipped"
+  },
+  {
+    "ko": "ZIP 로컬 헤더 시그니처 불일치",
+    "en": "ZIP local header signature mismatch"
+  },
+  {
+    "ko": "ZIP EOCD를 찾을 수 없습니다",
+    "en": "Cannot find ZIP EOCD"
+  },
+  {
+    "ko": "ZIP64는 지원하지 않습니다",
+    "en": "ZIP64 is not supported"
+  },
+  {
+    "ko": "ZIP Central Directory 손상",
+    "en": "Damaged ZIP Central Directory"
+  },
+  {
+    "ko": "ZIP에 없는 엔트리: {0}",
+    "en": "Entry not present in ZIP: {0}"
+  },
+  {
+    "ko": "ZIP에 이미 있는 엔트리: {0}",
+    "en": "Entry already present in ZIP: {0}"
+  },
+  {
+    "ko": "지원하지 않는 ZIP 압축 방식(method={0}): {1} — STORE(0)/DEFLATE(8)만 교체 가능",
+    "en": "Unsupported ZIP compression method (method={0}): {1}; only STORE(0)/DEFLATE(8) entries can be replaced"
+  },
+  {
+    "ko": "{0}개 그림은 OCR 로 읽을 수 없는 형식(WMF·EMF 등)이라 건너뜀",
+    "en": "Skipped {0} images in formats unreadable by OCR (WMF, EMF, etc.)"
+  },
+  {
+    "ko": "삽입 그림 OCR 실패 — 그림 속 글 없이 계속: {0}",
+    "en": "Embedded image OCR failed; continuing without image text: {0}"
+  },
+  {
+    "ko": "그림 {0}개는 {1} 로 바꾸지 못해 원본 형식으로 냈습니다 ({2}){3}",
+    "en": "Could not convert {0} images to {1}; output in their original format ({2}){3}"
+  },
+  {
+    "ko": " — optional dependency 'sharp' 가 없습니다",
+    "en": "; optional dependency 'sharp' is missing"
+  },
+  {
+    "ko": "문서A 파싱 실패: {0}",
+    "en": "Failed to parse document A: {0}"
+  },
+  {
+    "ko": "문서B 파싱 실패: {0}",
+    "en": "Failed to parse document B: {0}"
+  },
+  {
+    "ko": "내장 templates 디렉토리를 찾을 수 없습니다 (패키지 설치가 손상되었을 수 있습니다)",
+    "en": "Cannot find the embedded templates directory (the package installation may be damaged)"
+  },
+  {
+    "ko": "place_seal: 배치할 도장이 없습니다",
+    "en": "place_seal: no seals to place"
+  },
+  {
+    "ko": "place_seal: anchor 문구가 필요합니다",
+    "en": "place_seal: anchor text is required"
+  },
+  {
+    "ko": "place_seal: 도장 이미지가 필요합니다",
+    "en": "place_seal: a seal image is required"
+  },
+  {
+    "ko": "place_seal: 지원하지 않는 이미지 확장자 .{0} (png/jpg/bmp/gif)",
+    "en": "place_seal: unsupported image extension .{0} (png/jpg/bmp/gif)"
+  },
+  {
+    "ko": "place_seal: 이미지 내용이 .{0} 형식이 아닙니다 (매직바이트 불일치)",
+    "en": "place_seal: image content does not match .{0} format (magic-byte mismatch)"
+  },
+  {
+    "ko": "place_seal: 앵커 \"{0}\" {1}번째 등장을 찾지 못했습니다 (본문 내 {2}회 등장 — occurrence 0..{3})",
+    "en": "place_seal: occurrence {1} of anchor \"{0}\" was not found ({2} body occurrences; occurrence 0..{3})"
+  },
+  {
+    "ko": "place_seal: 앵커 \"{0}\" 문단에서 run을 찾지 못했습니다",
+    "en": "place_seal: no run found in the paragraph for anchor \"{0}\""
+  },
+  {
+    "ko": "탭이 든 문단 — 도장 가로 위치가 근사값입니다 (dx 로 보정)",
+    "en": "Paragraph contains tabs; seal horizontal position is approximate (adjust with dx)"
+  },
+  {
+    "ko": "줄바꿈이 든 문단 — 앵커가 2번째 줄 이하면 세로 위치가 어긋날 수 있습니다 (dy 로 보정)",
+    "en": "Paragraph contains line breaks; vertical position may be off if the anchor is on line 2 or later (adjust with dy)"
+  },
+  {
+    "ko": "중첩표(표 안 표) 셀 앵커 — 바깥 셀 오프셋을 체인으로 가산하나 셀 여백·정렬은 근사입니다 (필요 시 dx 로 보정)",
+    "en": "Anchor in a nested-table cell; outer cell offsets are chained, but cell margins/alignment are approximate (adjust with dx if needed)"
+  },
+  {
+    "ko": "글상자 앵커 — 글상자 기하를 반영하지 않아 정렬 보정이 근사입니다 (dx/dy 로 보정)",
+    "en": "Text-box anchor; alignment adjustment is approximate because text-box geometry is not reflected (adjust with dx/dy)"
+  },
+  {
+    "ko": "add_memo: 달 메모가 없습니다",
+    "en": "add_memo: no memos to add"
+  },
+  {
+    "ko": "HWPX에서 header.xml 을 찾을 수 없습니다",
+    "en": "Cannot find header.xml in HWPX"
+  },
+  {
+    "ko": "add_memo: header.xml 에 refList 가 없어 메모 모양을 넣을 수 없습니다",
+    "en": "add_memo: header.xml has no refList, so memo styles cannot be added"
+  },
+  {
+    "ko": "add_memo: anchor 문구가 필요합니다",
+    "en": "add_memo: anchor text is required"
+  },
+  {
+    "ko": "add_memo: 메모 글이 필요합니다",
+    "en": "add_memo: memo text is required"
+  },
+  {
+    "ko": "add_memo: 앵커 \"{0}\" {1}번째 등장을 찾지 못했습니다 (한 문단 안 본문 글 {2}회 등장 — occurrence 0..{3})",
+    "en": "add_memo: occurrence {1} of anchor \"{0}\" was not found ({2} body occurrences within a paragraph; occurrence 0..{3})"
+  },
+  {
+    "ko": "add_memo: 앵커 \"{0}\" 경계가 한 글자 표기 가운데에 걸립니다",
+    "en": "add_memo: anchor \"{0}\" boundary falls inside a single-character representation"
+  },
+  {
+    "ko": "pack: 기관 이름(1~60자)이 필요합니다",
+    "en": "pack: an organization name (1–60 characters) is required"
+  },
+  {
+    "ko": "pack: 견본 HWPX 가 한 건 이상 필요합니다",
+    "en": "pack: at least one sample HWPX is required"
+  },
+  {
+    "ko": "pack: 문서 종류 이름 \"{0}\" — 영문 소문자·숫자·한글·붙임표 1~20자",
+    "en": "pack: document kind name \"{0}\"; use 1–20 lowercase Latin letters, digits, Hangul characters or hyphens"
+  },
+  {
+    "ko": "pack: {0} 견본 {1}번째를 읽지 못했습니다 — {2}",
+    "en": "pack: could not read sample {1} of {0}: {2}"
+  },
+  {
+    "ko": "pack: 문서 종류는 {0}개까지",
+    "en": "pack: at most {0} document kinds"
+  },
+  {
+    "ko": "pack: 팩 파일이 너무 큽니다",
+    "en": "pack: pack file is too large"
+  },
+  {
+    "ko": "pack: 기관팩(.kpack, zip)이 아닙니다",
+    "en": "pack: not an organization pack (.kpack, ZIP)"
+  },
+  {
+    "ko": "pack: 팩에 허용하지 않는 파일이 있습니다: {0} (pack.json·guide.md·kinds/*.hwpx 만)",
+    "en": "pack: disallowed file in pack: {0} (only pack.json, guide.md and kinds/*.hwpx allowed)"
+  },
+  {
+    "ko": "pack: pack.json 이 없습니다",
+    "en": "pack: pack.json is missing"
+  },
+  {
+    "ko": "pack: pack.json 이 올바른 JSON 이 아닙니다",
+    "en": "pack: pack.json is not valid JSON"
+  },
+  {
+    "ko": "pack: 지원하지 않는 팩 형식 판 {0} — 이 kordoc 은 {1}판을 읽습니다",
+    "en": "pack: unsupported pack format version {0}; this kordoc reads version {1}"
+  },
+  {
+    "ko": "pack: pack.json 에 name·kinds 가 없습니다",
+    "en": "pack: pack.json is missing name/kinds"
+  },
+  {
+    "ko": "pack: 종류 {0} 의 견본이 없습니다",
+    "en": "pack: no sample for kind {0}"
+  },
+  {
+    "ko": "pack: 문서 종류가 하나도 없습니다",
+    "en": "pack: there are no document kinds"
+  },
+  {
+    "ko": "pack: {0} 팩에 '{1}' 종류가 없습니다 — {2} 중에서 고르세요",
+    "en": "pack: '{1}' kind is not in the {0} pack; choose from {2}"
+  },
+  {
+    "ko": "폰트 경고: {0}=\"{1}\" — 한컴 번들·통상 설치 목록에 없는 폰트명입니다. 오타이거나 대상 PC에 미설치면 한글이 기본 폰트로 대체 렌더합니다 (생성은 진행됨)",
+    "en": "Font warning: {0}=\"{1}\" is not in the Hancom-bundled or commonly installed font list. If misspelled or absent on the target PC, Hangul renders it with the default font (generation continues)"
+  },
+  {
+    "ko": "날짜 온점 뒤에 한 칸씩 띄워야 함",
+    "en": "Add one space after each date period"
+  },
+  {
+    "ko": "예) 2025. 1. 6.",
+    "en": "Example: 2025. 1. 6."
+  },
+  {
+    "ko": "월·일 앞의 '0'은 표기하지 않음",
+    "en": "Do not put a leading '0' before the month or day"
+  },
+  {
+    "ko": "예) 2025. 1. 6. (2025. 01. 06. ✕)",
+    "en": "Example: 2025. 1. 6. (2025. 01. 06. ✕)"
+  },
+  {
+    "ko": "연도는 네 자리로 표기('24 ✕) — 일정 줄(탭·점선 뒤 날짜)은 허용",
+    "en": "Use a four-digit year ('24 ✕); schedule lines (dates after tabs/dot leaders) are allowed"
+  },
+  {
+    "ko": "날짜의 '일' 다음에 마침표(.)를 찍어야 함",
+    "en": "Put a period (.) after the day in a date"
+  },
+  {
+    "ko": "날짜는 하이픈(-) 대신 온점으로 구분하고 온점 뒤 한 칸 띄움",
+    "en": "Separate dates with periods instead of hyphens, and add one space after each period"
+  },
+  {
+    "ko": "예) 2026. 7. 18.",
+    "en": "Example: 2026. 7. 18."
+  },
+  {
+    "ko": "24시각제 숫자로 표기(오전/오후 사용 안 함)",
+    "en": "Use 24-hour numeric time (do not use 오전/오후)"
+  },
+  {
+    "ko": "예) 09:00, 15:30",
+    "en": "Example: 09:00, 15:30"
+  },
+  {
+    "ko": "'24시'보다 다음 날 00:00 또는 '18:00까지' 권장",
+    "en": "Prefer 00:00 of the next day or '18:00까지' over '24시'"
+  },
+  {
+    "ko": "예) 18:00",
+    "en": "Example: 18:00"
+  },
+  {
+    "ko": "시와 분 사이 쌍점은 양쪽을 붙여 씀",
+    "en": "Do not put spaces around the colon between hours and minutes"
+  },
+  {
+    "ko": "예) 13:20",
+    "en": "Example: 13:20"
+  },
+  {
+    "ko": "금액은 '천원'으로 줄이지 않고 아라비아 숫자로",
+    "en": "Write amounts in Arabic numerals instead of abbreviating as '천원'"
+  },
+  {
+    "ko": "예) 345,000원",
+    "en": "Example: 345,000원"
+  },
+  {
+    "ko": "'금'과 숫자 사이는 붙여 쓰는 것이 원칙",
+    "en": "As a rule, do not put a space between '금' and the number"
+  },
+  {
+    "ko": "예) 금113,560원",
+    "en": "Example: 금113,560원"
+  },
+  {
+    "ko": "'붙임' 다음에 쌍점(:)을 붙이지 않음(2타 띄움)",
+    "en": "Do not put a colon (:) after '붙임' (use two spaces)"
+  },
+  {
+    "ko": "예) 붙임  계획서 1부.",
+    "en": "Example: 붙임  계획서 1부."
+  },
+  {
+    "ko": "물결표(∼)와 '까지'를 함께 쓰지 않음",
+    "en": "Do not use both the range tilde (∼) and '까지'"
+  },
+  {
+    "ko": "예) 2. 20.∼2. 24.",
+    "en": "Example: 2. 20.∼2. 24."
+  },
+  {
+    "ko": "한글을 먼저 쓰고 괄호 안에 외국어를 병기",
+    "en": "Write Korean first and place the foreign-language term in parentheses"
+  },
+  {
+    "ko": "예) 업무 협약(MOU)",
+    "en": "Example: 업무 협약(MOU)"
+  },
+  {
+    "ko": "쌍점은 앞말에 붙이고 뒤는 한 칸 띄움",
+    "en": "Attach a colon to the preceding word and put one space after it"
+  },
+  {
+    "ko": "예) 원장: 김갑동",
+    "en": "Example: 원장: 김갑동"
+  },
+  {
+    "ko": "병기한 한글 금액이 숫자와 다름",
+    "en": "The amount written in Korean differs from the numeric amount"
+  },
+  {
+    "ko": "금액은 숫자 다음 괄호 안에 한글 병기",
+    "en": "Write the amount in Korean in parentheses after the numerals"
+  },
+  {
+    "ko": "예) 금113,560원(금일십일만삼천오백육십원)",
+    "en": "Example: 금113,560원(금일십일만삼천오백육십원)"
+  },
+  {
+    "ko": "기간·시각 범위는 물결표(∼)로",
+    "en": "Use a tilde (∼) for date/time ranges"
+  },
+  {
+    "ko": "예) 2026. 3. 1.∼6. 30., 14:00∼16:00",
+    "en": "Example: 2026. 3. 1.∼6. 30., 14:00∼16:00"
+  },
+  {
+    "ko": "날짜와 요일이 맞지 않음",
+    "en": "The date and weekday do not match"
+  },
+  {
+    "ko": "기간 끝 날짜와 요일이 맞지 않음(연도는 앞 날짜)",
+    "en": "The range end date and weekday do not match (year taken from the first date)"
+  },
+  {
+    "ko": "물결표(∼) 앞뒤는 붙여 씀",
+    "en": "Do not put spaces around the range tilde (∼)"
+  },
+  {
+    "ko": "예) 2. 20.∼2. 24., 09:00∼18:00",
+    "en": "Example: 2. 20.∼2. 24., 09:00∼18:00"
+  },
+  {
+    "ko": "어두의 '년'은 두음법칙에 따라 '연'으로 적음",
+    "en": "At word start, write '연' instead of '년' according to the Korean initial-sound rule"
+  },
+  {
+    "ko": "예) 연도, 연간, 연말, 연초",
+    "en": "Example: 연도, 연간, 연말, 연초"
+  },
+  {
+    "ko": "외래어 표기법에 맞지 않는 표기",
+    "en": "Spelling does not conform to Korean loanword orthography"
+  },
+  {
+    "ko": "예) 콘텐츠·애플리케이션·메시지·워크숍·스케줄·콘셉트",
+    "en": "Example: 콘텐츠·애플리케이션·메시지·워크숍·스케줄·콘셉트"
+  },
+  {
+    "ko": "공공언어 쉬운 말로 바꿔 쓰기 권장 (틀린 말은 아님)",
+    "en": "Prefer simpler public-language wording (not an incorrect expression)"
+  },
+  {
+    "ko": "맞춤법 오기",
+    "en": "Spelling error"
+  },
+  {
+    "ko": "'끝.'은 앞 글 마침표에서 2타 띄움",
+    "en": "Separate '끝.' from the preceding sentence's period with two spaces"
+  },
+  {
+    "ko": "예) …바랍니다.  끝.",
+    "en": "Example: …바랍니다.  끝."
+  },
+  {
+    "ko": "'붙임' 뒤는 2타 띄움",
+    "en": "Use two spaces after '붙임'"
+  },
+  {
+    "ko": "예) 붙임  계획서 1부.  끝.",
+    "en": "Example: 붙임  계획서 1부.  끝."
+  },
+  {
+    "ko": "차별·비하 표현은 순화어로",
+    "en": "Replace discriminatory or derogatory wording with neutral terms"
+  },
+  {
+    "ko": "예) 장애자→장애인, 편부모→한부모, 학부형→학부모, 미망인→고인의 배우자",
+    "en": "Example: 장애자→장애인, 편부모→한부모, 학부형→학부모, 미망인→고인의 배우자"
+  },
+  {
+    "ko": "줄표(— – ―)는 공문서 표기 관행에 맞지 않음(생성형 AI 문체 흔적)",
+    "en": "Dashes (— – ―) do not follow official document notation conventions (a sign of generative AI style)"
+  },
+  {
+    "ko": "쉼표·괄호·가운뎃점(·)으로 풀어쓰기",
+    "en": "Rewrite using commas, parentheses or middle dots (·)"
+  },
+  {
+    "ko": "한 줄에 강조(**) 3회 이상 — 강조 남발은 생성형 AI 문체 흔적",
+    "en": "Three or more bold spans (**) on one line; excessive emphasis is a sign of generative AI style"
+  },
+  {
+    "ko": "리드어·핵심 수치 한 곳만 강조",
+    "en": "Emphasize only one lead phrase or key figure"
+  },
+  {
+    "ko": "붙임 표시 뒤에 '끝.' 표시가 없음",
+    "en": "The attachment indicator is not followed by '끝.'"
+  },
+  {
+    "ko": "결산 접속어 — 공문은 장 이름이 마무리를 맡음(생성형 AI 문체)",
+    "en": "Concluding connective; official documents use section names to close the discussion (generative AI style)"
+  },
+  {
+    "ko": "지우고 판단·조치를 바로 적음",
+    "en": "Delete it and state the judgment or action directly"
+  },
+  {
+    "ko": "평론·홍보 상투구(생성형 AI 문체)",
+    "en": "Commentary or promotional cliché (generative AI style)"
+  },
+  {
+    "ko": "무엇이 달라지는지 수치·사실로",
+    "en": "State what changes using numbers and facts"
+  },
+  {
+    "ko": "과장·홍보 상투구",
+    "en": "Exaggerated or promotional cliché"
+  },
+  {
+    "ko": "목표치·대상·기간으로 바꿔 씀",
+    "en": "Rewrite with targets, scope and timeframe"
+  },
+  {
+    "ko": "시대·분위기로 여는 상투 서두 — 배경은 사실로 연다",
+    "en": "Stock opening about the era or atmosphere; start background with facts"
+  },
+  {
+    "ko": "예) 「○○법」 개정(2026. 3. 1. 시행), 민원 412건(전년 대비 38%↑)",
+    "en": "Example: 「○○법」 amended (effective 2026. 3. 1.), 412 civil petitions (38%↑ year on year)"
+  },
+  {
+    "ko": "체감·만족도 상투구 — 무엇이 얼마나 나아지는지 없음",
+    "en": "Stock wording about perceived improvement or satisfaction; no indication of what improves or by how much"
+  },
+  {
+    "ko": "예) 대기시간 25분→10분, 민원 30% 감소",
+    "en": "Example: waiting time 25→10 minutes, civil petitions reduced by 30%"
+  },
+  {
+    "ko": "번역투 반복",
+    "en": "Repeated translationese"
+  },
+  {
+    "ko": "에 있어→에서, 되어지다→되다, 가지고 있다→있다, 에 대해서→를",
+    "en": "에 있어→에서, 되어지다→되다, 가지고 있다→있다, 에 대해서→를"
+  },
+  {
+    "ko": "'A, B, 그리고 C' 나열 — 영어식 3항 병렬",
+    "en": "'A, B, 그리고 C' enumeration; English-style three-part parallelism"
+  },
+  {
+    "ko": "A·B·C 또는 A, B 및 C",
+    "en": "A·B·C or A, B 및 C"
+  },
+  {
+    "ko": "줄 첫머리 지시어 반복 — 개조식은 줄마다 새 사실",
+    "en": "Repeated demonstratives at line starts; each bullet-style line should state a new fact"
+  },
+  {
+    "ko": "지시어를 지우고 주어·대상을 바로 씀",
+    "en": "Delete the demonstrative and state the subject or object directly"
+  },
+  {
+    "ko": "그림 문자는 공문서에 쓰지 않음",
+    "en": "Do not use emoji in official documents"
+  },
+  {
+    "ko": "지움 또는 □·ㅇ·※ 부호로",
+    "en": "Delete or replace with □·ㅇ·※ symbols"
+  },
+  {
+    "ko": "'제목: 부제' 꼴 헤딩 — 장 이름은 명사구 하나",
+    "en": "'Title: subtitle' heading; use a single noun phrase for a section name"
+  },
+  {
+    "ko": "예) Ⅱ. 현황 및 문제점",
+    "en": "Example: Ⅱ. 현황 및 문제점"
+  },
+  {
+    "ko": "숫자·대상 없이 추상 성과로 끝나는 줄(문서 {0}% — 실결재 보고서 최대 11%)",
+    "en": "Lines ending with abstract achievements without numbers or targets ({0}% of the document; at most 11% in actual approval reports)"
+  },
+  {
+    "ko": "무엇을·얼마나·언제까지 — 예) 상습 투기지점 42곳 CCTV 설치(12월)",
+    "en": "What, how much and by when; e.g. install CCTV at 42 habitual dumping sites (December)"
+  },
+  {
+    "ko": "장 이름을 서론·본론·결론으로 적음 — 공문은 그 흐름을 실무 장 이름으로 드러냄",
+    "en": "Sections named introduction/body/conclusion; official documents express that flow through practical section names"
+  },
+  {
+    "ko": "왜: 추진배경·관련근거·현황 및 문제점 → 무엇: 추진개요·개선방안·세부내용 → 어떻게: 추진일정·소요예산·향후계획",
+    "en": "Why: background, legal basis, current status/issues → What: overview, improvements, details → How: schedule, budget, next steps"
+  },
+  {
+    "ko": "산출근거 곱셈 결과가 적은 금액과 다름",
+    "en": "The multiplication in the calculation basis differs from the stated amount"
+  },
+  {
+    "ko": "합계 행은 머리행 바로 아래에 두는 것이 공문 표 관행",
+    "en": "Official document tables conventionally place the total row immediately below the header"
+  },
+  {
+    "ko": "합계 행을 머리행 다음 줄로 옮기기",
+    "en": "Move the total row immediately below the header"
+  },
+  {
+    "ko": "합계가 {0}의 합과 다름({1}번째 열)",
+    "en": "The total differs from the sum of {0} (column {1})"
+  },
+  {
+    "ko": "소계",
+    "en": "subtotals"
+  },
+  {
+    "ko": "항목",
+    "en": "items"
+  },
+  {
+    "ko": "공문서는 $·USD 대신 '달러'로 쓰고 원화를 먼저",
+    "en": "In official documents, write '달러' instead of $/USD and state the won amount first"
+  },
+  {
+    "ko": "예) 약 4,200원(약 3.1달러)",
+    "en": "Example: about 4,200원 (about 3.1달러)"
+  },
+  {
+    "ko": "외화 금액은 원화를 앞에 쓰고 외화는 괄호로",
+    "en": "State the won amount first, with the foreign-currency amount in parentheses"
+  },
+  {
+    "ko": "약 ○○원({0})",
+    "en": "About ○○원 ({0})"
+  },
+  {
+    "ko": "증감 기준이 본예산인지 최종예산(추경 포함)인지 밝히기",
+    "en": "Specify whether the change is relative to the initial budget or the final budget (including supplementary budgets)"
+  },
+  {
+    "ko": "예) 2026년 본예산 대비 1,200천원 증",
+    "en": "Example: increase of 1,200천원 relative to the 2026 initial budget"
+  },
+  {
+    "ko": "달러 금액이 있는데 원화 환산 환율 기준이 없음",
+    "en": "Dollar amounts appear without a reference exchange rate for conversion to won"
+  },
+  {
+    "ko": "예) ※ 환율 1,330원/달러('26. 10. 20. 기준)",
+    "en": "Example: ※ exchange rate 1,330원/달러 (as of '26. 10. 20.)"
+  },
+  {
+    "ko": "삽입 행 셀의 줄 수가 문단 수 초과 — 마지막 문단에 병합 적용",
+    "en": "Inserted row cell has more lines than paragraphs; merged into the last paragraph"
+  },
+  {
+    "ko": "셀 내 이미지·텍스트 혼재 — 텍스트만 적용 (이미지 인접 배치는 <br> 분리로 재현됨)",
+    "en": "Mixed image/text in cell; applied text only (image-adjacent placement reproduced with <br> separation)"
+  },
+  {
+    "ko": "셀 내 줄 추가는 문단 생성 미지원 — 한 문단으로 병합 적용",
+    "en": "Adding cell lines does not support creating paragraphs; merged into one paragraph"
+  },
+  {
+    "ko": "셀 내 줄 추가는 문단 생성 미지원 — 마지막 문단에 병합 적용",
+    "en": "Adding cell lines does not support creating paragraphs; merged into the last paragraph"
+  },
+  {
+    "ko": "셀 내 줄 삭제는 문단 제거 미지원 — 빈 문단 잔존(뷰어에 빈 줄 표시 가능)",
+    "en": "Deleting cell lines does not support removing paragraphs; empty paragraphs remain (the viewer may display blank lines)"
+  },
+  {
+    "ko": "OLE 시그니처가 아닙니다",
+    "en": "Not an OLE signature"
+  },
+  {
+    "ko": "CFB v3(512B 섹터)만 지원합니다",
+    "en": "Only CFB v3 (512-byte sectors) is supported"
+  },
+  {
+    "ko": "섹터 범위 초과: {0}",
+    "en": "Sector out of range: {0}"
+  },
+  {
+    "ko": "FAT 체인 손상",
+    "en": "Damaged FAT chain"
+  },
+  {
+    "ko": "miniFAT 체인 손상",
+    "en": "Damaged miniFAT chain"
+  },
+  {
+    "ko": "스트림 없음: {0}",
+    "en": "Stream missing: {0}"
+  },
+  {
+    "ko": "스트림이 아님: {0}",
+    "en": "Not a stream: {0}"
+  },
+  {
+    "ko": "DIFAT 체인 확장은 미지원 (7MB 초과 컨테이너 성장)",
+    "en": "DIFAT chain extension is not supported (container growth beyond 7MB)"
+  },
+  {
+    "ko": "mini stream 범위 초과",
+    "en": "Mini stream out of range"
+  },
+  {
+    "ko": "블록 삭제는 미지원 (v1) — 원본 유지",
+    "en": "Block deletion is not supported (v1); source preserved"
+  },
+  {
+    "ko": "블록 추가는 미지원 (v1)",
+    "en": "Block insertion is not supported (v1)"
+  },
+  {
+    "ko": "변경 내용 추적 문서라 한글이 고친 본문을 그리도록 추적 표시를 껐습니다. 한글에서는 지금 내용만 보이고 누가 무엇을 바꿨는지의 기록은 보이지 않습니다(원본 파일에는 남아 있음).",
+    "en": "Disabled tracking display in this tracked-changes document so Hangul renders the edited body. Hangul shows only the current content, without showing who changed what (the records remain in the source file)."
+  },
+  {
+    "ko": "HWP 섹터 수술 실패: {0}",
+    "en": "HWP sector surgery failed: {0}"
+  },
+  {
+    "ko": "패치본 재파싱 실패 — 패치 중단: {0}",
+    "en": "Failed to reparse the patched file; patch aborted: {0}"
+  },
+  {
+    "ko": "표 칸 위치를 찾지 못함 — 이 칸만 미적용",
+    "en": "Cannot locate table cell; skipped only this cell"
+  },
+  {
+    "ko": "각주 텍스트 수정은 미지원 — 본문만 적용",
+    "en": "Editing footnote text is not supported; applied body text only"
+  },
+  {
+    "ko": "각주 표기 삭제는 미지원 — 각주 유지, 본문만 적용",
+    "en": "Deleting footnote notation is not supported; footnote preserved, body text only applied"
+  },
+  {
+    "ko": "셀 내 추가 줄을 마지막 문단에 강제 줄바꿈으로 병합(문단 생성 대신)",
+    "en": "Merged additional cell lines into the last paragraph with forced line breaks (instead of creating paragraphs)"
+  },
+  {
+    "ko": "서식 보존 패치는 HWPX·HWP 5.x 문서만 지원합니다 (감지된 포맷: {0})",
+    "en": "Format-preserving patches support HWPX and HWP 5.x only (detected format: {0})"
+  },
+  {
+    "ko": "원본 HWPX 파싱 실패: {0}",
+    "en": "Failed to parse source HWPX: {0}"
+  },
+  {
+    "ko": "ZIP 로드 실패",
+    "en": "Failed to load ZIP"
+  },
+  {
+    "ko": "HWPX 섹션 파일을 찾을 수 없습니다",
+    "en": "Cannot find HWPX section files"
+  },
+  {
+    "ko": "블록 삭제는 미지원 (structure: false) — 원본 유지",
+    "en": "Block deletion is not supported (structure: false); source preserved"
+  },
+  {
+    "ko": "블록 추가는 미지원 (structure: false)",
+    "en": "Block insertion is not supported (structure: false)"
+  },
+  {
+    "ko": "소스맵 splice 실패: {0}",
+    "en": "Source-map splice failed: {0}"
+  },
+  {
+    "ko": "ZIP 재조립 실패: {0}",
+    "en": "ZIP reassembly failed: {0}"
+  },
+  {
+    "ko": "패치본 무결성 검사 실패 — 패치 중단: {0}",
+    "en": "Patched file integrity check failed; patch aborted: {0}"
+  },
+  {
+    "ko": "표 추가 불가 — header 엔트리(borderFills) 해석 실패",
+    "en": "Cannot add table; failed to interpret header entry (borderFills)"
+  },
+  {
+    "ko": "표 내용이 비어 있음",
+    "en": "Table content is empty"
+  },
+  {
+    "ko": "header <hh:borderFills> 구조를 찾을 수 없어 표 테두리 생성 불가",
+    "en": "Cannot generate table borders because the header <hh:borderFills> structure was not found"
+  },
+  {
+    "ko": "각주 참조 부호 삭제는 미지원 — 각주 유지, 본문만 적용",
+    "en": "Deleting footnote reference marks is not supported; footnote preserved, body text only applied"
+  },
+  {
+    "ko": "유효한 ZIP이 아님: {0}",
+    "en": "Not a valid ZIP: {0}"
+  },
+  {
+    "ko": "빈 ZIP",
+    "en": "Empty ZIP"
+  },
+  {
+    "ko": "첫 zip 엔트리가 '{0}' — 'mimetype'이어야 함",
+    "en": "First ZIP entry is '{0}'; it must be 'mimetype'"
+  },
+  {
+    "ko": "내용이 '{0}' — '{1}'이어야 함",
+    "en": "Content is '{0}'; it must be '{1}'"
+  },
+  {
+    "ko": "필수 파일 누락: {0}",
+    "en": "Required file missing: {0}"
+  },
+  {
+    "ko": "XML 웰폼드 위반: {0}",
+    "en": "XML is not well-formed: {0}"
+  },
+  {
+    "ko": "secCnt={0}인데 실제 sectionN.xml은 {1}개 — 한컴독스가 열기를 거부함",
+    "en": "secCnt={0}, but there are {1} actual sectionN.xml files; Hancom Docs refuses to open it"
+  },
+  {
+    "ko": "manifest가 없는 파일을 참조: {0}",
+    "en": "Manifest refers to a missing file: {0}"
+  },
+  {
+    "ko": "maskChar는 영숫자·공백·제어/결합 문자·구분 기호(|\\<>&\"'._-@+:/,;)가 아닌 보이는 1글자여야 함: {0}",
+    "en": "maskChar must be one visible character, excluding alphanumeric, whitespace, control/combining characters and delimiters (|\\<>&\"'._-@+:/,;): {0}"
+  },
+  {
+    "ko": "HWPX 세션은 HWPX 문서만 엽니다 (감지된 포맷: {0}) — HWP 5.x 는 patchHwp 로 패치하세요",
+    "en": "HWPX sessions open HWPX documents only (detected format: {0}); use patchHwp for HWP 5.x"
+  },
+  {
+    "ko": "블록 인덱스 범위 밖",
+    "en": "Block index out of range"
+  },
+  {
+    "ko": "문단 분절(강제 줄바꿈/병합 유닛) — 부분 수정은 미지원 (v1)",
+    "en": "Fragmented paragraph (forced line break/merged units); partial edits are not supported (v1)"
+  },
+  {
+    "ko": "문단 내 강제 줄바꿈 포함 — 수정 시 줄바꿈 보존 불가로 미지원 (v1)",
+    "en": "Paragraph contains forced line breaks; editing cannot preserve them and is not supported (v1)"
+  },
+  {
+    "ko": "문단 소스맵 매핑 실패 (머리말/글상자/캡션 영역이거나 텍스트 불일치)",
+    "en": "Paragraph source-map mapping failed (header/text-box/caption region or text mismatch)"
+  },
+  {
+    "ko": "표 개수 불일치 — 소스맵 신뢰 불가",
+    "en": "Table count mismatch; source map cannot be trusted"
+  },
+  {
+    "ko": "표 소스맵 매핑 실패",
+    "en": "Table source-map mapping failed"
+  },
+  {
+    "ko": "편집 가능한 셀 없음",
+    "en": "No editable cells"
+  },
+  {
+    "ko": "{0} 블록 편집은 미지원 (v1)",
+    "en": "Editing {0} blocks is not supported (v1)"
+  },
+  {
+    "ko": "블록 인덱스 범위 밖: {0}",
+    "en": "Block index out of range: {0}"
+  },
+  {
+    "ko": "표 블록에는 cells 편집만 지원",
+    "en": "Table blocks support cells edits only"
+  },
+  {
+    "ko": "같은 셀에 중복 편집 — 먼저 적용된 편집 유지",
+    "en": "Duplicate edits to the same cell; kept the first applied edit"
+  },
+  {
+    "ko": "셀 좌표 범위 밖: {0},{1}",
+    "en": "Cell coordinates out of range: {0},{1}"
+  },
+  {
+    "ko": "셀 내 이미지 변경은 미지원",
+    "en": "Changing images in cells is not supported"
+  },
+  {
+    "ko": "같은 블록에 중복 편집 — 먼저 적용된 편집 유지",
+    "en": "Duplicate edits to the same block; kept the first applied edit"
+  },
+  {
+    "ko": "지원하지 않는 블록 유형({0}) 또는 편집 형식",
+    "en": "Unsupported block type ({0}) or edit format"
+  },
+  {
+    "ko": "셀 좌표 범위 밖",
+    "en": "Cell coordinates out of range"
+  },
+  {
+    "ko": "병합 영역의 빈 칸이거나 좌표 불일치",
+    "en": "Empty cell in a merged area or coordinate mismatch"
+  },
+  {
+    "ko": "셀 콘텐츠 구조 복잡 (중첩표/글상자) — 매핑 신뢰 불가",
+    "en": "Complex cell content (nested table/text box); mapping cannot be trusted"
+  },
+  {
+    "ko": "빈 셀에 문단이 없어 텍스트 삽입 불가",
+    "en": "No paragraph in the empty cell; text cannot be inserted"
+  },
+  {
+    "ko": "셀 줄 경계 매핑 모호 (리터럴 <br>/문단 내 줄바꿈) — 미지원",
+    "en": "Ambiguous cell line-boundary mapping (literal <br>/in-paragraph line break); not supported"
+  },
+  {
+    "ko": "PDF 생성에 puppeteer-core가 필요합니다. 설치: npm install puppeteer-core",
+    "en": "PDF generation requires puppeteer-core. Install: npm install puppeteer-core"
+  },
+  {
+    "ko": "Chromium 실행 파일을 찾을 수 없습니다. PUPPETEER_EXECUTABLE_PATH 환경변수를 설정하세요.",
+    "en": "Cannot find a Chromium executable. Set the PUPPETEER_EXECUTABLE_PATH environment variable."
+  },
+  {
+    "ko": "조판 캐시가 맞지 않아(최상위 문단이 모두 같은 자리) 다시 조판해 렌더",
+    "en": "Layout cache mismatch (all top-level paragraphs at the same position); rendering with layout recomputed"
+  },
+  {
+    "ko": "조판 캐시가 쪽 기준 좌표로 적혀 있어 다시 조판해 렌더",
+    "en": "Layout cache uses page-relative coordinates; rendering with layout recomputed"
+  },
+  {
+    "ko": "렌더할 구역이 없습니다",
+    "en": "No sections to render"
+  },
+  {
+    "ko": "HWPX(ZIP) 형식이 아닙니다 — 렌더는 HWPX만 지원",
+    "en": "Not HWPX (ZIP); rendering supports HWPX only"
+  },
+  {
+    "ko": "Contents/section0.xml 없음 — HWPX가 아니거나 손상됨",
+    "en": "Contents/section0.xml is missing; not HWPX or damaged"
+  },
+  {
+    "ko": "header.xml 없음 — 기본 스타일로 렌더",
+    "en": "header.xml is missing; rendering with default styles"
+  },
+  {
+    "ko": "섹션 XML이 허용 크기를 초과",
+    "en": "Section XML exceeds the size limit"
+  },
+  {
+    "ko": "바탕쪽 XML이 허용 크기를 초과",
+    "en": "Master-page XML exceeds the size limit"
+  },
+  {
+    "ko": "이미지 {0}종 중 {1}종만 로딩 — 개수 한도 초과분 생략",
+    "en": "Loaded only {1} of {0} image types; omitted those above the count limit"
+  },
+  {
+    "ko": "이미지 {0} {1}MB — 한도 초과로 생략",
+    "en": "Image {0} is {1}MB; omitted because it exceeds the limit"
+  },
+  {
+    "ko": "이미지 누적 {0}MB 한도 초과 — 이후 생략",
+    "en": "Cumulative image size exceeds the {0}MB limit; remaining images omitted"
+  },
+  {
+    "ko": "구역 {0}: 조판 캐시 없음 — reflow 옵션 필요, 생략",
+    "en": "Section {0}: no layout cache; requires the reflow option; skipped"
+  },
+  {
+    "ko": "구역 {0} XML 파싱 실패 — 생략",
+    "en": "Failed to parse section {0} XML; skipped"
+  },
+  {
+    "ko": "조판 캐시(linesegarray) 없음 — 한컴에서 저장한 HWPX만 렌더 가능 (reflow 옵션으로 합성 렌더 가능)",
+    "en": "No layout cache (linesegarray); only HWPX saved by Hancom can be rendered (synthetic rendering available with reflow)"
+  },
+  {
+    "ko": "렌더할 구역이 없습니다 — HWPX가 손상되었을 수 있습니다",
+    "en": "No sections to render; HWPX may be damaged"
+  },
+  {
+    "ko": "구역 {0} 합성 DOM 생성 실패 — 생략",
+    "en": "Failed to generate synthetic DOM for section {0}; skipped"
+  },
+  {
+    "ko": "렌더할 구역이 없습니다 — HWP 가 손상되었을 수 있습니다",
+    "en": "No sections to render; HWP may be damaged"
+  },
+  {
+    "ko": "DocInfo 없음 — 기본 스타일로 렌더",
+    "en": "DocInfo is missing; rendering with default styles"
+  },
+  {
+    "ko": "섹션 스트림을 찾을 수 없습니다",
+    "en": "Cannot find section streams"
+  },
+  {
+    "ko": "PNG 래스터에는 sharp가 필요합니다 (npm install sharp). sharp 없이 쓰려면 format: \"svg\" + output_path로 SVG 파일 저장을 사용하세요.",
+    "en": "PNG rasterization requires sharp (npm install sharp). Without sharp, use format: \"svg\" + output_path to save an SVG file."
+  },
+  {
+    "ko": "잘못된 페이지 크기: {0}x{1}pt",
+    "en": "Invalid page size: {0}x{1}pt"
+  },
+  {
+    "ko": "PDF 렌더에는 puppeteer-core 가 필요합니다 (npm install puppeteer-core). SVG/HTML/PNG 는 Chromium 없이 됩니다",
+    "en": "PDF rendering requires puppeteer-core (npm install puppeteer-core). SVG/HTML/PNG work without Chromium"
+  },
+  {
+    "ko": "Chromium 실행 파일을 찾을 수 없습니다 — browserExecutablePath 옵션 또는 PUPPETEER_EXECUTABLE_PATH 환경변수를 지정하세요",
+    "en": "Cannot find a Chromium executable; specify browserExecutablePath or the PUPPETEER_EXECUTABLE_PATH environment variable"
+  },
+  {
+    "ko": "파일을 찾을 수 없습니다: {0}",
+    "en": "File not found: {0}"
+  },
+  {
+    "ko": "파일 읽기 실패: {0}",
+    "en": "Failed to read file: {0}"
+  },
+  {
+    "ko": "렌더 미지원 형식({0}) — 레이아웃 렌더는 HWPX·HWP 만 지원합니다",
+    "en": "Unsupported rendering format ({0}); layout rendering supports HWPX and HWP only"
+  },
+  {
+    "ko": "선택한 페이지가 없습니다 — 문서는 {0}쪽 (pages: {1})",
+    "en": "No selected pages; document has {0} pages (pages: {1})"
+  },
+  {
+    "ko": "알 수 없는 렌더 포맷: {0} (svg|html|png|jpeg|pdf)",
+    "en": "Unknown render format: {0} (svg|html|png|jpeg|pdf)"
+  },
+  {
+    "ko": "페이지 {0} 메타 없음",
+    "en": "No metadata for page {0}"
+  },
+  {
+    "ko": "파싱 실패: {0}",
+    "en": "Parsing failed: {0}"
+  },
+  {
+    "ko": "{0} 은 렌더 미지원 — region·crop 없음",
+    "en": "{0} does not support rendering; no regions/crops"
+  },
+  {
+    "ko": "렌더 실패 — region 없음: {0}",
+    "en": "Rendering failed; no regions: {0}"
+  },
+  {
+    "ko": "sourceId 없음 — region 조인 불가",
+    "en": "No sourceId; cannot join regions"
+  },
+  {
+    "ko": "렌더 region 미매칭(sourceId {0})",
+    "en": "No matching render region (sourceId {0})"
+  },
+  {
+    "ko": "렌더 region 중복 매칭(sourceId {0}, {1}개) — 첫 개체만",
+    "en": "Multiple matching render regions (sourceId {0}, {1} matches); using the first object only"
+  },
+  {
+    "ko": "htmlTables 와 tableFormat 은 함께 쓸 수 없습니다",
+    "en": "htmlTables and tableFormat cannot be used together"
+  },
+  {
+    "ko": "빈 버퍼이거나 유효하지 않은 입력입니다.",
+    "en": "Empty buffer or invalid input."
+  },
+  {
+    "ko": "요청한 쪽 범위({0})가 문서 쪽(1~{1})과 겹치지 않습니다",
+    "en": "The requested page range ({0}) does not overlap the document pages (1–{1})"
+  },
+  {
+    "ko": "지원하지 않는 파일 형식입니다.",
+    "en": "Unsupported file format."
+  },
+  {
+    "ko": "PDF 파싱에 pdfjs-dist가 필요합니다. 설치: npm install pdfjs-dist",
+    "en": "PDF parsing requires pdfjs-dist. Install: npm install pdfjs-dist"
+  },
+  {
+    "ko": "hwpx-preserve 포맷은 HWPX·HWP 5.x 입력만 지원합니다 (감지된 포맷: {0})",
+    "en": "hwpx-preserve format supports HWPX and HWP 5.x input only (detected format: {0})"
+  },
+  {
+    "ko": "서식 파싱 실패: {0}",
+    "en": "Format parsing failed: {0}"
+  },
+  {
+    "ko": "소스맵 splice 범위 겹침 — 내부 오류",
+    "en": "Source-map splice ranges overlap; internal error"
+  },
+  {
+    "ko": "HWP 문서가 아닙니다 ({0})",
+    "en": "Not an HWP document ({0})"
+  },
+  {
+    "ko": "한/글 저장 변환은 열기 암호를 받지 않습니다 — engine \"kordoc\" 으로 바꾸세요",
+    "en": "Hangul save conversion does not accept opening passwords; switch to engine \"kordoc\""
+  },
+  {
+    "ko": "문서를 읽지 못했습니다",
+    "en": "Could not read the document"
+  },
+  {
+    "ko": "gVisor 샌드박스는 root 로 실행해야 합니다 (rootless runsc 는 네트워크를 막지 못함). sudo 로 실행하거나 컨테이너 런타임(docker --runtime=runsc)을 쓰세요",
+    "en": "The gVisor sandbox must run as root (rootless runsc cannot block the network). Run with sudo or use a container runtime (docker --runtime=runsc)"
+  },
+  {
+    "ko": "XML 파싱 실패: {0}",
+    "en": "XML parsing failed: {0}"
+  },
+  {
+    "ko": "경고",
+    "en": "warning"
+  },
+  {
+    "ko": "오류",
+    "en": "error"
+  },
+  {
+    "ko": "ZIP 엔트리 수 초과: {0} (최대 {1})",
+    "en": "ZIP entry count exceeded: {0} (maximum {1})"
+  },
+  {
+    "ko": "ZIP 비압축 크기 초과: {0}MB (최대 {1}MB){2}",
+    "en": "ZIP uncompressed size exceeded: {0}MB (maximum {1}MB){2}"
+  },
+  {
+    "ko": "{0}개 머리글/바닥글 요소 제거됨",
+    "en": "Removed {0} header/footer elements"
+  },
+  {
+    "ko": "QR 코드를 읽으려면 optional dependency 'zxing-wasm' 이 필요합니다 — `npm install zxing-wasm` 후 다시 실행하세요",
+    "en": "Reading QR codes requires optional dependency 'zxing-wasm'; install with `npm install zxing-wasm` and retry"
+  },
+  {
+    "ko": "WebP 로 내려면 optional dependency 'sharp' 가 필요합니다 — PDF 그림은 PNG, 다른 형식은 원본 그림 그대로 냈습니다. `npm install sharp` 후 다시 실행하세요",
+    "en": "WebP output requires optional dependency 'sharp'; PDF images were output as PNG, other formats kept original images. Install with `npm install sharp` and retry"
+  },
+  {
+    "ko": "빈 그림 판정에 optional dependency 'sharp' 가 필요합니다 — 그림 {0}개는 판정하지 않고 남겼습니다",
+    "en": "Detecting blank images requires optional dependency 'sharp'; kept {0} images without checking"
+  },
+  {
+    "ko": "CFB 파일이 너무 짧습니다 (최소 512바이트)",
+    "en": "CFB file too short (at least 512 bytes required)"
+  },
+  {
+    "ko": "CFB 매직 바이트 불일치",
+    "en": "CFB magic-byte mismatch"
+  },
+  {
+    "ko": "유효하지 않은 섹터 크기 시프트: ",
+    "en": "Invalid sector size shift: "
+  },
+  {
+    "ko": "유효하지 않은 미니 섹터 크기 시프트: ",
+    "en": "Invalid mini-sector size shift: "
+  },
+  {
+    "ko": "FAT 섹터 수가 너무 많습니다: ",
+    "en": "Too many FAT sectors: "
+  },
+  {
+    "ko": "스트림이 너무 큽니다",
+    "en": "Stream too large"
+  },
+  {
+    "ko": "OCR 모델을 열지 못했습니다: {0} — ONNX 모델이 아니거나 손상됐습니다",
+    "en": "Cannot open OCR model: {0}; not an ONNX model or damaged"
+  },
+  {
+    "ko": "OCR 사전 파싱 실패 — 모델 캐시를 삭제 후 재다운로드하세요",
+    "en": "Failed to parse OCR dictionary; delete the model cache and download again"
+  },
+  {
+    "ko": "OCR 사전 파싱 실패 — {0} 에 PostProcess.character_dict 목록이 없습니다",
+    "en": "Failed to parse OCR dictionary; {0} has no PostProcess.character_dict list"
+  },
+  {
+    "ko": "OCR rec 출력 클래스 {0}개가 사전 {1}자 + 2 와 다릅니다 — 모델에 맞는 사전(ocrRecDict)을 지정하세요",
+    "en": "OCR recognition output has {0} classes, differing from dictionary size {1} + 2; specify a matching dictionary (ocrRecDict)"
+  },
+  {
+    "ko": "내장 OCR 을 사용하려면 optional dependency '{0}' 이 필요합니다. `npm install {1}` 후 다시 실행하세요.{2} 원인: {3}",
+    "en": "Built-in OCR requires optional dependency '{0}'. Install with `npm install {1}` and retry.{2} Cause: {3}"
+  },
+  {
+    "ko": "OCR 모델 파일을 읽지 못했습니다: {0} ({1})",
+    "en": "Cannot read OCR model file: {0} ({1})"
+  },
+  {
+    "ko": "OCR 모델 SHA256 mismatch: {0} — expected {1}, got {2} (로드 거부)",
+    "en": "OCR model SHA256 mismatch: {0}; expected {1}, got {2} (load refused)"
+  },
+  {
+    "ko": "페이지 {0} OCR 실패: {1}",
+    "en": "Page {0} OCR failed: {1}"
+  },
+  {
+    "ko": "OCR 래스터 픽셀 상한으로 렌더 해상도를 축소했습니다 (작은 글자 인식 결손 가능)",
+    "en": "Reduced rendering resolution due to the OCR raster pixel limit (small text may be missed)"
+  },
+  {
+    "ko": "페이지 {0}: 저신뢰 OCR 라인 {1}개 폐기 (인식 결손 가능)",
+    "en": "Page {0}: discarded {1} low-confidence OCR lines (recognition may be incomplete)"
+  },
+  {
+    "ko": "페이지 {0}: OCR 검출 상자가 너무 많아 {1}개는 인식하지 않음 (일부 글 결손)",
+    "en": "Page {0}: too many OCR detection boxes; {1} were not recognized (some text missing)"
+  },
+  {
+    "ko": "페이지 {0} OCR 결과 없음",
+    "en": "No OCR result for page {0}"
+  },
+  {
+    "ko": "OCR 을 사용하려면 optional dependency '{0}' 이 필요합니다. `npm install {1}` 후 다시 실행하세요.{2} 원인: {3}",
+    "en": "OCR requires optional dependency '{0}'. Install with `npm install {1}` and retry.{2} Cause: {3}"
+  },
+  {
+    "ko": "agency: 실측 서식이 없는 기관입니다 \"{0}\" — {1} 또는 {2}",
+    "en": "agency: no measured format for organization \"{0}\"; use {1} or {2}"
+  },
+  {
+    "ko": "지원하지 않는 용지 프리셋: {0} (A4·A3·B4·B5·Letter)",
+    "en": "Unsupported paper preset: {0} (A4/A3/B4/B5/Letter)"
+  },
+  {
+    "ko": "용지 치수는 0~1000mm 범위여야 합니다: {0}×{1}",
+    "en": "Paper dimensions must be within 0–1000mm: {0}×{1}"
+  },
+  {
+    "ko": "다단 개수는 1~8 정수여야 합니다: {0}",
+    "en": "Column count must be an integer from 1 to 8: {0}"
+  },
+  {
+    "ko": "내부 오류: {0} id 파티션 드리프트 — {1} 위치에 id={2} 방출. id 상수(gen-ids)와 실제 방출 수가 어긋났다 (GJ_CHAR_COUNT류 카운트·base 산술 확인)",
+    "en": "Internal error: {0} ID partition drift; emitted id={2} at position {1}. ID constants (gen-ids) differ from actual emissions (check GJ_CHAR_COUNT counts and base arithmetic)"
+  },
+  {
+    "ko": "내부 오류: charPr 기본 블록 방출 수({0}) ≠ charVariantBase({1}) — gen-header 방출 행과 gen-ids 카운트 상수가 어긋났다",
+    "en": "Internal error: charPr base block emission count ({0}) ≠ charVariantBase ({1}); gen-header emissions differ from gen-ids count constants"
+  },
+  {
+    "ko": "fontface 정적 개수 드리프트: {0} ≠ staticFontNext {1}",
+    "en": "Static fontface count drift: {0} ≠ staticFontNext {1}"
+  },
+  {
+    "ko": "목차 쪽번호 칸은 비워 둡니다 — 쪽은 조판 뒤에 정해지므로 한글에서 채우세요",
+    "en": "Table of contents page-number cells are left blank; pagination is determined after layout, so fill them in Hangul"
+  },
+  {
+    "ko": "제목이 길어 한 줄에 담지 못했습니다(20pt·장평 85%까지 축소) — 제목을 줄이세요: \"{0}…\"",
+    "en": "The title did not fit on one line (reduced to 20pt and 85% character width); shorten it: \"{0}…\""
+  },
+  {
+    "ko": "보고서 요약박스가 없습니다 — 제목 직후 인용문(>)에 보고 목적을 한 문장(쉼표 허용) 3줄 이내 \"…하고자 함\"으로 넣거나 summary 옵션을 지정하세요",
+    "en": "No report summary box; insert a blockquote (>) immediately after the title with the report purpose in one sentence (commas allowed), within 3 lines and ending in \"…하고자 함\", or specify the summary option"
+  },
+  {
+    "ko": "□ 항목이 한 줄에 담기지 않아 두 줄로 꺾입니다 — 문장을 줄이세요(장평 90%·자간 -5 로도 초과): \"{0}…\"",
+    "en": "A □ item does not fit on one line and wraps to two; shorten it (still exceeds with 90% character width and -5 spacing): \"{0}…\""
+  },
+  {
+    "ko": "장 제목이 띠 한 줄에 담기지 않아 축소했습니다 — 제목을 줄이세요: \"{0}…\"",
+    "en": "Reduced a chapter title that did not fit on one banner line; shorten it: \"{0}…\""
+  },
+  {
+    "ko": "장 제목이 한 줄에 담기지 않아 축소했습니다 — 제목을 줄이세요: \"{0}…\"",
+    "en": "Reduced a chapter title that did not fit on one line; shorten it: \"{0}…\""
+  },
+  {
+    "ko": "장 제목이 띠 표 한 줄에 담기지 않아 축소했습니다 — 제목을 줄이세요: \"{0}…\"",
+    "en": "Reduced a chapter title that did not fit on one banner-table line; shorten it: \"{0}…\""
+  },
+  {
+    "ko": "절 제목이 띠 한 줄에 담기지 않아 축소했습니다 — 제목을 줄이세요: \"{0}…\"",
+    "en": "Reduced a section title that did not fit on one banner line; shorten it: \"{0}…\""
+  },
+  {
+    "ko": "개체·구역 정의·쪽 나눔이 든 문단 — 문단은 두고 글만 비움",
+    "en": "Paragraph contains objects, section definitions or page breaks; retained the paragraph and cleared only its text"
+  },
+  {
+    "ko": "메모 텍스트 본문 제외: memogroup",
+    "en": "Excluded memo text from body: memogroup"
+  },
+  {
+    "ko": "스킵된 요소: {0}",
+    "en": "Skipped element: {0}"
+  },
+  {
+    "ko": "숨은 설명 텍스트 제외: hiddenComment",
+    "en": "Excluded hidden description text: hiddenComment"
+  },
+  {
+    "ko": "미지원 제어 요소의 텍스트 손실: {0}",
+    "en": "Text lost from unsupported control element: {0}"
+  },
+  {
+    "ko": "변경추적 삭제 텍스트 출력 제외",
+    "en": "Excluded tracked-deletion text from output"
+  },
+  {
+    "ko": "수식 LaTeX 변환 실패 — 수식 텍스트 제외: {0}",
+    "en": "Equation LaTeX conversion failed; excluded equation text: {0}"
+  },
+  {
+    "ko": "손상된 ZIP 구조 — Local File Header 기반 복구 모드",
+    "en": "Damaged ZIP structure; recovering from Local File Headers"
+  },
+  {
+    "ko": "압축 해제 크기 초과",
+    "en": "Decompressed size exceeded"
+  },
+  {
+    "ko": "손상된 HWPX에서 섹션 데이터를 복구할 수 없습니다",
+    "en": "Cannot recover section data from damaged HWPX"
+  },
+  {
+    "ko": "COM fallback은 Windows에서만 사용 가능합니다",
+    "en": "COM fallback is available on Windows only"
+  },
+  {
+    "ko": "COM 출력에 JSON이 없습니다: {0}",
+    "en": "No JSON in COM output: {0}"
+  },
+  {
+    "ko": "COM 텍스트 추출 실패: {0}",
+    "en": "COM text extraction failed: {0}"
+  },
+  {
+    "ko": "COM으로 텍스트를 추출하지 못했습니다",
+    "en": "Could not extract text with COM"
+  },
+  {
+    "ko": "DRM 문서: 한컴 COM API로 텍스트 추출 (서식/표 정보 제한적)",
+    "en": "DRM document: extracted text using the Hancom COM API (limited formatting/table information)"
+  },
+  {
+    "ko": "견본 {0} 이 너무 큽니다 ({1}MB)",
+    "en": "Sample {0} is too large ({1}MB)"
+  },
+  {
+    "ko": "견본 {0} 에 DOCTYPE 이 있습니다 — 한글 저장본이 아닙니다",
+    "en": "Sample {0} contains DOCTYPE; not a Hangul-saved file"
+  },
+  {
+    "ko": "견본 {0} XML 이 올바르지 않습니다: {1}",
+    "en": "Sample {0} XML is invalid: {1}"
+  },
+  {
+    "ko": "견본이 HWPX(zip)가 아닙니다 — 한글에서 .hwpx 로 저장한 파일을 쓰세요 (.hwp 는 kordoc 으로 먼저 변환)",
+    "en": "Sample is not HWPX (ZIP); use a file saved as .hwpx in Hangul (convert .hwp with kordoc first)"
+  },
+  {
+    "ko": "견본 ZIP 엔트리 수 초과 (ZIP bomb 의심)",
+    "en": "Sample ZIP entry count exceeded (suspected ZIP bomb)"
+  },
+  {
+    "ko": "견본 ZIP 에 허용하지 않는 경로가 있습니다: {0}",
+    "en": "Disallowed path in sample ZIP: {0}"
+  },
+  {
+    "ko": "암호가 걸린 견본입니다 — 한글에서 암호를 풀고 저장한 파일을 쓰세요",
+    "en": "The sample is password-protected; use a file saved after removing the password in Hangul"
+  },
+  {
+    "ko": "견본 HWPX 에 Contents/header.xml 또는 section0.xml 이 없습니다",
+    "en": "Sample HWPX is missing Contents/header.xml or section0.xml"
+  },
+  {
+    "ko": "견본 HWPX 에 {0} 이 없습니다",
+    "en": "Sample HWPX is missing {0}"
+  },
+  {
+    "ko": "견본 section0 에 구역 정의(secPr)가 없습니다 — 한글에서 저장한 HWPX 인지 확인하세요",
+    "en": "Sample section0 has no section definition (secPr); verify it is HWPX saved in Hangul"
+  },
+  {
+    "ko": "template: 원고에 없는 담당 줄 칸은 견본 그대로 둠 — {0}",
+    "en": "template: kept sample contact-line fields absent from the manuscript: {0}"
+  },
+  {
+    "ko": "붙여넣기 흔적 {0}개 정리 (보이지 않는 글자·인용 표시·이스케이프된 굵게)",
+    "en": "Cleaned {0} paste artifacts (invisible characters, quotation markers, escaped bold)"
+  },
+  {
+    "ko": "template: 각주 {0}개는 견본 모드에서 넣지 않습니다",
+    "en": "template: {0} footnotes are not inserted in sample mode"
+  },
+  {
+    "ko": "template: 그림 {0}개는 견본 모드에서 넣지 않습니다",
+    "en": "template: {0} images are not inserted in sample mode"
+  },
+  {
+    "ko": "template: 글 줄 안 그림 {0}개는 대체 글(alt)로 넣었습니다",
+    "en": "template: inserted {0} inline images as alternative text (alt)"
+  },
+  {
+    "ko": "template: 견본에 {0} 서식이 없어 가까운 서식으로 대신했습니다",
+    "en": "template: sample has no {0} format; substituted the nearest format"
+  },
+  {
+    "ko": "생성 본문이 너무 큽니다 ({0}MB) — 원고를 나눠 만드세요",
+    "en": "Generated body is too large ({0}MB); split the manuscript"
+  },
+  {
+    "ko": "template: 견본의 구역 {0}개 중 {1}번째 구역(본문) 서식만 씁니다",
+    "en": "template: using only section {1} (body) formatting out of {0} sample sections"
+  },
+  {
+    "ko": "template(부서 서식 견본)은 {0} 옵션과 함께 쓸 수 없습니다 — 쪽·글꼴·표 서식은 견본이 정합니다",
+    "en": "template (department format sample) cannot be used with {0} options; the sample determines page, font and table formatting"
+  },
+  {
+    "ko": "BinData {0} 없음",
+    "en": "BinData {0} is missing"
+  },
+  {
+    "ko": "BinData {0}: 알 수 없는 이미지 형식",
+    "en": "BinData {0}: unknown image format"
+  },
+  {
+    "ko": "AES-128 키는 16바이트여야 합니다",
+    "en": "An AES-128 key must be 16 bytes"
+  },
+  {
+    "ko": "AES ECB 입력은 16바이트의 배수여야 합니다",
+    "en": "AES ECB input must be a multiple of 16 bytes"
+  },
+  {
+    "ko": "배포용 payload가 256바이트 미만입니다",
+    "en": "Distribution payload is shorter than 256 bytes"
+  },
+  {
+    "ko": "AES 키 추출 실패: 오프셋이 payload 범위를 초과합니다",
+    "en": "AES key extraction failed: offset exceeds payload bounds"
+  },
+  {
+    "ko": "레코드 헤더 파싱 실패: 데이터 부족",
+    "en": "Record header parsing failed: insufficient data"
+  },
+  {
+    "ko": "확장 레코드 크기 파싱 실패: 데이터 부족",
+    "en": "Extended record size parsing failed: insufficient data"
+  },
+  {
+    "ko": "배포용 문서의 첫 레코드가 DISTRIBUTE_DOC_DATA({0})가 아닙니다 (실제: {1})",
+    "en": "The first record of the distribution document is not DISTRIBUTE_DOC_DATA ({0}) (actual: {1})"
+  },
+  {
+    "ko": "배포용 payload가 유효하지 않습니다",
+    "en": "Invalid distribution payload"
+  },
+  {
+    "ko": "배포용 문서에 암호화된 본문 데이터가 없습니다",
+    "en": "Distribution document has no encrypted body data"
+  },
+  {
+    "ko": "암호화된 데이터가 너무 짧습니다 (16바이트 미만)",
+    "en": "Encrypted data too short (less than 16 bytes)"
+  },
+  {
+    "ko": "지원하지 않는 HWP 암호화 버전입니다 (EncryptVersion={0}, 지원: {1})",
+    "en": "Unsupported HWP encryption version (EncryptVersion={0}, supported: {1})"
+  },
+  {
+    "ko": "스킵된 OLE 개체",
+    "en": "Skipped OLE object"
+  },
+  {
+    "ko": "외부 연결 이미지 (binDataId {0})",
+    "en": "Externally linked image (binDataId {0})"
+  },
+  {
+    "ko": "손상된 CFB 컨테이너 — lenient 모드로 복구",
+    "en": "Damaged CFB container; recovering in lenient mode"
+  },
+  {
+    "ko": "CFB 컨테이너 파싱 실패 (strict 및 lenient 모두)",
+    "en": "CFB container parsing failed in both strict and lenient modes"
+  },
+  {
+    "ko": "FileHeader 스트림 없음",
+    "en": "FileHeader stream is missing"
+  },
+  {
+    "ko": "HWP 시그니처 불일치",
+    "en": "HWP signature mismatch"
+  },
+  {
+    "ko": "DRM 보호된 HWP는 지원하지 않습니다",
+    "en": "DRM-protected HWP is not supported"
+  },
+  {
+    "ko": "암호로 보호된 HWP 문서입니다. password 옵션에 열기 암호를 지정하세요.",
+    "en": "This HWP document is password-protected. Specify the opening password in the password option."
+  },
+  {
+    "ko": "DocInfo 스트림 없음",
+    "en": "DocInfo stream is missing"
+  },
+  {
+    "ko": "총 압축 해제 크기 초과 (decompression bomb 의심)",
+    "en": "Total decompressed size exceeded (suspected decompression bomb)"
+  },
+  {
+    "ko": "반복 러닝 헤더 {0}개 제거",
+    "en": "Removed {0} repeated running headers"
+  },
+  {
+    "ko": "HWPX ZIP을 열 수 없습니다",
+    "en": "Cannot open HWPX ZIP"
+  },
+  {
+    "ko": "프로필 JSON 파싱 실패: {0}",
+    "en": "Profile JSON parsing failed: {0}"
+  },
+  {
+    "ko": "프로필 스키마 불일치: {0}",
+    "en": "Profile schema mismatch: {0}"
+  },
+  {
+    "ko": "폐쇄망 모드(KORDOC_OFFLINE)에서 차단됨: {0}",
+    "en": "Blocked in offline mode (KORDOC_OFFLINE): {0}"
+  },
+  {
+    "ko": "이미 존재 + SHA 일치",
+    "en": "Already exists and SHA matches"
+  },
+  {
+    "ko": "{0} 다운로드 실패: HTTP {1} {2} ({3})",
+    "en": "Failed to download {0}: HTTP {1} {2} ({3})"
+  },
+  {
+    "ko": "응답이 예상 크기({0}MB)를 크게 넘습니다",
+    "en": "Response greatly exceeds the expected size ({0}MB)"
+  },
+  {
+    "ko": "{0} 스트리밍 실패: {1}",
+    "en": "Failed to stream {0}: {1}"
+  },
+  {
+    "ko": "{0} SHA 계산 실패: {1}",
+    "en": "Failed to calculate SHA for {0}: {1}"
+  },
+  {
+    "ko": "{0} SHA256 mismatch: expected {1}, got {2} — 모델 URL 이 오염되었거나 전송 중 손상되었습니다.",
+    "en": "{0} SHA256 mismatch: expected {1}, got {2}; the model URL may be compromised or the transfer damaged."
+  },
+  {
+    "ko": "FileHeader가 너무 짧습니다 (최소 40바이트)",
+    "en": "FileHeader is too short (at least 40 bytes required)"
+  },
+  {
+    "ko": "이미지 건너뜀: {0} ({1})",
+    "en": "Image skipped: {0} ({1})"
+  },
+  {
+    "ko": "--levels: '{0}' — 'depth=글꼴/pt/bold' 꼴이어야 함",
+    "en": "--levels: '{0}'; expected 'depth=font/pt/bold'"
+  },
+  {
+    "ko": "허용된 작업 디렉토리(KORDOC_ROOT) 밖의 경로입니다: {0}",
+    "en": "Path is outside the allowed working directory (KORDOC_ROOT): {0}"
+  },
+  {
+    "ko": "파일이 너무 큽니다 ({0}MB)",
+    "en": "File too large ({0}MB)"
+  },
+  {
+    "ko": "잘못된 SVG 크기: {0}x{1}pt",
+    "en": "Invalid SVG size: {0}x{1}pt"
+  },
+  {
+    "ko": "PNG가 상한({0}MB)을 초과합니다 ({1}MB) — format: \"svg\" + output_path로 파일 저장을 사용하세요",
+    "en": "PNG exceeds the limit ({0}MB) at {1}MB; use format: \"svg\" + output_path to save a file"
+  },
+  {
+    "ko": "MFD 출력 없음 또는 dtype 불일치",
+    "en": "MFD output missing or dtype mismatch"
+  },
+  {
+    "ko": "MFD 출력 차원 예상 3, 실제 {0}: [{1}]",
+    "en": "Expected 3 MFD output dimensions, got {0}: [{1}]"
+  },
+  {
+    "ko": "MFD 채널 수 예상 {0}, 실제 {1}",
+    "en": "Expected {0} MFD channels, got {1}"
+  },
+  {
+    "ko": "MFR encoder 출력 없음",
+    "en": "MFR encoder output missing"
+  },
+  {
+    "ko": "MFR encoder 차원 예상 3, 실제 {0}",
+    "en": "Expected 3 MFR encoder dimensions, got {0}"
+  },
+  {
+    "ko": "MFR encoder hidden 예상 {0}, 실제 {1}",
+    "en": "Expected MFR encoder hidden size {0}, got {1}"
+  },
+  {
+    "ko": "MFR decoder logits 없음",
+    "en": "MFR decoder logits missing"
+  },
+  {
+    "ko": "MFR decoder 차원 예상 3, 실제 {0}",
+    "en": "Expected 3 MFR decoder dimensions, got {0}"
+  },
+  {
+    "ko": "수식 OCR 을 사용하려면 optional dependency '{0}' 이 필요합니다. `npm install {1}` 후 다시 실행하세요. 원인: {2}",
+    "en": "Formula OCR requires optional dependency '{0}'. Install with `npm install {1}` and retry. Cause: {2}"
+  },
+  {
+    "ko": "한/글 저장 변환은 Windows + 한/글 설치 환경에서만 씁니다 — engine 을 \"kordoc\" 이나 \"auto\" 로 주세요",
+    "en": "Hangul save conversion requires Windows with Hangul installed; set engine to \"kordoc\" or \"auto\""
+  },
+  {
+    "ko": "한/글이 문서를 열지 못했습니다 — 열기 암호가 걸린 문서는 engine \"kordoc\" 과 password 로 바꾸세요",
+    "en": "Hangul could not open the document; for opening-password-protected documents, use engine \"kordoc\" with password"
+  },
+  {
+    "ko": "한/글 저장 변환 실패: {0}",
+    "en": "Hangul save conversion failed: {0}"
+  },
+  {
+    "ko": "수식 OCR 실패: {0}",
+    "en": "Formula OCR failed: {0}"
+  },
+  {
+    "ko": "OCR 결과 없음",
+    "en": "No OCR result"
+  },
+  {
+    "ko": "OCR 래스터 픽셀 상한으로 이미지 해상도를 축소했습니다 (작은 글자 인식 결손 가능)",
+    "en": "Reduced image resolution due to the OCR raster pixel limit (small text may be missed)"
+  },
+  {
+    "ko": "저신뢰 OCR 라인 {0}개 폐기 (인식 결손 가능)",
+    "en": "Discarded {0} low-confidence OCR lines (recognition may be incomplete)"
+  },
+  {
+    "ko": "OCR 검출 상자가 너무 많아 {0}개는 인식하지 않음 (일부 글 결손)",
+    "en": "Too many OCR detection boxes; {0} were not recognized (some text missing)"
+  },
+  {
+    "ko": "이미지에서 텍스트를 인식하지 못했습니다",
+    "en": "Could not recognize text in the image"
+  },
+  {
+    "ko": "이미지 파싱에는 optional dependency 'sharp' 가 필요합니다. `npm install sharp` 후 다시 실행하세요.{0} 원인: {1}",
+    "en": "Image parsing requires optional dependency 'sharp'. Install with `npm install sharp` and retry.{0} Cause: {1}"
+  },
+  {
+    "ko": "캐시에 없음",
+    "en": "Not in cache"
+  },
+  {
+    "ko": "번들에 없음",
+    "en": "Not in bundle"
+  },
+  {
+    "ko": "options: htmlTables 와 tableFormat 은 함께 쓸 수 없습니다",
+    "en": "options: htmlTables and tableFormat cannot be used together"
+  },
+  {
+    "ko": "이미지 바이트가 Uint8Array 가 아닙니다",
+    "en": "Image bytes are not a Uint8Array"
+  },
+  {
+    "ko": "응답이 상한({0}바이트)을 넘습니다 — transport.images \"files\" 로 이미지를 파일로 받으세요",
+    "en": "Response exceeds the limit ({0} bytes); use transport.images \"files\" to receive images as files"
+  },
+  {
+    "ko": "이미지 크기 초과로 추출 생략 ({0}×{1})",
+    "en": "Image extraction skipped due to size limit ({0}×{1})"
+  },
+  {
+    "ko": "이미지 추출 상한 도달 ({0}개/128MB) — 이후 이미지 생략",
+    "en": "Image extraction limit reached ({0} images/128MB); remaining images omitted"
+  },
+  {
+    "ko": "WebP 한도(가로·세로 16,383px)를 넘는 그림 {0}개를 PNG 로 냈습니다",
+    "en": "Output {0} images as PNG because they exceed the WebP limit (16,383px in width/height)"
+  },
+  {
+    "ko": "WebP 인코딩 실패로 그림 {0}개를 PNG 로 냈습니다",
+    "en": "Output {0} images as PNG because WebP encoding failed"
+  },
+  {
+    "ko": "암호로 보호된 PDF 파일입니다 (PDF 열기 암호는 지원하지 않습니다)",
+    "en": "This PDF file is password-protected (PDF opening passwords are not supported)"
+  },
+  {
+    "ko": "PDF 로딩 타임아웃 (30초 초과)",
+    "en": "PDF loading timed out (over 30 seconds)"
+  },
+  {
+    "ko": "PDF에 페이지가 없습니다.",
+    "en": "The PDF has no pages."
+  },
+  {
+    "ko": "{0}쪽 중 앞 {1}쪽만 파싱했습니다 (쪽 수 상한)",
+    "en": "Parsed only the first {1} of {0} pages (page count limit)"
+  },
+  {
+    "ko": "{0}개 숨겨진 텍스트 요소 필터링됨",
+    "en": "Filtered {0} hidden text elements"
+  },
+  {
+    "ko": "텍스트 추출 크기 초과",
+    "en": "Extracted text size exceeded"
+  },
+  {
+    "ko": "페이지 {0} 파싱 실패: {1}",
+    "en": "Failed to parse page {0}: {1}"
+  },
+  {
+    "ko": "{0}개 페이지에 OCR 적용 ({1})",
+    "en": "Applied OCR to {0} pages ({1})"
+  },
+  {
+    "ko": "내장 PP-OCRv5",
+    "en": "built-in PP-OCRv5"
+  },
+  {
+    "ko": "사용자 프로바이더",
+    "en": "custom provider"
+  },
+  {
+    "ko": "OCR 실행 불가: {0}",
+    "en": "Cannot run OCR: {0}"
+  },
+  {
+    "ko": "이미지 기반 PDF ({0}페이지, 텍스트 {1}자) — 텍스트 레이어가 없어 OCR이 필요합니다. ocr: true (CLI --ocr) 로 다시 파싱하면 읽습니다",
+    "en": "Image-based PDF ({0} pages, {1} text characters); no text layer, so OCR is required. Parse again with ocr: true (CLI --ocr) to read it"
+  },
+  {
+    "ko": "{0} — OCR 검토 필요 (ocr: true / CLI --ocr 로 다시 파싱)",
+    "en": "{0}; OCR review required (parse again with ocr: true / CLI --ocr)"
+  },
+  {
+    "ko": "{0}개 이미지 영역에 추출 가능한 텍스트 없음 (그림/차트/도장 내용 누락 가능 — 그림 속 글은 ocr: true / CLI --ocr 로 읽습니다)",
+    "en": "No extractable text in {0} image regions (image/chart/seal content may be missing; read image text with ocr: true / CLI --ocr)"
+  },
+  {
+    "ko": "마스킹 splice 범위 겹침 — 내부 오류",
+    "en": "Redaction splice ranges overlap; internal error"
+  },
+  {
+    "ko": "알 수 없는 바이너리 엔트리 {0} 는 검사하지 못했습니다",
+    "en": "Unknown binary entry {0} could not be scanned"
+  },
+  {
+    "ko": "{0}: 형식을 몰라 미리보기 이미지를 지우지 못했습니다 — 첫 쪽 렌더에 PII 가 보일 수 있습니다",
+    "en": "{0}: could not remove preview image due to unknown format; PII may be visible in the first-page rendering"
+  },
+  {
+    "ko": "미리보기 이미지({0})를 같은 크기의 흰 이미지로 바꿨습니다 — 한컴에서 저장하면 다시 만들어집니다",
+    "en": "Replaced preview images ({0}) with white images of the same size; regenerated when saved in Hancom"
+  },
+  {
+    "ko": "삽입 그림 {0}개({1})는 화소 속 글자(스캔 문서 등)를 탐지하지 못합니다 — JPEG·PNG 메타데이터만 검사했습니다",
+    "en": "Cannot detect text within pixels in {0} embedded images ({1}), such as scanned documents; scanned JPEG/PNG metadata only"
+  },
+  {
+    "ko": "삽입 개체 {0}개({1} — OLE·EMF)는 가리지 못합니다 — 안의 글자에 PII 가 있으면 재검사 잔존으로 보고됩니다",
+    "en": "Cannot redact {0} embedded objects ({1}; OLE/EMF); PII in their text is reported as residual in the rescan"
+  },
+  {
+    "ko": "인코딩을 몰라 검사하지 못한 글자 엔트리: {0}",
+    "en": "Text entry not scanned due to unknown encoding: {0}"
+  },
+  {
+    "ko": "HWP FileHeader 스트림이 없습니다",
+    "en": "HWP FileHeader stream is missing"
+  },
+  {
+    "ko": "배포용·암호·DRM 문서는 본문이 암호화돼 있어 마스킹할 수 없습니다",
+    "en": "Cannot redact distribution/password/DRM documents because their body is encrypted"
+  },
+  {
+    "ko": "문서 이력({0})이 들어 있습니다 — 이전 판의 글자는 문자열 조각 단위로만 검사했습니다",
+    "en": "Document history ({0}) is present; previous-version text was scanned only as string fragments"
+  },
+  {
+    "ko": "미리보기 이미지(PrvImage)를 같은 크기의 흰 이미지로 바꿨습니다 — 한컴에서 저장하면 다시 만들어집니다",
+    "en": "Replaced the preview image (PrvImage) with a white image of the same size; regenerated when saved in Hancom"
+  },
+  {
+    "ko": "미리보기 이미지(PrvImage) 형식을 몰라 지우지 못했습니다 — 첫 쪽 렌더에 PII 가 보일 수 있습니다",
+    "en": "Could not remove the preview image (PrvImage) due to unknown format; PII may be visible in the first-page rendering"
+  },
+  {
+    "ko": "미할당 영역(한컴이 남긴 옛 스트림 사본 등) {0}KB를 0으로 비웠습니다{1}",
+    "en": "Zeroed {0}KB of unallocated space (such as old stream copies left by Hancom){1}"
+  },
+  {
+    "ko": " — 그 안에 개인정보 {0}건이 있었습니다",
+    "en": "; it contained {0} personal information matches"
+  },
+  {
+    "ko": "미할당 섹터를 비우지 못했습니다 ({0}) — 옛 스트림 사본이 남을 수 있습니다",
+    "en": "Could not clear unallocated sectors ({0}); old stream copies may remain"
+  },
+  {
+    "ko": "PDF 를 공개하려면 PDF 편집기의 가림(redaction) 기능으로 텍스트를 실제로 지우거나, 마스킹된 마크다운으로 새 문서를 만드세요.",
+    "en": "To publish a PDF, actually remove text with a PDF editor's redaction feature, or create a new document from the redacted Markdown."
+  },
+  {
+    "ko": "Linux에서 디렉토리 감시(fs.watch recursive)는 Node 19.1 이상이 필요합니다 (현재 {0}) — Node 20+ 업그레이드를 권장합니다",
+    "en": "Recursive directory watching (fs.watch recursive) on Linux requires Node 19.1 or later (current {0}); upgrading to Node 20+ is recommended"
+  },
+  {
+    "ko": "디렉토리를 찾을 수 없습니다: {0}",
+    "en": "Directory not found: {0}"
+  },
+  {
+    "ko": "유효하지 않은 webhook URL: {0}",
+    "en": "Invalid webhook URL: {0}"
+  },
+  {
+    "ko": "허용되지 않는 webhook 프로토콜: {0}",
+    "en": "Disallowed webhook protocol: {0}"
+  },
+  {
+    "ko": "내부 네트워크 대상 webhook은 허용되지 않습니다: {0}",
+    "en": "Webhooks targeting internal networks are not allowed: {0}"
+  },
+  {
+    "ko": "webhook 대상이 내부 네트워크로 해석됩니다: {0} → {1}",
+    "en": "Webhook target resolves to an internal network: {0} → {1}"
+  },
+  {
+    "ko": "webhook DNS 결과가 없습니다: {0}",
+    "en": "No webhook DNS results: {0}"
+  },
+  {
+    "ko": "webhook 연결 시간 초과",
+    "en": "Webhook connection timed out"
+  },
+  {
+    "ko": " — 그림·개체 파트가 {0}MB, 이미지 추출을 끄면(images: false·--no-images) 세지 않는다",
+    "en": "; image/object parts total {0}MB; they are not counted when image extraction is disabled (images: false / --no-images)"
+  },
+  {
+    "ko": " (주: {0})",
+    "en": " (note: {0})"
+  },
+  {
+    "ko": "강조(굵게·밑줄 등) 추가·삭제는 미지원: 글만 적용, 원문 글자 모양 유지",
+    "en": "Adding/removing emphasis (bold, underline, etc.) is not supported: applied text only, preserving original character styles"
+  },
+  {
+    "ko": "글자를 곡선(벡터 경로)으로 그린 페이지 (텍스트층에 글자 없음)",
+    "en": "Page draws characters as curves (vector paths); no characters in the text layer"
+  },
+  {
+    "ko": "텍스트가 거의 없는 페이지 (스캔/이미지 추정)",
+    "en": "Page has almost no text (suspected scan/image)"
+  },
+  {
+    "ko": "글꼴 매핑 실패 (PUA 비율 높음) — 추출 텍스트 신뢰 불가",
+    "en": "Font mapping failed (high PUA ratio); extracted text is unreliable"
+  },
+  {
+    "ko": "제어문자 비율 높음 — 추출 텍스트 신뢰 불가",
+    "en": "High control-character ratio; extracted text is unreliable"
+  },
+  {
+    "ko": "대체문자(U+FFFD) 비율 높음 — 추출 텍스트 신뢰 불가",
+    "en": "High replacement-character (U+FFFD) ratio; extracted text is unreliable"
+  },
+  {
+    "ko": "글꼴 매핑 실패 (한글 자소 분포 이상) — 추출 텍스트가 깨졌을 수 있음",
+    "en": "Font mapping failed (abnormal Hangul Jamo distribution); extracted text may be garbled"
+  },
+  {
+    "ko": "{0} 원본 파일은 수정하지 않습니다 — 마스킹된 마크다운만 만듭니다. 원본의 텍스트 레이어·이미지·메타데이터에는 PII 가 그대로 남습니다.",
+    "en": "The {0} source file is not modified; only redacted Markdown is created. PII remains in the source text layer, images and metadata."
+  }
+]

@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import type { App, TFile } from "obsidian";
 import MarkdownIt from "markdown-it";
 
@@ -21,10 +22,10 @@ export async function collectVaultImages(app: App, source: TFile, markdown: stri
     let decoded = target;
     try { decoded = decodeURIComponent(target); } catch { /* Keep literal filenames with %. */ }
     const image = app.metadataCache.getFirstLinkpathDest(decoded.split("#", 1)[0], source.path);
-    if (!image || !/^(png|jpg|jpeg|gif|bmp)$/i.test(image.extension)) { warnings.push(`이미지를 삽입하지 못했습니다: ${target}`); continue; }
+    if (!image || !/^(png|jpg|jpeg|gif|bmp)$/i.test(image.extension)) { warnings.push(L({ ko: `이미지를 삽입하지 못했습니다: ${target}`, en: `Could not embed image: ${target}` })); continue; }
     if (resolved.has(image.path)) { aliases[target] = resolved.get(image.path)!; continue; }
     const data = await app.vault.readBinary(image);
-    if (data.byteLength > 40 * 1024 * 1024 || total + data.byteLength > 100 * 1024 * 1024) throw new Error("첨부 이미지의 크기가 허용 범위를 초과했습니다 (개별 40MB·전체 100MB).");
+    if (data.byteLength > 40 * 1024 * 1024 || total + data.byteLength > 100 * 1024 * 1024) throw new Error(L({ ko: "첨부 이미지의 크기가 허용 범위를 초과했습니다 (개별 40MB·전체 100MB).", en: "Attachment image sizes exceed the allowed limits (40MB each, 100MB total)." }));
     total += data.byteLength;
     const name = `kordoc-image-${resolved.size + 1}.${image.extension.toLowerCase()}`;
     resolved.set(image.path, name); aliases[target] = name; images[name] = data;

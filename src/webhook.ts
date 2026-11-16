@@ -1,8 +1,9 @@
+import { L } from "./locale";
 import type { requestUrl } from "obsidian";
 
 export async function notifyWebhook(request: typeof requestUrl, url: string, payload: unknown, timeoutMs = 5000): Promise<void> {
   const endpoint = new URL(url);
-  if (!/^https?:$/.test(endpoint.protocol)) throw new Error("웹훅은 HTTP(S) 주소여야 합니다.");
+  if (!/^https?:$/.test(endpoint.protocol)) throw new Error(L({ ko: "웹훅은 HTTP(S) 주소여야 합니다.", en: "The webhook must be an HTTP(S) URL." }));
   let timer = 0;
   try {
     // Timeout stops waiting; requestUrl cannot abort and may still complete later.

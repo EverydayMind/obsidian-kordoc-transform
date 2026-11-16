@@ -1,3 +1,4 @@
+import { L } from "./locale";
 import { createRequire } from "node:module";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -21,15 +22,15 @@ export function configureRuntimePaths(pluginDirectory: string): void {
 }
 export function runtimePath(...parts: string[]): string { return join(directory, ...parts); }
 function inspect(): { files: Record<string, string> } {
-  if (!directory || !existsSync(runtimePath("pack.json"))) throw new Error("OCR 추가 팩이 설치되지 않았습니다.");
+  if (!directory || !existsSync(runtimePath("pack.json"))) throw new Error(L({ ko: "OCR 추가 팩이 설치되지 않았습니다.", en: "The OCR add-on pack is not installed." }));
   let data: unknown;
   try { data = JSON.parse(readFileSync(runtimePath("pack.json"), "utf8")); }
-  catch { throw new Error("OCR 추가 팩 정보를 읽을 수 없습니다."); }
-  if (!data || typeof data !== "object" || !("format" in data) || data.format !== 1 || !("pluginId" in data) || data.pluginId !== "kordoc-transform" || !("pluginVersion" in data) || data.pluginVersion !== VERSION || !("engineVersion" in data) || data.engineVersion !== VERSION) throw new Error("OCR 추가 팩의 형식 또는 버전이 맞지 않습니다.");
-  if (!("platform" in data) || data.platform !== process.platform || !("arch" in data) || data.arch !== process.arch) throw new Error("OCR 추가 팩의 운영체제 또는 아키텍처가 맞지 않습니다.");
-  if (!("buildId" in data) || typeof data.buildId !== "string" || !/^[a-f0-9]{7,40}$/.test(data.buildId) || !("files" in data) || !data.files || typeof data.files !== "object" || Array.isArray(data.files)) throw new Error("OCR 추가 팩의 파일 목록이 잘못되었습니다.");
-  for (const name of required) if (!Object.prototype.hasOwnProperty.call(data.files, name) || !existsSync(runtimePath(...name.split("/")))) throw new Error(`OCR 추가 팩의 필수 파일이 없습니다: ${name}`);
-  for (const name of Object.keys(data.files)) if (!existsSync(runtimePath(...name.split("/")))) throw new Error(`OCR 추가 팩 파일이 없습니다: ${name}`);
+  catch { throw new Error(L({ ko: "OCR 추가 팩 정보를 읽을 수 없습니다.", en: "Cannot read OCR add-on pack information." })); }
+  if (!data || typeof data !== "object" || !("format" in data) || data.format !== 1 || !("pluginId" in data) || data.pluginId !== "kordoc-transform" || !("pluginVersion" in data) || data.pluginVersion !== VERSION || !("engineVersion" in data) || data.engineVersion !== VERSION) throw new Error(L({ ko: "OCR 추가 팩의 형식 또는 버전이 맞지 않습니다.", en: "The OCR add-on pack format or version does not match." }));
+  if (!("platform" in data) || data.platform !== process.platform || !("arch" in data) || data.arch !== process.arch) throw new Error(L({ ko: "OCR 추가 팩의 운영체제 또는 아키텍처가 맞지 않습니다.", en: "The OCR add-on pack operating system or architecture does not match." }));
+  if (!("buildId" in data) || typeof data.buildId !== "string" || !/^[a-f0-9]{7,40}$/.test(data.buildId) || !("files" in data) || !data.files || typeof data.files !== "object" || Array.isArray(data.files)) throw new Error(L({ ko: "OCR 추가 팩의 파일 목록이 잘못되었습니다.", en: "Invalid OCR add-on pack file list." }));
+  for (const name of required) if (!Object.prototype.hasOwnProperty.call(data.files, name) || !existsSync(runtimePath(...name.split("/")))) throw new Error(L({ ko: `OCR 추가 팩의 필수 파일이 없습니다: ${name}`, en: `Required OCR add-on pack file is missing: ${name}` }));
+  for (const name of Object.keys(data.files)) if (!existsSync(runtimePath(...name.split("/")))) throw new Error(L({ ko: `OCR 추가 팩 파일이 없습니다: ${name}`, en: `OCR add-on pack file is missing: ${name}` }));
   return { files: data.files as Record<string, string> };
 }
 export function runtimePackError(verify: boolean | "worker" = false): string | undefined {
@@ -41,14 +42,14 @@ export function runtimePackError(verify: boolean | "worker" = false): string | u
       const entries = verify === "worker" ? ["engine.cjs", "parse-worker.cjs", "web-worker-engine.cjs"].map(name => [name, pack.files[name]] as const) : Object.entries(pack.files);
       for (const [name, expected] of entries) {
         const target = resolve(directory, name);
-        if (!name || name.includes("\\") || name.split("/").some(part => !part || part === "." || part === "..") || !target.startsWith(resolve(directory) + sep) || !/^[a-f0-9]{64}$/.test(expected) || createHash("sha256").update(readFileSync(target)).digest("hex") !== expected) throw new Error(`OCR 추가 팩 파일이 손상되었습니다: ${name}`);
+        if (!name || name.includes("\\") || name.split("/").some(part => !part || part === "." || part === "..") || !target.startsWith(resolve(directory) + sep) || !/^[a-f0-9]{64}$/.test(expected) || createHash("sha256").update(readFileSync(target)).digest("hex") !== expected) throw new Error(L({ ko: `OCR 추가 팩 파일이 손상되었습니다: ${name}`, en: `OCR add-on pack file is damaged: ${name}` }));
       }
       if (verify === "worker") workerVerified = true;
       else { verified = "ok"; workerVerified = true; }
     }
     return undefined;
   } catch (error) {
-    failure = `${error instanceof Error ? error.message : String(error)} 설치 안내: ${HELP}`;
+    failure = L({ ko: `${error instanceof Error ? error.message : String(error)} 설치 안내: ${HELP}`, en: `${error instanceof Error ? error.message : String(error)} Installation guide: ${HELP}` });
     return failure;
   }
 }
