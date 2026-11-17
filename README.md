@@ -4,7 +4,7 @@
 
 Convert Korean office documents to Markdown notes inside Obsidian Desktop, preview and edit HWPX, and export Markdown back to HWPX. Everything runs locally and offline; the conversion engine is bundled.
 
-The interface and the agent tool wording follow the app language: Korean when Obsidian is set to Korean, English otherwise. This is an unofficial plugin built on the MIT-licensed [kordoc](https://github.com/chrisryugj/kordoc) library (bundled engine version 4.24.59; plugin version 4.24.62).
+The interface and the agent tool wording follow the app language: Korean when Obsidian is set to Korean, English otherwise. This is an unofficial plugin built on the MIT-licensed [kordoc](https://github.com/chrisryugj/kordoc) library (bundled engine version 4.24.59; plugin version 4.24.63).
 
 ## Features
 
@@ -64,4 +64,4 @@ MIT, see [LICENSE](LICENSE).
 
 ---
 
-**Verbex**, an AI agent plugin for Obsidian that works together with this plugin, is planned for public release.
+**Verbex**, an AI agent plugin for Obsidian that works together with this plugin, is available at [EverydayMind/obsidian-verbex](https://github.com/EverydayMind/obsidian-verbex).

@@ -7,6 +7,7 @@ import type { ParseWorkerPool } from "./batch-worker";
 import { normalizeKordocProviderPath } from "./verbex-contract";
 import { indexTextChunks } from "./index-text-blocks";
 import { parseIndexSource } from "./index-text-parse";
+import { knownPageCount } from "./page-count";
 
 export const INDEX_TEXT_EXTRACTOR = { id: "kordoc" as const, engineVersion: VERSION, chunkerVersion: 'chunks-section-1+plain+gfm+hf+pdf-page-1' };
 export type IndexTextInput = { path: string; signal?: AbortSignal; maxChars?: number; ocr?: "off" | "candidates" };
@@ -47,6 +48,6 @@ export function createIndexText(app: App, pool: () => ParseWorkerPool) {
         ...(chunk.page ? { page: chunk.page, pageEnd: Math.max(chunk.page, result.blocks[chunk.blockRange[1]]?.pageNumber ?? chunk.page) } : {}), ...(chunk.table ? { table: { rows: chunk.table.rows, cols: chunk.table.cols } } : {}) }];
     });
     if (!chunks.length) return { status: "empty", message: "No extractable text" };
-    return { status: "ok", format: String(result.fileType), sourceSha256, sourceStamp, extractor: { ...INDEX_TEXT_EXTRACTOR, ocrApplied: ocr === "candidates" && !!result.warnings?.some((warning) => warning.code === "OCR_APPLIED") }, pageMode: result.metadata?.pageMode ?? (result.fileType === "pdf" ? "layout" : "section"), ...(quality ? { quality } : {}), pageCount: result.pageCount ?? null, outline: (result.outline ?? []).map(({ level, text }) => ({ level, text })), chunks, truncated, warnings: [...(result.warnings ?? []).reduce((counts, warning) => counts.set(warning.code, (counts.get(warning.code) ?? 0) + 1), new Map<string, number>())].map(([code, count]) => ({ code, count })).concat(result.indexBatched ? [{ code: "INDEX_PDF_PAGE_BATCHED", count: 1 }] : []) };
+    return { status: "ok", format: String(result.fileType), sourceSha256, sourceStamp, extractor: { ...INDEX_TEXT_EXTRACTOR, ocrApplied: ocr === "candidates" && !!result.warnings?.some((warning) => warning.code === "OCR_APPLIED") }, pageMode: result.metadata?.pageMode ?? (result.fileType === "pdf" ? "layout" : "section"), ...(quality ? { quality } : {}), pageCount: knownPageCount(result) ?? null, outline: (result.outline ?? []).map(({ level, text }) => ({ level, text })), chunks, truncated, warnings: [...(result.warnings ?? []).reduce((counts, warning) => counts.set(warning.code, (counts.get(warning.code) ?? 0) + 1), new Map<string, number>())].map(([code, count]) => ({ code, count })).concat(result.indexBatched ? [{ code: "INDEX_PDF_PAGE_BATCHED", count: 1 }] : []) };
   };
 }

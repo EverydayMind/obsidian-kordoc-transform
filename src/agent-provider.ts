@@ -87,6 +87,8 @@ const PAGES = { type: "string", minLength: 1, maxLength: 64, description: L({ ko
 
 const instructions = (locale: Locale): string => L({ ko: "한글(HWP·HWPX)·PDF·Word·Excel·PowerPoint 문서를 읽는 도구다. Markdown 노트(.md)는 이 도구로 읽지 않는다. 노트는 read_file 같은 노트 읽기 도구를 쓴다. 문서 내용에 대해 답하기 전에 read_document나 read_tables로 실제 내용을 확인한다. 긴 문서는 get_document_info로 쪽 수와 개요를 먼저 보고 pages로 범위를 좁힌다. cursor는 그 결과가 나온 파일 상태에서만 유효하며 파일이 바뀌면 처음부터 다시 읽는다. 이 도구들은 문서를 바꾸지 않고 파일도 만들지 않는다. 이 문서들은 노트용 쓰기 도구로 고칠 수 없다. 고치려면 그 형식의 문서 편집 도구를 쓰고, 여기서 읽은 본문에는 그 도구의 핸들이나 블록 번호가 없으므로 그 도구의 읽기 도구로 대상을 다시 확인한다. 암호가 걸린 문서는 읽지 못한다.", en: "Tools for reading Hangul (HWP/HWPX), PDF, Word, Excel and PowerPoint documents. Do not use these tools for Markdown notes (.md); use note-reading tools such as read_file. Before answering questions about document content, verify the actual content with read_document or read_tables. For long documents, first check the page count and outline with get_document_info, then narrow the range with pages. A cursor is valid only for the file state that produced it; restart reading if the file changes. These tools do not modify documents or create files. Note-writing tools cannot edit these documents. Use editing tools for that document format; text read here has no handles or block numbers for those tools, so verify the targets again using their reading tools. Password-protected documents cannot be read." }, locale);
 
+import { knownPageCount } from "./page-count";
+
 interface Loaded { file: TFile; path: string; buffer: ArrayBuffer; stamp: string }
 interface Parsed { key: string; markdown: string; format: string; pageCount: number; sectionMode: boolean }
 // HWPX without a layout cache reports sections, not rendered pages (metadata pageMode "section").
@@ -211,6 +213,7 @@ Verify these paths and read in a new request. Do not invent folder prefixes.` })
       catch (error) { throw new ToolError("PARSE_FAILED", L({ ko: `문서를 읽지 못했다: ${error instanceof Error ? error.message : String(error)}`, en: `Could not read the document: ${error instanceof Error ? error.message : String(error)}` })); }
       const outline = (Array.isArray(result.outline) ? result.outline : []) as Array<{ level?: number; text?: string; pageNumber?: number }>;
       const tables = result.blocks.filter((block) => block.type === "table").length;
+      const pageCount = knownPageCount(result);
       const lines = [
         L({ ko: `문서 ${source.path} · 형식 ${format} · ${unitCount(result.pageCount ?? "?", sectionMode(result.metadata))} · 블록 ${result.blocks.length}개 · 표 ${tables}개 · 본문 ${result.markdown.length}자`, en: `Document ${source.path} · Format ${format} · ${unitCount(result.pageCount ?? "?", sectionMode(result.metadata))} · ${result.blocks.length} blocks · ${tables} tables · ${result.markdown.length} body characters` }),
         ...Object.entries(result.metadata ?? {}).filter(([, value]) => typeof value === "string" || typeof value === "number").map(([key, value]) => `${key}: ${clip(value, 200)}`),
@@ -220,7 +223,7 @@ Verify these paths and read in a new request. Do not invent folder prefixes.` })
       ];
       return {
         content: [{ type: "text", text: lines.join("\n") }],
-        structuredContent: { format, pageCount: result.pageCount ?? null, blocks: result.blocks.length, tables, characters: result.markdown.length, outlineItems: outline.length },
+        structuredContent: { format, pageCount: pageCount ?? null, blocks: result.blocks.length, tables, characters: result.markdown.length, outlineItems: outline.length },
         _meta: resource(source),
       };
     },

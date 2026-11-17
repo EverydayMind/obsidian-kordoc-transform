@@ -1,4 +1,5 @@
 import { artifactName } from "./artifact-formats";
+import { knownPageCount, withoutUnknownPageCount } from "./page-count";
 import { L, initLocale } from "./locale";
 import {
   App,
@@ -525,7 +526,8 @@ ${jsonStringify(result.report)}
     if (name === "parse_document" || name === "parse_metadata") {
       if (!source) throw new Error(L({ ko: "대상 문서를 지정하세요.", en: "Specify a target document." }));
       const result = await parseOffline(source.buffer, { ...options, images: false });
-      return name === "parse_metadata" ? { format: result.fileType, metadata: result.metadata, pageCount: result.pageCount, outline: result.outline } : result;
+      const safeResult = withoutUnknownPageCount(result);
+      return name === "parse_metadata" ? { format: safeResult.fileType, metadata: safeResult.metadata, ...(safeResult.pageCount !== undefined ? { pageCount: safeResult.pageCount } : {}), outline: safeResult.outline } : safeResult;
     }
     const actions: Record<string, ToolAction> = {
       parse_pages: "pages", parse_table: "tables", parse_chunks: "chunks", compare_documents: "compare",
@@ -1032,7 +1034,8 @@ function buildFrontmatter(originalName: string, result: ParseResult): string {
   lines.push(`source: "${yamlEscape(originalName)}"`);
   if (result.success) {
     lines.push(`format: ${result.fileType}`);
-    if (result.pageCount != null) lines.push(`pages: ${result.pageCount}`);
+    const pageCount = knownPageCount(result);
+    if (pageCount != null) lines.push(`pages: ${pageCount}`);
     const meta = result.metadata;
     if (meta?.title) lines.push(`title: "${yamlEscape(meta.title)}"`);
     if (meta?.author) lines.push(`author: "${yamlEscape(meta.author)}"`);
