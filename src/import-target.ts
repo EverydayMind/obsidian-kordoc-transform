@@ -34,3 +34,8 @@ export function parentFolderOf(path: string): string {
   const slash = path.lastIndexOf("/");
   return slash >= 0 ? path.slice(0, slash) : "";
 }
+
+/** 볼트 밖에서 가져온 파일이고 복사 옵션이 켜져 있을 때만 원본을 복사한다. */
+export function shouldCopyOriginal(copyOriginal: boolean, sourcePath?: string): boolean {
+  return copyOriginal && !sourcePath;
+}

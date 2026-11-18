@@ -67,6 +67,10 @@ export interface KordocVerbexRegistration {
   registration: VerbexProviderRegistration;
 }
 
+interface ActiveVerbexRegistration extends KordocVerbexRegistration {
+  provider: KordocProvider;
+}
+
 /**
  * Owns the importer side of the Verbex registry handshake.
  *
@@ -77,12 +81,12 @@ export interface KordocVerbexRegistration {
  * protocol check always tears down the previous registration first.
  */
 export class KordocVerbexRegistrationManager {
-  private current: KordocVerbexRegistration | undefined;
+  private current: ActiveVerbexRegistration | undefined;
   private disposed = false;
 
   constructor(
     private readonly app: App,
-    private readonly provider: KordocProvider,
+    private readonly createProvider: () => KordocProvider,
   ) {}
 
   get generation(): string | undefined {
@@ -91,6 +95,10 @@ export class KordocVerbexRegistrationManager {
 
   get isRegistered(): boolean {
     return this.current !== undefined;
+  }
+
+  get provider(): KordocProvider | undefined {
+    return this.current?.provider;
   }
 
   sync(): void {
@@ -104,12 +112,18 @@ export class KordocVerbexRegistrationManager {
       if (this.current?.generation === registry.generation) return;
 
       this.disposeCurrent();
+      const provider = this.createProvider();
       try {
-        const registration = registry.registerProvider(this.provider);
-        this.current = { generation: registry.generation, registration };
+        const registration = registry.registerProvider(provider);
+        this.current = { generation: registry.generation, registration, provider };
       } catch (error) {
         // A registry that fails during registration must not leave the
         // provider looking registered to the importer.
+        try {
+          provider.dispose();
+        } catch {
+          // Best-effort cleanup if a freshly created provider fails to dispose.
+        }
         this.disposeCurrent();
         throw error;
       }
@@ -130,7 +144,17 @@ export class KordocVerbexRegistrationManager {
   private disposeCurrent(): void {
     const current = this.current;
     this.current = undefined;
-    current?.registration.dispose();
+    if (!current) return;
+    try {
+      current.registration.dispose();
+    } catch {
+      // The previous host registry may already be gone.
+    }
+    try {
+      current.provider.dispose();
+    } catch {
+      // Provider disposal must be safe even if the registry already disposed it.
+    }
   }
 }
 

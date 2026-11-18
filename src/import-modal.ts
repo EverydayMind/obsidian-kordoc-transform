@@ -9,14 +9,24 @@ export interface ImportTarget {
   copyOriginal: boolean;
 }
 
+export interface AskImportTargetOptions {
+  /** 볼트 안 파일이면 원본 복사 토글을 숨긴다. */
+  inVault?: boolean;
+}
+
 /** 변환 전에 저장할 볼트 폴더(및 새 하위 폴더)와 원본 복사 여부를 묻는다. 취소하면 null. */
-export function askImportTarget(app: App, fileNames: string[], initial: ImportTarget): Promise<ImportTarget | null> {
+export function askImportTarget(
+  app: App,
+  fileNames: string[],
+  initial: ImportTarget,
+  options: AskImportTargetOptions = {},
+): Promise<ImportTarget | null> {
   return new Promise((resolve) => {
     class ImportTargetModal extends Modal {
       private submitted = false;
       private base = initial.folder;
       private sub = "";
-      private copyOriginal = initial.copyOriginal;
+      private copyOriginal = options.inVault ? false : initial.copyOriginal;
 
       onOpen() {
         if (typeof this.setTitle === "function") this.setTitle(L({ ko: "KorDoc: 가져올 위치 선택", en: "KorDoc: Choose import location" }));
@@ -51,10 +61,12 @@ export function askImportTarget(app: App, fileNames: string[], initial: ImportTa
             t.inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") this.submit(); });
           });
 
-        new Setting(contentEl)
-          .setName(L({ ko: "원본 파일도 함께 복사", en: "Copy source files too" }))
-          .setDesc(L({ ko: "변환 전 원본 문서를 마크다운 노트와 같은 폴더에 복사합니다.", en: "Copy the original documents into the same folder as the Markdown notes before conversion." }))
-          .addToggle((t) => t.setValue(this.copyOriginal).onChange((v) => { this.copyOriginal = v; }));
+        if (!options.inVault) {
+          new Setting(contentEl)
+            .setName(L({ ko: "원본 파일도 함께 복사", en: "Copy source files too" }))
+            .setDesc(L({ ko: "변환 전 원본 문서를 마크다운 노트와 같은 폴더에 복사합니다.", en: "Copy the original documents into the same folder as the Markdown notes before conversion." }))
+            .addToggle((t) => t.setValue(this.copyOriginal).onChange((v) => { this.copyOriginal = v; }));
+        }
 
         contentEl.createEl("p", { cls: "kordoc-import-preview" });
         this.updatePreview();

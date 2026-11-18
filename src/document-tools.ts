@@ -24,7 +24,7 @@ export function createToolActions(locale: Locale = getLocale()) {
   template: L({ ko: "표준 기안문 작성", en: "Create a standard draft" }), seal: L({ ko: "도장·서명 배치", en: "Place seal or signature" }), redact: L({ ko: "개인정보 마스킹", en: "Redact personal information" }),
   profile: L({ ko: "표 서식 프로필 추출", en: "Extract table format profile" }), patch: L({ ko: "수정한 Markdown을 원본에 반영", en: "Apply edited Markdown to source" }),
   editMarkdown: L({ ko: "서식 보존 편집용 Markdown 추출", en: "Extract Markdown for format-preserving editing" }), validate: L({ ko: "HWPX 구조 검사", en: "Validate HWPX structure" }),
-  lint: L({ ko: "공문서 표기·문체 검사", en: "Check official document notation and style" }), preview: L({ ko: "HWP·HWPX 미리보기", en: "HWP/HWPX preview" }),
+  lint: L({ ko: "공문서 표기·문체 검사", en: "Check official document notation and style" }), preview: L({ ko: "미리보기 노트 만들기 (SVG 저장)", en: "Create preview note (save SVG)" }),
   svg: L({ ko: "쪽별 SVG 저장", en: "Save SVG by page" }), html: L({ ko: "레이아웃 HTML 저장", en: "Save layout HTML" }), printHtml: L({ ko: "인쇄용 HTML 저장", en: "Save print HTML" }),
   regions: L({ ko: "영역 정보·SVG 추출", en: "Extract region information and SVG" }),
   generate: L({ ko: "Markdown으로 HWPX 작성", en: "Create HWPX from Markdown" }),

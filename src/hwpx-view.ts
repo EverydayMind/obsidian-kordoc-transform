@@ -1,5 +1,4 @@
 import { L } from "./locale";
-import JSZip from "jszip";
 import {
   App,
   FileView,
@@ -35,21 +34,6 @@ export interface HwpxViewOptions {
   canOverwrite: () => boolean;
 }
 
-/** HWPX section XML에 한컴 조판 캐시가 있는지 확인한다. */
-async function hasLayoutCache(bytes: Uint8Array): Promise<boolean> {
-  try {
-    const zip = await JSZip.loadAsync(bytes);
-    const sections = zip.file(/Contents\/section\d+\.xml$/i);
-    for (const section of sections) {
-      const xml = await section.async("string");
-      if (/<(?:[A-Za-z][\w.-]*:)?linesegarray[\s/>]/.test(xml)) return true;
-    }
-  } catch {
-    // renderHwpxToSvg/validateHwpx가 실제 오류를 사용자에게 설명한다.
-  }
-  return false;
-}
-
 function previewText(block: IRBlock): string {
   if (block.type === "table" && block.table) {
     return L({ ko: `표 ${block.table.rows}행 × ${block.table.cols}열`, en: `Table: ${block.table.rows} rows × ${block.table.cols} columns` });
@@ -75,7 +59,6 @@ export class KordocHwpxView extends FileView {
   private readonly options: HwpxViewOptions;
   private session: HwpxEditSession | null = null;
   private renderResult: RenderSvgResult | null = null;
-  private hasCache = false;
   private selectedBlockIndex: number | null = null;
   private blobUrl: string | null = null;
   private busy = false;
@@ -184,7 +167,6 @@ export class KordocHwpxView extends FileView {
       // 생성본·편집본은 linesegarray가 없으므로 항상 reflow를 켠다.
       reflow: true,
     });
-    this.hasCache = await hasLayoutCache(bytes);
   }
 
   private refreshUi(): void {
@@ -210,22 +192,17 @@ export class KordocHwpxView extends FileView {
     const toolbar = root.createDiv({ cls: "kordoc-hwpx-toolbar" });
     const title = toolbar.createDiv({ cls: "kordoc-hwpx-toolbar-title" });
     this.filenameEl = title.createEl("strong", { text: this.file?.name ?? "HWPX" });
-    const session = this.session;
     const result = this.renderResult;
-    const approximate = !!session?.isDirty || !this.hasCache;
     const badge = title.createSpan({
-      cls: approximate
-        ? "kordoc-hwpx-badge kordoc-hwpx-badge-approx"
-        : "kordoc-hwpx-badge",
-      text: approximate
-        ? L({ ko: "근사 미리보기 · kordoc reflow", en: "Approximate preview · kordoc reflow" })
-        : L({ ko: "조판 캐시 재생", en: "Layout cache playback" }),
+      cls: "kordoc-hwpx-badge kordoc-hwpx-badge-approx",
+      text: L({ ko: "근사 미리보기", en: "Approximate preview" }),
     });
     badge.setAttribute(
       "title",
-      approximate
-        ? L({ ko: "한글에서 다시 저장하기 전에는 줄바꿈·페이지 배치가 근사치입니다.", en: "Line wrapping and pagination are approximate until the document is saved again in Hangul." })
-        : L({ ko: "한컴오피스가 저장한 조판 캐시를 재생합니다.", en: "Replays the layout cache saved by Hancom Office." }),
+      L({
+        ko: "글자 배치는 한컴오피스와 조금 다를 수 있습니다.",
+        en: "Text layout may differ slightly from Hancom Office.",
+      }),
     );
 
     if (result) {
@@ -247,7 +224,7 @@ export class KordocHwpxView extends FileView {
     const prompt = root.createDiv({ cls: "kordoc-hwpx-command" });
     const promptInput = prompt.createEl("input", {
       type: "text",
-      placeholder: L({ ko: "예: 3번째 문단을 새 내용으로 바꿔줘", en: "Example: 3번째 문단을 새 내용으로 바꿔줘" }),
+      placeholder: L({ ko: "예: 3번째 문단을 새 내용으로 바꿔줘", en: "Edit commands are understood in Korean only, for example: 3번째 문단을 새 내용으로 바꿔줘" }),
     });
     const promptButton = prompt.createEl("button", { text: L({ ko: "편집 명령 실행", en: "Run edit command" }) });
     const run = () => {
@@ -661,12 +638,12 @@ class HwpxPromptModal extends Modal {
     else this.titleEl.setText(L({ ko: "KorDoc: 편집 명령 실행", en: "KorDoc: Run edit command" }));
     const input = this.contentEl.createEl("input", {
       type: "text",
-      placeholder: L({ ko: "3번째 문단을 새 내용으로 바꿔줘", en: "3번째 문단을 새 내용으로 바꿔줘" }),
+      placeholder: L({ ko: "3번째 문단을 새 내용으로 바꿔줘", en: "Edit commands are understood in Korean only, for example: 3번째 문단을 새 내용으로 바꿔줘" }),
     });
     input.addClass("kordoc-hwpx-command-input");
     this.contentEl.createEl("p", {
       cls: "kordoc-hwpx-help",
-      text: L({ ko: "지원 패턴: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘", en: "Supported patterns: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘" }),
+      text: L({ ko: "지원 패턴: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘", en: "Edit commands are understood in Korean only. Supported patterns: n번째 문단을 X로 바꿔줘 · 표 R행 C열 값을 X로 바꿔줘" }),
     });
     const button = this.contentEl.createEl("button", { text: L({ ko: "실행", en: "Run" }) });
     const submit = () => {

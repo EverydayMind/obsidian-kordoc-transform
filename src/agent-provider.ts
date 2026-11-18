@@ -57,7 +57,7 @@ const PAGES = { type: "string", minLength: 1, maxLength: 64, description: L({ ko
     "dev.agentinterop/resourceTypes": types, "dev.agentinterop/maxResultChars": MAX_RESULT_CHARS, ...extra,
   });
   // A host shows an extended tool only when the request mentions one of its keywords.
-  const extended = (keywords: string[]): JsonObject => ({ "dev.agentinterop/group": "extended", "dev.agentinterop/keywords": keywords });
+  const extended = (keywords: string[]): JsonObject => ({ "dev.agentinterop/group": "extended", "dev.agentinterop/keywords": [...new Set(keywords)] });
   const tool = (name: string, title: string, description: string, properties: JsonObject, required: string[], extra?: JsonObject): JsonObject => ({
     name, title, description,
     inputSchema: { type: "object", additionalProperties: false, required, properties },
@@ -75,13 +75,13 @@ const PAGES = { type: "string", minLength: 1, maxLength: 64, description: L({ ko
       { path: PATH, pages: PAGES, table: { type: "integer", minimum: 1, maximum: 100000, description: L({ ko: "표 순번(1부터). 목록을 볼 때와 같은 pages로 부른다.", en: "Table index (starting at 1). Use the same pages value as for the list." }) } }, ["path"]),
     tool("read_form_fields", L({ ko: "양식 필드 읽기", en: "Read form fields" }),
       L({ ko: "양식 문서에서 채울 수 있는 칸(라벨과 지금 값)과 HWPX 누름틀을 찾아 돌려준다.", en: "Find fillable fields (labels and current values) and HWPX click-here fields in a form document." }),
-      { path: PATH }, ["path"], extended([L({ ko: "양식", en: "form" }), L({ ko: "서식", en: "template" }), L({ ko: "누름틀", en: "click-here" }), L({ ko: "필드", en: "field" }), L({ ko: "입력란", en: "input" }), L({ ko: "빈칸", en: "blank" }), L({ ko: "채우", en: "fill" }), "form"])),
+      { path: PATH }, ["path"], extended(["양식", "서식", "누름틀", "필드", "입력란", "빈칸", "채우", "form", "template", "click-here", "field", "input", "blank", "fill", "form"])),
     tool("compare_documents", L({ ko: "문서 신구 비교", en: "Compare document versions" }),
       L({ ko: "두 문서의 문단과 표 칸을 비교해 추가·삭제·수정된 곳을 돌려준다. path가 이전 문서, second_path가 새 문서다. 형식이 달라도 된다.", en: "Compare paragraphs and table cells in two documents and return additions, deletions and modifications. path is the old document; second_path is the new one. Formats may differ." }),
-      { path: PATH, second_path: { ...PATH, description: L({ ko: "비교할 새 문서의 Vault 기준 상대 경로.", en: "Vault-relative path to the new document for comparison." }) } }, ["path", "second_path"], extended([L({ ko: "비교", en: "compare" }), L({ ko: "신구", en: "versions" }), L({ ko: "대비", en: "comparison" }), L({ ko: "차이", en: "difference" }), L({ ko: "달라", en: "different" }), L({ ko: "바뀐", en: "changed" }), L({ ko: "변경", en: "change" }), "compare", "diff"])),
+      { path: PATH, second_path: { ...PATH, description: L({ ko: "비교할 새 문서의 Vault 기준 상대 경로.", en: "Vault-relative path to the new document for comparison." }) } }, ["path", "second_path"], extended(["비교", "신구", "대비", "차이", "달라", "바뀐", "변경", "compare", "versions", "comparison", "difference", "different", "changed", "change", "compare", "diff"])),
     tool("lint_document", L({ ko: "공문서 표기·문체 검사", en: "Check official document notation and style" }),
       L({ ko: "문서의 공문서 표기(날짜·금액·항목 기호 등)와 개조식 문체를 검사하고, HWPX면 파일 구조도 검사한다. 고칠 곳의 목록만 주며 문서를 바꾸지 않는다. 고칠 때는 replace_in_file 같은 노트 도구가 아니라 그 형식의 문서 편집 도구를 쓴다.", en: "Check official document notation (dates, amounts, list symbols, etc.) and bullet-style writing; also validate file structure for HWPX. Returns a list of issues without modifying the document. Use editing tools for that document format to fix issues, rather than note tools such as replace_in_file." }),
-      { path: PATH }, ["path"], extended([L({ ko: "검사", en: "check" }), L({ ko: "점검", en: "inspect" }), L({ ko: "검토", en: "review" }), L({ ko: "표기", en: "notation" }), L({ ko: "문체", en: "style" }), L({ ko: "맞춤법", en: "spelling" }), L({ ko: "오류", en: "error" }), "lint"])),
+      { path: PATH }, ["path"], extended(["검사", "점검", "검토", "표기", "문체", "맞춤법", "오류", "check", "inspect", "review", "notation", "style", "spelling", "error", "lint"])),
   ];
 }
 
