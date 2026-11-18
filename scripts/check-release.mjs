@@ -5,4 +5,7 @@ if (manifest.id !== 'kordoc-transform' || pkg.name !== manifest.id || manifest.v
 const tracked = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
 const forbidden = tracked.filter(p => /(^|\/)(AGENTS|CLAUDE)\.md$|(^|\/)[^/]*(PLAN|REVIEW|HANDOFF)[^/]*\.md$|^(docs|tests|test|node_modules|artifacts|runtime)\/|^main\.js$|\.map$/i.test(p));
 if (forbidden.length) throw new Error(`Forbidden tracked files: ${forbidden.join(', ')}`);
+const notes = `release-notes/${manifest.version}.md`;
+if (!tracked.includes(notes)) throw new Error(`Missing release notes: ${notes}`);
+if (!(await readFile(notes, 'utf8')).trim()) throw new Error('Release notes are empty');
 console.log('Release metadata and tracked-file checks passed.');
