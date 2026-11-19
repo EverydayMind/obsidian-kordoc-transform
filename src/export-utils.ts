@@ -155,3 +155,29 @@ export function normalizeGongmunPreset(value: unknown): GongmunPresetSetting {
 export function isMarkdownFilename(name: string): boolean {
   return name.toLowerCase().endsWith(".md");
 }
+
+const RENDER_ONLY_LANGUAGES = new Set(["plotly", "dataview", "dataviewjs", "mermaid", "tasks", "query", "button", "excalidraw"]);
+
+/** Fenced blocks Obsidian draws as charts/views; the HWPX export writes them as plain code text. */
+export function countRenderOnlyBlocks(markdown: string): { count: number; languages: string[] } {
+  let count = 0;
+  const languages: string[] = [];
+  let open: { marker: string; length: number } | null = null;
+  for (const raw of markdown.split("\n")) {
+    const line = raw.replace(/\r$/, "");
+    if (open) {
+      const closing = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(line);
+      if (closing && closing[1][0] === open.marker && closing[1].length >= open.length) open = null;
+      continue;
+    }
+    const fence = /^ {0,3}(`{3,}|~{3,})[ \t]*([^\s`]*)/.exec(line);
+    if (!fence) continue;
+    open = { marker: fence[1][0], length: fence[1].length };
+    const language = fence[2].toLowerCase();
+    if (RENDER_ONLY_LANGUAGES.has(language)) {
+      count++;
+      if (!languages.includes(language)) languages.push(language);
+    }
+  }
+  return { count, languages };
+}

@@ -2,6 +2,7 @@ import { L, getLocale, type Locale } from "./locale";
 import type { App, TFile } from "obsidian";
 import { parseOffline, preciseDocumentFormat, runDocumentTool, type ToolAction } from "./document-tools";
 import { normalizeKordocProviderPath } from "./verbex-contract";
+import { isAiPrivatePath } from "./ai-privacy";
 
 /**
  * Agent facade (agentinterop v1). An agent host discovers this object on the
@@ -151,11 +152,12 @@ export function createAgentProvider(app: App, options: AgentProviderOptions, loc
     let path: string;
     try { path = normalizeKordocProviderPath(input); }
     catch (error) { throw new ToolError("INVALID_ARGUMENT", `${label}: ${error instanceof Error ? error.message : String(error)}`, true); }
+    if (isAiPrivatePath(app, path)) throw new ToolError("AI_PRIVATE", L({ ko: "이 문서는 사용자가 HWP Hands에서 AI 비공개로 지정해 읽지 않았습니다. 해제는 사용자가 HWP Hands에서 합니다.", en: "The user marked this document as AI-private in HWP Hands, so it was not read. Only the user can remove that setting, in HWP Hands." }), false);
     const file = app.vault.getAbstractFileByPath(path);
     if (!isVaultFile(file)) {
       const name = path.split('/').pop();
       const matches = (app.vault.getFiles?.() ?? []).filter(candidate => {
-        if (candidate.name !== name || candidate.path === path || candidate.path.split('/').some(part => part.startsWith('.'))) return false;
+        if (candidate.name !== name || candidate.path === path || candidate.path.split('/').some(part => part.startsWith('.')) || isAiPrivatePath(app, candidate.path)) return false;
         try { normalizeKordocProviderPath(candidate.path); return true; } catch { return false; }
       }).map(candidate => candidate.path).sort((a, b) =>
         Number(b === name) - Number(a === name) || (a < b ? -1 : a > b ? 1 : 0)

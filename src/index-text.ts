@@ -5,6 +5,7 @@ import { vaultFileByPath } from "./vault-file";
 import { VERSION } from "./engine";
 import type { ParseWorkerPool } from "./batch-worker";
 import { normalizeKordocProviderPath } from "./verbex-contract";
+import { isAiPrivatePath } from "./ai-privacy";
 import { indexTextChunks } from "./index-text-blocks";
 import { parseIndexSource } from "./index-text-parse";
 import { knownPageCount } from "./page-count";
@@ -19,6 +20,7 @@ export function createIndexText(app: App, pool: () => ParseWorkerPool) {
     check();
     const path = normalizeKordocProviderPath(input);
     if (path.split("/").some((part) => part.startsWith("."))) return { status: "unsupported", message: "Hidden paths are not indexable" };
+    if (isAiPrivatePath(app, path)) return { status: "unsupported", message: "Marked AI-private in HWP Hands" };
     const file = vaultFileByPath(app.vault, path);
     if (!file || !/^(hwp|hwpx|pdf)$/i.test(file.extension)) return { status: "unsupported", message: "HWP/HWPX/PDF file required" };
     const sourceStamp = { mtime: file.stat.mtime, size: file.stat.size };

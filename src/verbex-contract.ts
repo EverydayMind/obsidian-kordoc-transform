@@ -1,6 +1,9 @@
 import { L } from "./locale";
 import type { BlockEdit, IRBlock } from "./engine";
 
+/** Message shown when HWP Hands marks a document AI-private. */
+export const aiPrivateMessage = (): string => L({ ko: "이 문서는 사용자가 HWP Hands에서 AI 비공개로 지정해 읽지 않았습니다. 해제는 사용자가 HWP Hands에서 합니다.", en: "The user marked this document as AI-private in HWP Hands, so it was not read. Only the user can remove that setting, in HWP Hands." });
+
 /** importer ↔ Verbex provider registry의 프로토콜 버전. */
 export const KORDOC_PROVIDER_PROTOCOL_VERSION = 1 as const;
 export const VERBEX_PROVIDER_HOST_PROTOCOL_VERSION = 1 as const;

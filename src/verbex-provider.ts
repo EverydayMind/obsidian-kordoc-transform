@@ -6,6 +6,7 @@ import {
   type BlockEdit,
   type IRBlock,
 } from "./engine";
+import { isAiPrivatePath } from "./ai-privacy";
 import { HwpxEditSession, sha256Hex, type AppliedBlockPatch } from "./hwpx-edit";
 import {
   KORDOC_PROVIDER_ID,
@@ -15,6 +16,7 @@ import {
   KORDOC_PROVIDER_TOOL_NAMES,
   KordocProviderError,
   computeKordocProviderSchemaHash,
+  aiPrivateMessage,
   normalizeKordocProviderPath,
   type KordocBinaryChangeDraft,
   type KordocBlockPage,
@@ -325,6 +327,7 @@ export class KordocProviderService implements KordocProvider {
 
   private async ensureSession(pathInput: KordocProviderPath | string): Promise<SessionRecord> {
     const path = normalizeKordocProviderPath(pathInput);
+    if (isAiPrivatePath(this.app, path)) throw providerError("INVALID_PATH", aiPrivateMessage());
     const abstract = this.app.vault.getAbstractFileByPath(path);
     if (!isVaultFile(abstract)) {
       throw providerError("NOT_FOUND", `HWPX file not found in Vault: ${path}`);

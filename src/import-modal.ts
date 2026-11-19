@@ -34,7 +34,7 @@ export function askImportTarget(
         const { contentEl } = this;
         contentEl.addClass("kordoc-import-target");
         const shown = fileNames.slice(0, 5).join(", ") + (fileNames.length > 5 ? L({ ko: ` 외 ${fileNames.length - 5}개`, en: ` and ${fileNames.length - 5} more` }) : "");
-        contentEl.createEl("p", { text: L({ ko: `변환할 문서 ${fileNames.length}개: ${shown}`, en: `${fileNames.length} documents to convert: ${shown}` }), cls: "kordoc-import-files" });
+        contentEl.createEl("p", { text: L({ ko: `변환할 문서 ${fileNames.length}개: ${shown}`, en: `${fileNames.length} ${fileNames.length === 1 ? "document" : "documents"} to convert: ${shown}` }), cls: "kordoc-import-files" });
 
         const folders = app.vault.getAllLoadedFiles()
           .filter((f): f is TFolder => f instanceof TFolder && !f.isRoot())

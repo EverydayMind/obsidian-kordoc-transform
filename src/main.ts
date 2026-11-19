@@ -49,6 +49,7 @@ import {
   preprocessObsidianMarkdown,
   stripFrontmatter,
   type GongmunPresetSetting,
+  countRenderOnlyBlocks,
 } from "./export-utils";
 import { HWPX_VIEW_TYPE, KordocHwpxView } from "./hwpx-view";
 import { askImportTarget, type ImportTarget } from "./import-modal";
@@ -61,7 +62,9 @@ import {
   KORDOC_PROVIDER_PROTOCOL_VERSION,
   type KordocImporterApi,
   type KordocProvider,
+  aiPrivateMessage,
 } from "./verbex-contract";
+import { isAiPrivatePath } from "./ai-privacy";
 import { KordocProviderService } from "./verbex-provider";
 import { KordocVerbexRegistrationManager } from "./verbex-adapter";
 import { AGENT_CAPABILITY_PROVIDER, PROVIDERS_CHANGED_EVENT, createAgentProvider, type AgentCapabilityProvider } from "./agent-provider";
@@ -544,6 +547,7 @@ ${jsonStringify(result.report)}
   private async executeMcpTool(name: string, args: Record<string, unknown>): Promise<unknown> {
     const read = async (path: unknown) => {
       const normalized = normalizeVaultRelativeFolder(path);
+      if (normalized && isAiPrivatePath(this.app, normalized)) throw new Error(aiPrivateMessage());
       const file = normalized ? this.app.vault.getAbstractFileByPath(normalized) : null;
       if (!(file instanceof TFile)) throw new Error(L({ ko: "볼트 기준 상대 파일 경로를 지정하세요.", en: "Specify a vault-relative file path." }));
       return { file, name: file.name, buffer: await this.app.vault.readBinary(file),
@@ -710,6 +714,8 @@ ${jsonStringify(result.report)}
       const attachments = this.settings.embedImages
         ? await collectVaultImages(this.app, file, sourceMarkdown)
         : { aliases: {}, images: {}, warnings: [] as string[] };
+      const imageWarningCount = attachments.warnings.length;
+      const renderOnly = countRenderOnlyBlocks(sourceMarkdown);
       const markdown = preprocessObsidianMarkdown(sourceMarkdown, attachments.aliases);
       const preset = this.settings.gongmunPreset;
       const extras: unknown = this.settings.hwpxOptionsJson.trim() ? JSON.parse(this.settings.hwpxOptionsJson) : {};
@@ -735,9 +741,9 @@ ${jsonStringify(result.report)}
 
       notice.hide();
       const done = buildExportNoticeFragment(
-        L({ ko: `✅ HWPX 내보내기 완료: ${outputFile.path}`, en: `✅ HWPX export complete: ${outputFile.path}` }),
+        L({ ko: `✅ HWPX 내보내기 완료: ${outputFile.path}`, en: `✅ HWPX export complete: ${outputFile.path}` }) + exportNoticeNotes(renderOnly, imageWarningCount),
         L({ ko: "열기", en: "Open" }),
-        () => { void this.openHwpxPreview(outputFile, "tab"); },
+        () => { void this.openExportedHwpx(outputFile); },
         createFragment,
       );
       new Notice(done, 6000);
@@ -746,6 +752,16 @@ ${jsonStringify(result.report)}
       notice.hide();
       this.reportError(L({ ko: `${file.name} HWPX 내보내기`, en: `${file.name} HWPX export` }), e);
     }
+  }
+
+  /** HWP Hands가 켜져 있고 openInEditor를 제공하면 거기서 열고, 아니면 KorDoc 미리보기로 연다. */
+  private async openExportedHwpx(file: TFile): Promise<void> {
+    const hands = (this.app as unknown as { plugins?: { plugins?: Record<string, unknown> } }).plugins?.plugins?.["hwp-hands"] as
+      { openInEditor?: (file: TFile) => unknown } | undefined;
+    if (typeof hands?.openInEditor === "function") {
+      try { await hands.openInEditor.call(hands, file); return; } catch { /* KorDoc 미리보기로 대체 */ }
+    }
+    await this.openHwpxPreview(file, "tab");
   }
 
   private getHwpxOutputFolder(file: TFile): string {
@@ -1042,6 +1058,17 @@ ${msg}` }), 8000);
 }
 
 /* ---------- 순수 헬퍼 ---------- */
+
+/** 내보내기 완료 알림에 덧붙일 안내(렌더 전용 블록, 넣지 못한 그림). */
+function exportNoticeNotes(renderOnly: { count: number; languages: string[] }, imageWarnings: number): string {
+  const notes: string[] = [];
+  if (renderOnly.count > 0) {
+    const langs = renderOnly.languages.slice(0, 3).join(", ");
+    notes.push(L({ ko: `Obsidian이 차트·보기로 그리는 블록 ${renderOnly.count}개(${langs})는 코드 글자로 들어갔습니다.`, en: `${renderOnly.count} block(s) that Obsidian draws as charts or views (${langs}) were written as code text.` }));
+  }
+  if (imageWarnings > 0) notes.push(L({ ko: `그림 ${imageWarnings}개를 넣지 못했습니다.`, en: `${imageWarnings} image(s) could not be embedded.` }));
+  return notes.length ? "\n" + notes.join("\n") : "";
+}
 
 function joinVaultPath(folder: string, name: string): string {
   return normalizePath(folder ? `${folder}/${name}` : name);
