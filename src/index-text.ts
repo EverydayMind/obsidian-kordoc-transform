@@ -11,11 +11,19 @@ import { parseIndexSource } from "./index-text-parse";
 import { knownPageCount } from "./page-count";
 
 export const INDEX_TEXT_EXTRACTOR = { id: "kordoc" as const, engineVersion: VERSION, chunkerVersion: 'chunks-section-1+plain+gfm+hf+pdf-page-1' };
+/** The host copies results as plain JSON and rejects any property whose value is undefined: drop those keys at any depth. */
+export function omitUndefined<T>(value: T): T {
+  if (Array.isArray(value)) return value.map(omitUndefined) as T;
+  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined).map(([key, item]) => [key, omitUndefined(item)])) as T;
+  }
+  return value;
+}
 export type IndexTextInput = { path: string; signal?: AbortSignal; maxChars?: number; ocr?: "off" | "candidates" };
 
 /** Host-only disk projection. Never opens an editor or enables OCR/network. */
 export function createIndexText(app: App, pool: () => ParseWorkerPool) {
-  return async ({ path: input, signal, maxChars = 2000000, ocr = "off" }: IndexTextInput) => {
+  const extract = async ({ path: input, signal, maxChars = 2000000, ocr = "off" }: IndexTextInput) => {
     const check = () => { if (signal?.aborted) throw new Error("Index extraction aborted"); };
     check();
     const path = normalizeKordocProviderPath(input);
@@ -52,4 +60,5 @@ export function createIndexText(app: App, pool: () => ParseWorkerPool) {
     if (!chunks.length) return { status: "empty", message: "No extractable text" };
     return { status: "ok", format: String(result.fileType), sourceSha256, sourceStamp, extractor: { ...INDEX_TEXT_EXTRACTOR, ocrApplied: ocr === "candidates" && !!result.warnings?.some((warning) => warning.code === "OCR_APPLIED") }, pageMode: result.metadata?.pageMode ?? (result.fileType === "pdf" ? "layout" : "section"), ...(quality ? { quality } : {}), pageCount: knownPageCount(result) ?? null, outline: (result.outline ?? []).map(({ level, text }) => ({ level, text })), chunks, truncated, warnings: [...(result.warnings ?? []).reduce((counts, warning) => counts.set(warning.code, (counts.get(warning.code) ?? 0) + 1), new Map<string, number>())].map(([code, count]) => ({ code, count })).concat(result.indexBatched ? [{ code: "INDEX_PDF_PAGE_BATCHED", count: 1 }] : []) };
   };
+  return async (input: IndexTextInput) => omitUndefined(await extract(input));
 }

@@ -28,6 +28,9 @@ export interface AgentCapabilityProvider {
   describe(): Promise<JsonObject>;
   callTool(name: string, args: JsonObject, ctx?: { signal?: AbortSignal }): Promise<AgentToolResult>;
   dispose(): void;
+  /** host-capabilities-v1 members: own data properties, present only when the plugin supplies them. */
+  readonly extractText?: { version: 1; extensions: string[]; extractorVersion: { id: string; engineVersion: string; chunkerVersion: string }; extract: (input: ExtractTextInput) => Promise<unknown> };
+  readonly ownership?: { openDocumentPaths(): Promise<string[]> };
 }
 export interface AgentProviderOptions {
   pluginId: string;
@@ -35,7 +38,16 @@ export interface AgentProviderOptions {
   version: string;
   /** Lower-case extensions without the dot. */
   extensions: readonly string[];
+  /** Host-only text extraction (host-capabilities-v1 `extractText`). Omitted: the member is not published. */
+  extractText?: { extractorVersion: { id: string; engineVersion: string; chunkerVersion: string }; extract: (input: ExtractTextInput) => Promise<unknown> };
+  /** Vault paths of the open companion windows (host-capabilities-v1 `ownership`). Omitted: the member is not published. */
+  openDocumentPaths?: () => readonly string[];
 }
+export interface ExtractTextInput { path: string; signal?: AbortSignal; ocr?: "off" | "candidates"; maxChars?: number }
+
+/** host-capabilities-v1 section 5 limits. Over them the answer is a failure, never a truncated list. */
+const MAX_OWNERSHIP_PATHS = 100;
+const MAX_OWNERSHIP_PATH_CHARS = 4096;
 
 class ToolError extends Error {
   constructor(readonly code: string, message: string, readonly retryable = false) { super(message); }
@@ -346,9 +358,33 @@ ${cut ? L({ ko: `${markdown.slice(0, PAGE_CHARS)}\n… 표가 길어 ${PAGE_CHAR
     },
   };
 
+  const hostMembers: { -readonly [K in "extractText" | "ownership"]?: AgentCapabilityProvider[K] } = {};
+  if (options.extractText) {
+    const { extractorVersion, extract } = options.extractText;
+    hostMembers.extractText = {
+      version: 1,
+      extensions: [".hwp", ".hwpx", ".pdf"],
+      extractorVersion: { id: extractorVersion.id, engineVersion: extractorVersion.engineVersion, chunkerVersion: extractorVersion.chunkerVersion },
+      extract,
+    };
+  }
+  const openPaths = options.openDocumentPaths;
+  if (openPaths) {
+    hostMembers.ownership = {
+      async openDocumentPaths(): Promise<string[]> {
+        if (disposed) throw new Error("KorDoc provider has shut down");
+        const paths = [...new Set(openPaths().map(normalizeKordocProviderPath))];
+        if (paths.length > MAX_OWNERSHIP_PATHS) throw new Error(`Too many open document paths: ${paths.length}`);
+        if (paths.some((path) => path.length > MAX_OWNERSHIP_PATH_CHARS)) throw new Error("An open document path is too long");
+        return paths;
+      },
+    };
+  }
+
   return {
     protocol: "agentinterop",
     protocolVersion: 1,
+    ...hostMembers,
     async describe() { return descriptor; },
     async callTool(name, args, ctx) {
       try {

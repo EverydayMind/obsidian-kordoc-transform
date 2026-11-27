@@ -67,6 +67,7 @@ import {
 import { isAiPrivatePath } from "./ai-privacy";
 import { KordocProviderService } from "./verbex-provider";
 import { KordocVerbexRegistrationManager } from "./verbex-adapter";
+import { hostAdvertisesCapabilities, gateIndexTextVersion } from "./host-advertisement";
 import { AGENT_CAPABILITY_PROVIDER, PROVIDERS_CHANGED_EVENT, createAgentProvider, type AgentCapabilityProvider } from "./agent-provider";
 
 /** kordoc 가 처리할 수 있는 입력 확장자 (소문자, 점 제외) */
@@ -206,31 +207,34 @@ export default class KordocImporterPlugin extends Plugin {
       }));
     });
 
-    const createVerbexProvider = () => new KordocProviderService(this.app, VERSION, () =>
+    const viewPaths = () =>
       this.app.workspace.getLeavesOfType(HWPX_VIEW_TYPE).flatMap(leaf => {
         const view = leaf.view;
         const path = view instanceof KordocHwpxView ? view.getOwnershipPath() : null;
         return path ? [path] : [];
-      }),
-    );
+      });
+    const createVerbexProvider = () => new KordocProviderService(this.app, VERSION, viewPaths);
     this.verbexRegistrationManager = new KordocVerbexRegistrationManager(
       this.app,
       createVerbexProvider,
+      () => hostAdvertisesCapabilities(this.app),
     );
     const manager = this.verbexRegistrationManager;
     this.verbexProvider = createVerbexProvider();
     const fallbackProvider = this.verbexProvider;
+    const app = this.app;
+    const indexText = createIndexText(app, () => this.getPool());
     this.api = {
       styleProfile: createStyleProfileApi(this.app),
-      indexTextVersion: 1,
       indexTextExtractor: INDEX_TEXT_EXTRACTOR,
-      indexText: createIndexText(this.app, () => this.getPool()),
+      indexText,
       protocolVersion: KORDOC_PROVIDER_PROTOCOL_VERSION,
       get provider(): KordocProvider {
         return manager.provider ?? fallbackProvider;
       },
       tools: { list: () => createLocalMcpTools(), execute: (name, args) => this.executeMcpTool(name, args) },
     };
+    gateIndexTextVersion(this.app, this.api);
     const workspaceEvents = this.app.workspace as unknown as {
       on(name: "verbex:registry-ready", callback: () => void): EventRef;
     };
@@ -238,9 +242,11 @@ export default class KordocImporterPlugin extends Plugin {
       void this.syncVerbexRegistration();
     }));
     void this.syncVerbexRegistration();
+    // The host can load after this plugin; look for its advertisement again once the workspace is ready.
+    this.app.workspace.onLayoutReady(() => { void this.syncVerbexRegistration(); });
 
     // Self-exposed read tools (agentinterop v1). Any agent host finds them under the Symbol; the provider above is unchanged.
-    this.agentProvider = createAgentProvider(this.app, { pluginId: this.manifest.id, name: this.manifest.name, version: this.manifest.version, extensions: SUPPORTED_EXTENSIONS });
+    this.agentProvider = createAgentProvider(this.app, { pluginId: this.manifest.id, name: this.manifest.name, version: this.manifest.version, extensions: SUPPORTED_EXTENSIONS, extractText: { extractorVersion: INDEX_TEXT_EXTRACTOR, extract: indexText }, openDocumentPaths: viewPaths });
     Object.defineProperty(this, AGENT_CAPABILITY_PROVIDER, { value: this.agentProvider, configurable: true, enumerable: false, writable: false });
     this.app.workspace.onLayoutReady(() => this.app.workspace.trigger(PROVIDERS_CHANGED_EVENT));
 

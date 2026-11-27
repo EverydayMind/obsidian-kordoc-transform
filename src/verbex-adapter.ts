@@ -87,6 +87,8 @@ export class KordocVerbexRegistrationManager {
   constructor(
     private readonly app: App,
     private readonly createProvider: () => KordocProvider,
+    /** True when a host that reads the agentinterop provider advertises host-capabilities-v1: the protocol-1 registration is then retired. */
+    private readonly hostSupersedes: () => boolean = () => false,
   ) {}
 
   get generation(): string | undefined {
@@ -104,6 +106,10 @@ export class KordocVerbexRegistrationManager {
   sync(): void {
     if (this.disposed) return;
     try {
+      if (this.hostSupersedes()) {
+        this.disposeCurrent();
+        return;
+      }
       const registry = resolveVerbexProviderRegistry(this.app);
       if (!registry) {
         this.disposeCurrent();
